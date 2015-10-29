@@ -47,7 +47,7 @@ module.exports = function (grunt, options) {
             reporters: ['progress', 'coverage'],
             preprocessors: {
                 'test/**/**/*.coffee': ['coffee'],
-                'dist/angular-leaflet-directive.js': ['coverage']
+                'dist/<%= pkg.name %>.js': ['coverage']
             },
             coverageReporter: {
                 reporters:[

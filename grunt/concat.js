@@ -13,7 +13,7 @@ concatDist = {
         'src/**/*.js'
 
     ],
-    dest: 'dist/angular-leaflet-directive.pre.js'
+    dest: 'dist/<%= pkg.name %>.pre.js'
 };
 
 concatDistMapped = _.clone(concatDist, true);
@@ -30,9 +30,9 @@ module.exports = function(grunt, options) {
         license: {
             src: [
                 'src/header-MIT-license.txt',
-                'dist/angular-leaflet-directive.min.no-header.js'
+                'dist/<%= pkg.name %>.min.no-header.js'
             ],
-            dest: 'dist/angular-leaflet-directive.min.js'
+            dest: 'dist/<%= pkg.name %>.min.js'
         },
         examples: {
             options: {

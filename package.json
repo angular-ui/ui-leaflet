@@ -1,4 +1,5 @@
 {
+  "org": "angular-ui",
   "author": "https://github.com/angular-ui/ui-leaflet/graphs/contributors",
   "name": "ui-leaflet",
   "description": "ui-leaflet - An AngularJS directive to easily interact with Leaflet maps",

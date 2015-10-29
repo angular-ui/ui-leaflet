@@ -7,7 +7,7 @@ module.exports = function (grunt, options) {
         },
         dist: {
             files: {
-                'dist/<%= pkg.name %>.min.no-header.js': ['dist/angular-leaflet-directive.js']
+                'dist/<%= pkg.name %>.min.no-header.js': ['dist/<%= pkg.name %>.js']
             }
         }
     };

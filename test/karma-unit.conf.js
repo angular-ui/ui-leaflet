@@ -1,3 +1,5 @@
+const pkg = require('../package.json');
+
 module.exports = function(karma) {
     karma.set({
         // base path, that will be used to resolve files and exclude
@@ -23,7 +25,7 @@ module.exports = function(karma) {
             'bower_components/angular-simple-logger/dist/angular-simple-logger.js',//THIS IS BROWSER version
             'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
             'bower_components/leaflet.vector-markers/dist/Leaflet.vector-markers.js',
-            'dist/angular-leaflet-directive_dev_mapped.js',
+            'dist/'+ pkg.name +'_dev_mapped.js',
             'test/unit/bootstrap.coffee',
             'test/unit/*.js',
             'test/unit/**/*.js',

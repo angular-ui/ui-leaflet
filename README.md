@@ -30,9 +30,9 @@ See https://angular-ui.github.com/ui-leaflet
 
 Include [angular-simple-logger](https://github.com/nmccready/angular-simple-logger) before Angular-Leaflet js files. Logger gets installed as a requirement of Angular-Leaflet with `bower install` or `npm install`. Note if your using the browser to load it without CommonJS (browserify, webpack) please use angular-simple-logger.js (not index.js) .
 
-Include the `leaflet-directive` dependency on your Angular module:
+Include the `ui-leaflet` dependency on your Angular module:
 ```
-var app = angular.module('demoapp', ['nemLogging','leaflet-directive']);
+var app = angular.module('demoapp', ['nemLogging','ui-leaflet']);
 ```
 
 After that, you can change the default values of the directive on

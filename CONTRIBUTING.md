@@ -9,7 +9,7 @@ When submitting an issue please include context from your test and
 your application. If there's an error, please include the error text.
 
 It isn't always easy to understand the bug/problem visually, you can use this [predefined
-jsfiddle](http://jsfiddle.net/maistho/9jymzymu/) example which loads a simple map. 
+jsfiddle](http://jsfiddle.net/maistho/9jymzymu/) example which loads a simple map.
 Then you can customize it to demonstrate your issue.
 
 Code style
@@ -51,7 +51,7 @@ $
 
 And we must install the client libraries dependencies with _bower_ too:
 ```
-[dave@haddock angular-leaflet-directive]$ bower install
+$ bower install
 bower angular#1.2.x             cached git://github.com/angular/bower-angular.git#1.2.6-build.1989+sha.b0474cb
 bower angular#1.2.x           validate 1.2.6-build.1989+sha.b0474cb against git://github.com/angular/bower-angular.git#1.2.x
 ...

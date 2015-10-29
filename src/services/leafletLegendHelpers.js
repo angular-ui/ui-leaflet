@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").factory('leafletLegendHelpers', function () {
+angular.module('ui-leaflet').factory('leafletLegendHelpers', function () {
 	var _updateLegend = function(div, legendData, type, url) {
 		div.innerHTML = '';
 		if(legendData.error) {

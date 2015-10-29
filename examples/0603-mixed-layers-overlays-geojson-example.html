@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
     <script src="../dist/ui-leaflet.js"></script>
     <script>
-        var app = angular.module('demoapp', ["leaflet-directive"]);
+        var app = angular.module('demoapp', ['ui-leaflet']);
         app.controller("MixedLayersOverlaysGeoJSONController", ["$scope", function($scope){
             angular.extend($scope, {
                 sanfrancisco: {

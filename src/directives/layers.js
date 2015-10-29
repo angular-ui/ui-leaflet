@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").directive('layers', function (leafletLogger, $q, leafletData, leafletHelpers, leafletLayerHelpers, leafletControlHelpers) {
+angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, leafletData, leafletHelpers, leafletLayerHelpers, leafletControlHelpers) {
     // var $log = leafletLogger;
     return {
         restrict: "A",

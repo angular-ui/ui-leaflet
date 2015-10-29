@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").directive('legend', function (leafletLogger, $http, leafletHelpers, leafletLegendHelpers) {
+angular.module('ui-leaflet').directive('legend', function (leafletLogger, $http, leafletHelpers, leafletLegendHelpers) {
         var $log = leafletLogger;
         return {
             restrict: "A",

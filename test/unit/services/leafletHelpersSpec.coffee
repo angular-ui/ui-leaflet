@@ -1,6 +1,6 @@
 describe 'leafletHelpers', ->
     beforeEach ->
-        module('leaflet-directive')
+        module('ui-leaflet')
         inject (_$compile_, _$rootScope_, _leafletData_, _leafletHelpers_) ->
             @$compile = _$compile_
             @$rootScope = _$rootScope_

@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").directive('maxbounds', function (leafletLogger, leafletMapDefaults, leafletBoundsHelpers, leafletHelpers) {
+angular.module('ui-leaflet').directive('maxbounds', function (leafletLogger, leafletMapDefaults, leafletBoundsHelpers, leafletHelpers) {
     // var $log = leafletLogger;
     return {
         restrict: "A",

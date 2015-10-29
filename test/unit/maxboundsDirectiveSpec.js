@@ -7,7 +7,7 @@
 describe('Directive: leaflet', function() {
     var $compile = null, $rootScope = null, $timeout, leafletData = null, leafletMapDefaults = null;
 
-    beforeEach(module('leaflet-directive'));
+    beforeEach(module('ui-leaflet'));
     beforeEach(inject(function(_$compile_, _$rootScope_, _$timeout_, _leafletData_, _leafletMapDefaults_) {
         $compile = _$compile_;
         $rootScope = _$rootScope_;

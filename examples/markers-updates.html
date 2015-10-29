@@ -17,7 +17,7 @@
         }
     </style>
     <script>
-        angular.module('demoApp', ['leaflet-directive'])
+        angular.module('demoApp', ['ui-leaflet'])
         .controller('Ctrl', ['$scope', 'leafletData', '$timeout', function($scope, leafletData, $timeout) {
             angular.extend($scope, {
                 center: {

@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="leaflet/leaflet.ie.css" />
     <![endif]-->
     <script>
-        var app = angular.module("demoapp", ["leaflet-directive"]);
+        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller('MarkersLabelController', [ '$scope', function($scope) {
             angular.extend($scope, {
                 london: {

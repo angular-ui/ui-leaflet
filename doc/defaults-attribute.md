@@ -46,4 +46,4 @@ And after that, in our HTML code we will define our leaflet directive like this:
 <leaflet defaults="defaults"></leaflet>
 ```
 
-And that's all. A full example of using this attribute can be found [here](http://tombatossals.github.io/angular-leaflet-directive/examples/custom-parameters-example.html).
+And that's all. A full example of using this attribute can be found [here](http://angular-ui.github.io/ui-leaflet/examples/custom-parameters-example.html).

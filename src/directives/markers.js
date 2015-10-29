@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").directive('markers',
+angular.module('ui-leaflet').directive('markers',
     function (leafletLogger, $rootScope, $q, leafletData, leafletHelpers, leafletMapDefaults,
               leafletMarkersHelpers, leafletMarkerEvents, leafletIterators, leafletWatchHelpers,
               leafletDirectiveControlsHelpers) {

@@ -8,7 +8,7 @@
     <script src="../dist/ui-leaflet.js"></script>
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
     <script>
-        var app = angular.module("demoapp", ["leaflet-directive"]);
+        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller("BasicMaxBoundsPadController", ["$scope", "leafletBoundsHelpers", function($scope, leafletBoundsHelpers) {
 
             var maxbounds = leafletBoundsHelpers.createBoundsFromArray([

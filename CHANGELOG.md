@@ -179,7 +179,7 @@ We now use marker.popupOpen() to handle popup logic (when focus is set to true, 
 
 #### Features
 
-* Added a new property to the layers to be able to hide the layer to the layer switcher. Example here: http://tombatossals.github.io/angular-leaflet-directive/examples/layers-hide-baselayer-on-selector-example.html
+* Added a new property to the layers to be able to hide the layer to the layer switcher. Example here: http://angular-ui.github.io/ui-leaflet/examples/layers-hide-baselayer-on-selector-example.html
 
 #### Bug Fixes
 
@@ -286,7 +286,7 @@ marker = {
 ```
 
 You can take a look at the demo page to see examples of this change:
-[http://tombatossals.github.io/angular-leaflet-directive/#!/examples/customized-markers](http://tombatossals.github.io/angular-leaflet-directive/#!/examples/customized-markers)
+[http://angular-ui.github.io/ui-leaflet/#!/examples/customized-markers](http://angular-ui.github.io/ui-leaflet/#!/examples/customized-markers)
 
 #### Features
 

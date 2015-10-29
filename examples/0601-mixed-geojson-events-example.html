@@ -63,7 +63,7 @@
         }
     </style>
     <script>
-        var app = angular.module("demoapp", ["leaflet-directive"]);
+        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller('MixedGeoJSONEventsController', [ "$scope", "$http", function($scope, $http) {
 
             $scope.$on("leafletDirectiveGeoJson.mouseover", function(ev, leafletPayload) {

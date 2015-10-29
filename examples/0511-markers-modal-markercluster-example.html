@@ -21,7 +21,7 @@
     <script src="../bower_components/Leaflet.ExtraMarkers/src/leaflet.extra-markers.js"></script>
 
     <script>
-        var app = angular.module("demoapp", ['leaflet-directive']);
+        var app = angular.module("demoapp", ['ui-leaflet']);
 
         app.controller("MarkersModalMarkerClusterController", ['$scope', 'leafletData', function($scope, leafletData) {
             var markers = [];

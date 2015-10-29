@@ -1,4 +1,4 @@
-angular.module("leaflet-directive")
+angular.module('ui-leaflet')
 .service('leafletWatchHelpers', function (){
 
     var _maybe = function(scope, watchFunctionName, thingToWatchStr, watchOptions, initCb){

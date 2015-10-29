@@ -2,7 +2,7 @@ describe 'Directive: leaflet center', ->
     scope = center = leafletData = $location = $timeout = $compile = $rootScope = undefined
 
     beforeEach ->
-        module('leaflet-directive')
+        module('ui-leaflet')
         inject (_$compile_, _$rootScope_, _$timeout_, _$location_, _leafletData_) ->
             $compile = _$compile_
             $rootScope = _$rootScope_

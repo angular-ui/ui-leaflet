@@ -2,7 +2,7 @@ describe 'leafletData directiveControls', ->
     geojsonData = mainLayers = leafletHelpers = leafletData = $rootScope = $compile = undefined
 
     beforeEach ->
-        module('leaflet-directive')
+        module('ui-leaflet')
         inject (_$compile_, _$rootScope_, _$timeout_, _leafletData_, _leafletHelpers_) ->
             $compile = _$compile_
             $rootScope = _$rootScope_

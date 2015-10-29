@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").directive("decorations", function(leafletLogger, leafletHelpers) {
+angular.module('ui-leaflet').directive("decorations", function(leafletLogger, leafletHelpers) {
 	var $log = leafletLogger;
 	return {
 		restrict: "A",

@@ -4,7 +4,7 @@
     NgAnnotate does not work here due to the functional creation
 */
 ['markers', 'geojson'].forEach(function(name){
-    angular.module("leaflet-directive").directive(name + 'WatchOptions', [
+    angular.module('ui-leaflet').directive(name + 'WatchOptions', [
         '$log', '$rootScope', '$q', 'leafletData', 'leafletHelpers',
         function (leafletLogger, $rootScope, $q, leafletData, leafletHelpers) {
 

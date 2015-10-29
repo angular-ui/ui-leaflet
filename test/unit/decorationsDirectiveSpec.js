@@ -7,7 +7,7 @@
 describe('Directive: decorations', function() {
 	var $compile, $rootScope, leafletData, leafletHelpers, mainCoordinates, mainDecorations;
 
-	beforeEach(module('leaflet-directive'));
+	beforeEach(module('ui-leaflet'));
 	beforeEach(inject(function(_$compile_, _$rootScope_, _leafletData_, _leafletHelpers_) {
 		$compile = _$compile_;
 		$rootScope = _$rootScope_;

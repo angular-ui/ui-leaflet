@@ -10,7 +10,7 @@
     <script src="../dist/ui-leaflet.min.js"></script>
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
     <script>
-        var app = angular.module("demoapp", ["leaflet-directive"]);
+        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller("LayersEsriImageLayerController", [ "$scope", function($scope) {
             angular.extend($scope, {
                 center: {

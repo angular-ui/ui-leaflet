@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css" />
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
     <script>
-        var app = angular.module("demoapp", ["leaflet-directive"]);
+        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller("LayersOverlayGeoJSONController", [ "$scope", '$http', function($scope, $http) {
             angular.extend($scope, {
                 world: {

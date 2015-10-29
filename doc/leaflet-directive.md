@@ -16,7 +16,7 @@ Before detailing how to use the directive and its attributes, let's talk about i
   <head>
      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
      <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
-     <script src="http://tombatossals.github.io/angular-leaflet-directive/dist/ui-leaflet.min.js"></script>
+     <script src="http://angular-ui.github.io/ui-leaflet/dist/ui-leaflet.min.js"></script>
      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
   </head>
 </html>
@@ -60,10 +60,10 @@ Great, let's see now the complete HTML and inline javascript code needed to load
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
-    <script src="http://tombatossals.github.io/angular-leaflet-directive/dist/ui-leaflet.min.js"></script>
+    <script src="http://angular-ui.github.io/ui-leaflet/dist/ui-leaflet.min.js"></script>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
     <script>
-       var app = angular.module("demoapp", ['leaflet-directive']);
+       var app = angular.module("demoapp", ['ui-leaflet']);
        app.controller("DemoController", [ "$scope", function($scope) {
            // Nothing here!
        }]);
@@ -76,7 +76,7 @@ Great, let's see now the complete HTML and inline javascript code needed to load
 
 ```
 
-You can see this example in action on the [simple-example.html demo file](http://tombatossals.github.io/angular-leaflet-directive/examples/simple-example.html).
+You can see this example in action on the [simple-example.html demo file](http://angular-ui.github.io/ui-leaflet/examples/simple-example.html).
 
 Take a look at the [AnguarJS controller documentation](http://docs.angularjs.org/guide/controller) if you want to learn more about Angular controller definition, or to the [AngularJS ngApp](http://docs.angularjs.org/api/ng.directive:ngApp) to know how to bootstrap an Angular application.
 

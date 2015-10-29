@@ -1,17 +1,18 @@
 {
-  "name": "angular-leaflet-directive",
-  "author": "https://github.com/tombatossals/angular-leaflet-directive/graphs/contributors",
-  "description": "angular-leaflet-directive - An AngularJS directive to easily interact with Leaflet maps",
+  "name": "ui-leaflet",
+  "author": "https://github.com/angular-ui/ui-leaflet/graphs/contributors",
+  "description": "ui-leaflet - An AngularJS directive to easily interact with Leaflet maps",
   "version": "0.9.0",
-  "homepage": "http://tombatossals.github.io/angular-leaflet-directive/",
+  "homepage": "http://angular-ui.github.io/ui-leaflet/",
   "keywords": [
     "angularjs",
     "javascript",
     "directive",
-    "leaflet"
+    "leaflet",
+    "angular-ui"
   ],
   "main": [
-    "dist/angular-leaflet-directive.js"
+    "dist/ui-leaflet.js"
   ],
   "dependencies": {
     "angular": "1.x",

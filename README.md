@@ -1,8 +1,8 @@
 # Angular Leaflet
 
-##Why the fork?
+##Why the [fork](https://github.com/tombatossals/angular-leaflet-directive)?
 
-We need to be able to operate as an organization to respond to issues, pull-requests and other various items quicker. We need to be able to add other developers as admins easier via group permissions via github orgs. Lastly this project needs to be more credible via being a group / org.
+While we are grateful for all the original work at [tombatossals/angular-leaflet-directive](https://github.com/tombatossals/angular-leaflet-directive). We need to be able to operate as an organization to respond to issues, pull-requests and other various items quicker. We need to be able to add other developers as admins easier via group permissions via github orgs. Lastly this project needs to be more credible via being a group / org.
 
 ## Goal
 

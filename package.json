@@ -1,16 +1,19 @@
 {
-  "author": "https://github.com/tombatossals/angular-leaflet-directive/graphs/contributors",
-  "name": "angular-leaflet-directive",
-  "description": "angular-leaflet-directive - An AngularJS directive to easily interact with Leaflet maps",
+  "author": "https://github.com/angular-ui/ui-leaflet/graphs/contributors",
+  "name": "ui-leaflet",
+  "description": "ui-leaflet - An AngularJS directive to easily interact with Leaflet maps",
   "version": "0.9.0",
-  "homepage": "http://tombatossals.github.io/angular-leaflet-directive/",
+  "homepage": "http://angular-ui.github.io/ui-leaflet/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tombatossals/angular-leaflet-directive"
+    "url": "https://github.com/angular-ui/ui-leaflet"
   },
   "keywords": [
     "angularjs",
+    "javascript",
+    "directive",
     "leaflet",
+    "angular-ui",
     "cli"
   ],
   "license": "MIT",
@@ -62,7 +65,7 @@
     "karmaChrome": "grunt test-unit-chrome",
     "karmaChromeOnce": "grunt karma:unit-chrome-once"
   },
-  "main": "dist/angular-leaflet-directive",
+  "main": "dist/ui-leaflet.js",
   "dependencies": {
     "angular": "1.x",
     "angular-simple-logger": "~0.1.4",

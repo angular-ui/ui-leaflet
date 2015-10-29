@@ -14,7 +14,7 @@ module.exports = function (grunt, options) {
                 'dist/<%= pkg.name %>.js',
                 'dist/<%= pkg.name %>.min.js',
                 'dist/<%= pkg.name %>.js',
-                'dist//<%= pkg.name %>_dev_mapped.js.map',
+                'dist/<%= pkg.name %>_dev_mapped.js.map',
                 'dist/architecture/**/*'
             ],
             createTag: true,

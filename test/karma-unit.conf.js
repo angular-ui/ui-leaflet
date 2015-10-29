@@ -56,7 +56,7 @@ module.exports = function(karma) {
 
         // test results reporter to use
         // possible values: dots || progress
-        reporters: ['progress'],
+        reporters: ['dots'],
 
         // web server port
         port: 9018,

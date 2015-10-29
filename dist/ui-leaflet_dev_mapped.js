@@ -1,12 +1,12 @@
 /*!
-*  angular-leaflet-directive 0.9.0 2015-10-12
-*  angular-leaflet-directive - An AngularJS directive to easily interact with Leaflet maps
-*  git: https://github.com/tombatossals/angular-leaflet-directive
+*  ui-leaflet 0.9.0 2015-10-29
+*  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
+*  git: https://github.com/angular-ui/ui-leaflet
 */
 (function(angular){
 'use strict';
 angular.module("leaflet-directive", ['nemLogging']).directive('leaflet',
-    ["$q", "leafletData", "leafletMapDefaults", "leafletHelpers", "leafletMapEvents", function ($q, leafletData, leafletMapDefaults, leafletHelpers, leafletMapEvents) {
+    function ($q, leafletData, leafletMapDefaults, leafletHelpers, leafletMapEvents) {
     return {
         restrict: "EA",
         replace: true,
@@ -30,7 +30,7 @@ angular.module("leaflet-directive", ['nemLogging']).directive('leaflet',
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',
-        controller: ["$scope", function ($scope) {
+        controller: function ($scope) {
             this._leafletMap = $q.defer();
             this.getMap = function () {
                 return this._leafletMap.promise;
@@ -39,7 +39,7 @@ angular.module("leaflet-directive", ['nemLogging']).directive('leaflet',
             this.getLeafletScope = function() {
                 return $scope;
             };
-        }],
+        },
 
         link: function(scope, element, attrs, ctrl) {
             var isDefined = leafletHelpers.isDefined,
@@ -155,9 +155,9 @@ angular.module("leaflet-directive", ['nemLogging']).directive('leaflet',
             });
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").factory('leafletBoundsHelpers', ["leafletLogger", "leafletHelpers", function (leafletLogger, leafletHelpers) {
+angular.module("leaflet-directive").factory('leafletBoundsHelpers', function (leafletLogger, leafletHelpers) {
 
     var isArray = leafletHelpers.isArray,
         isNumber = leafletHelpers.isNumber,
@@ -225,9 +225,9 @@ angular.module("leaflet-directive").factory('leafletBoundsHelpers', ["leafletLog
             };
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").factory('leafletControlHelpers', ["$rootScope", "leafletLogger", "leafletHelpers", "leafletLayerHelpers", "leafletMapDefaults", function ($rootScope, leafletLogger, leafletHelpers, leafletLayerHelpers, leafletMapDefaults) {
+angular.module("leaflet-directive").factory('leafletControlHelpers', function ($rootScope, leafletLogger, leafletHelpers, leafletLayerHelpers, leafletMapDefaults) {
     var isDefined = leafletHelpers.isDefined,
         isObject = leafletHelpers.isObject,
         createLayer = leafletLayerHelpers.createLayer,
@@ -425,9 +425,9 @@ angular.module("leaflet-directive").factory('leafletControlHelpers', ["$rootScop
             return mustBeLoaded;
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").service('leafletData', ["leafletLogger", "$q", "leafletHelpers", function (leafletLogger, $q, leafletHelpers) {
+angular.module("leaflet-directive").service('leafletData', function (leafletLogger, $q, leafletHelpers) {
     var getDefer = leafletHelpers.getDefer,
         getUnresolvedDefer = leafletHelpers.getUnresolvedDefer,
         setResolvedDefer = leafletHelpers.setResolvedDefer;
@@ -477,10 +477,10 @@ angular.module("leaflet-directive").service('leafletData', ["leafletLogger", "$q
             return defer.promise;
         };
     });
-}]);
+});
 
 angular.module("leaflet-directive")
-.service('leafletDirectiveControlsHelpers', ["leafletLogger", "leafletData", "leafletHelpers", function (leafletLogger, leafletData, leafletHelpers) {
+.service('leafletDirectiveControlsHelpers', function (leafletLogger, leafletData, leafletHelpers) {
     var _isDefined = leafletHelpers.isDefined,
         _isString = leafletHelpers.isString,
         _isObject = leafletHelpers.isObject,
@@ -521,10 +521,10 @@ angular.module("leaflet-directive")
     return {
         extend: _extend
     };
-}]);
+});
 
 angular.module("leaflet-directive")
-.service('leafletGeoJsonHelpers', ["leafletHelpers", "leafletIterators", function (leafletHelpers, leafletIterators) {
+.service('leafletGeoJsonHelpers', function (leafletHelpers, leafletIterators) {
     var lHlp = leafletHelpers,
     lIt = leafletIterators;
     var Point = function(lat,lng){
@@ -600,9 +600,9 @@ angular.module("leaflet-directive")
             validateCoords: _validateCoords,
             getCoords: _getCoords
         };
-    }]);
+    });
 
-angular.module("leaflet-directive").service('leafletHelpers', ["$q", "$log", function ($q, $log) {
+angular.module("leaflet-directive").service('leafletHelpers', function ($q, $log) {
     var _errorHeader = '[AngularJS - Leaflet] ';
     var _copy = angular.copy;
     var _clone = _copy;
@@ -1282,9 +1282,9 @@ angular.module("leaflet-directive").service('leafletHelpers', ["$q", "$log", fun
             }
         }
     };
-}]);
+});
 
-angular.module('leaflet-directive').service('leafletIterators', ["leafletLogger", "leafletHelpers", function (leafletLogger, leafletHelpers) {
+angular.module('leaflet-directive').service('leafletIterators', function (leafletLogger, leafletHelpers) {
 
   var lHlp = leafletHelpers,
   errorHeader = leafletHelpers.errorHeader + 'leafletIterators: ';
@@ -1451,10 +1451,10 @@ angular.module('leaflet-directive').service('leafletIterators', ["leafletLogger"
     every: _every,
     all: _all
   };
-}]);
+});
 
 angular.module("leaflet-directive")
-.factory('leafletLayerHelpers', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletIterators", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletIterators) {
+.factory('leafletLayerHelpers', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletIterators) {
     var Helpers = leafletHelpers;
     var isString = leafletHelpers.isString;
     var isObject = leafletHelpers.isObject;
@@ -2007,7 +2007,7 @@ angular.module("leaflet-directive")
         safeAddLayer: safeAddLayer,
         safeRemoveLayer: safeRemoveLayer
     };
-}]);
+});
 
 angular.module("leaflet-directive").factory('leafletLegendHelpers', function () {
 	var _updateLegend = function(div, legendData, type, url) {
@@ -2073,7 +2073,7 @@ angular.module("leaflet-directive").factory('leafletLegendHelpers', function () 
 	};
 });
 
-angular.module("leaflet-directive").factory('leafletMapDefaults', ["$q", "leafletHelpers", function ($q, leafletHelpers) {
+angular.module("leaflet-directive").factory('leafletMapDefaults', function ($q, leafletHelpers) {
     function _getDefaults() {
         return {
             keyboard: true,
@@ -2245,9 +2245,9 @@ angular.module("leaflet-directive").factory('leafletMapDefaults', ["$q", "leafle
             return newDefaults;
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").service('leafletMarkersHelpers', ["$rootScope", "$timeout", "leafletHelpers", "leafletLogger", "$compile", "leafletGeoJsonHelpers", function ($rootScope, $timeout, leafletHelpers, leafletLogger, $compile, leafletGeoJsonHelpers) {
+angular.module("leaflet-directive").service('leafletMarkersHelpers', function ($rootScope, $timeout, leafletHelpers, leafletLogger, $compile, leafletGeoJsonHelpers) {
     var isDefined = leafletHelpers.isDefined,
         defaultTo = leafletHelpers.defaultTo,
         MarkerClusterPlugin = leafletHelpers.MarkerClusterPlugin,
@@ -2578,6 +2578,10 @@ angular.module("leaflet-directive").service('leafletMarkersHelpers', ["$rootScop
                 marker.unbindPopup();
                 if (isString(markerData.message)) {
                     marker.bindPopup(markerData.message, markerData.popupOptions);
+                    // if marker has been already focused, reopen popup
+                    if (map.hasLayer(marker) && markerData.focus === true) {
+                        marker.openPopup();
+                    }
                 }
             }
 
@@ -2777,9 +2781,9 @@ angular.module("leaflet-directive").service('leafletMarkersHelpers', ["$rootScop
         string: _string,
         log: _log
     };
-}]);
+});
 
-angular.module("leaflet-directive").factory('leafletPathsHelpers', ["$rootScope", "leafletLogger", "leafletHelpers", function ($rootScope, leafletLogger, leafletHelpers) {
+angular.module("leaflet-directive").factory('leafletPathsHelpers', function ($rootScope, leafletLogger, leafletHelpers) {
     var isDefined = leafletHelpers.isDefined,
         isArray = leafletHelpers.isArray,
         isNumber = leafletHelpers.isNumber,
@@ -3031,7 +3035,7 @@ angular.module("leaflet-directive").factory('leafletPathsHelpers', ["$rootScope"
             return pathTypes[path.type].createPath(options);
         }
     };
-}]);
+});
 
 angular.module("leaflet-directive")
 .service('leafletWatchHelpers', function (){
@@ -3075,11 +3079,11 @@ angular.module("leaflet-directive")
   };
 });
 
-angular.module("leaflet-directive").service('leafletLogger', ["nemSimpleLogger", function(nemSimpleLogger) {
+angular.module("leaflet-directive").service('leafletLogger', function(nemSimpleLogger) {
   return nemSimpleLogger.spawn();
-}]);
+});
 
-angular.module("leaflet-directive").factory('nominatimService', ["$q", "$http", "leafletHelpers", "leafletMapDefaults", function ($q, $http, leafletHelpers, leafletMapDefaults) {
+angular.module("leaflet-directive").factory('nominatimService', function ($q, $http, leafletHelpers, leafletMapDefaults) {
     var isDefined = leafletHelpers.isDefined;
 
     return {
@@ -3099,9 +3103,9 @@ angular.module("leaflet-directive").factory('nominatimService', ["$q", "$http", 
             return df.promise;
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").directive('bounds', ["leafletLogger", "$timeout", "$http", "leafletHelpers", "nominatimService", "leafletBoundsHelpers", function (leafletLogger, $timeout, $http, leafletHelpers, nominatimService, leafletBoundsHelpers) {
+angular.module("leaflet-directive").directive('bounds', function (leafletLogger, $timeout, $http, leafletHelpers, nominatimService, leafletBoundsHelpers) {
     var $log = leafletLogger;
     return {
         restrict: "A",
@@ -3181,7 +3185,7 @@ angular.module("leaflet-directive").directive('bounds', ["leafletLogger", "$time
             });
         }
     };
-}]);
+});
 
 var centerDirectiveTypes = ['center', 'lfCenter'],
     centerDirectives = {};
@@ -3402,7 +3406,7 @@ centerDirectiveTypes.forEach(function(dirType){
   angular.module("leaflet-directive").directive(dirType, centerDirectives[dirType]);
 });
 
-angular.module("leaflet-directive").directive('controls', ["leafletLogger", "leafletHelpers", "leafletControlHelpers", function (leafletLogger, leafletHelpers, leafletControlHelpers) {
+angular.module("leaflet-directive").directive('controls', function (leafletLogger, leafletHelpers, leafletControlHelpers) {
     var $log = leafletLogger;
     return {
         restrict: "A",
@@ -3471,9 +3475,9 @@ angular.module("leaflet-directive").directive('controls', ["leafletLogger", "lea
             });
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").directive("decorations", ["leafletLogger", "leafletHelpers", function(leafletLogger, leafletHelpers) {
+angular.module("leaflet-directive").directive("decorations", function(leafletLogger, leafletHelpers) {
 	var $log = leafletLogger;
 	return {
 		restrict: "A",
@@ -3532,9 +3536,9 @@ angular.module("leaflet-directive").directive("decorations", ["leafletLogger", "
 			});
 		}
 	};
-}]);
+});
 
-angular.module("leaflet-directive").directive('eventBroadcast', ["leafletLogger", "$rootScope", "leafletHelpers", "leafletMapEvents", "leafletIterators", function (leafletLogger, $rootScope, leafletHelpers, leafletMapEvents, leafletIterators) {
+angular.module("leaflet-directive").directive('eventBroadcast', function (leafletLogger, $rootScope, leafletHelpers, leafletMapEvents, leafletIterators) {
     var $log = leafletLogger;
     return {
         restrict: "A",
@@ -3591,10 +3595,10 @@ angular.module("leaflet-directive").directive('eventBroadcast', ["leafletLogger"
             });
         }
     };
-}]);
+});
 
 angular.module("leaflet-directive")
-.directive('geojson', ["leafletLogger", "$rootScope", "leafletData", "leafletHelpers", "leafletWatchHelpers", "leafletDirectiveControlsHelpers", "leafletIterators", "leafletGeoJsonEvents", function (leafletLogger, $rootScope, leafletData, leafletHelpers,
+.directive('geojson', function (leafletLogger, $rootScope, leafletData, leafletHelpers,
     leafletWatchHelpers, leafletDirectiveControlsHelpers,leafletIterators, leafletGeoJsonEvents) {
     var _maybeWatch = leafletWatchHelpers.maybeWatch,
         _watchOptions = leafletHelpers.watchOptions,
@@ -3717,9 +3721,9 @@ angular.module("leaflet-directive")
             });
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").directive('layercontrol', ["$filter", "leafletLogger", "leafletData", "leafletHelpers", function ($filter, leafletLogger, leafletData, leafletHelpers) {
+angular.module("leaflet-directive").directive('layercontrol', function ($filter, leafletLogger, leafletData, leafletHelpers) {
     var $log = leafletLogger;
     return {
         restrict: "E",
@@ -3734,7 +3738,7 @@ angular.module("leaflet-directive").directive('layercontrol', ["$filter", "leafl
         replace: true,
         transclude: false,
         require: '^leaflet',
-        controller: ["$scope", "$element", "$sce", function ($scope, $element, $sce) {
+        controller: function ($scope, $element, $sce) {
             $log.debug('[Angular Directive - Layers] layers', $scope, $element);
             var safeApply = leafletHelpers.safeApply,
             isDefined = leafletHelpers.isDefined;
@@ -3867,7 +3871,7 @@ angular.module("leaflet-directive").directive('layercontrol', ["$filter", "leafl
             } else {
                 L.DomEvent.on(div, 'click', L.DomEvent.stopPropagation);
             }
-        }],
+        },
         template:
         '<div class="angular-leaflet-control-layers" ng-show="overlaysArray.length">' +
             '<h4 ng-if="title">{{ title }}</h4>' +
@@ -4005,21 +4009,21 @@ angular.module("leaflet-directive").directive('layercontrol', ["$filter", "leafl
             });
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").directive('layers', ["leafletLogger", "$q", "leafletData", "leafletHelpers", "leafletLayerHelpers", "leafletControlHelpers", function (leafletLogger, $q, leafletData, leafletHelpers, leafletLayerHelpers, leafletControlHelpers) {
+angular.module("leaflet-directive").directive('layers', function (leafletLogger, $q, leafletData, leafletHelpers, leafletLayerHelpers, leafletControlHelpers) {
     // var $log = leafletLogger;
     return {
         restrict: "A",
         scope: false,
         replace: false,
         require: 'leaflet',
-        controller: ["$scope", function ($scope) {
+        controller: function ($scope) {
             $scope._leafletLayers = $q.defer();
             this.getLayers = function () {
                 return $scope._leafletLayers.promise;
             };
-        }],
+        },
         link: function(scope, element, attrs, controller){
             var isDefined = leafletHelpers.isDefined,
                 leafletLayers = {},
@@ -4200,9 +4204,9 @@ angular.module("leaflet-directive").directive('layers', ["leafletLogger", "$q", 
             });
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").directive('legend', ["leafletLogger", "$http", "leafletHelpers", "leafletLegendHelpers", function (leafletLogger, $http, leafletHelpers, leafletLegendHelpers) {
+angular.module("leaflet-directive").directive('legend', function (leafletLogger, $http, leafletHelpers, leafletLegendHelpers) {
         var $log = leafletLogger;
         return {
             restrict: "A",
@@ -4313,10 +4317,10 @@ angular.module("leaflet-directive").directive('legend', ["leafletLogger", "$http
                 });
             }
         };
-    }]);
+    });
 
 angular.module("leaflet-directive").directive('markers',
-    ["leafletLogger", "$rootScope", "$q", "leafletData", "leafletHelpers", "leafletMapDefaults", "leafletMarkersHelpers", "leafletMarkerEvents", "leafletIterators", "leafletWatchHelpers", "leafletDirectiveControlsHelpers", function (leafletLogger, $rootScope, $q, leafletData, leafletHelpers, leafletMapDefaults,
+    function (leafletLogger, $rootScope, $q, leafletData, leafletHelpers, leafletMapDefaults,
               leafletMarkersHelpers, leafletMarkerEvents, leafletIterators, leafletWatchHelpers,
               leafletDirectiveControlsHelpers) {
     //less terse vars to helpers
@@ -4582,9 +4586,9 @@ angular.module("leaflet-directive").directive('markers',
             });
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").directive('maxbounds', ["leafletLogger", "leafletMapDefaults", "leafletBoundsHelpers", "leafletHelpers", function (leafletLogger, leafletMapDefaults, leafletBoundsHelpers, leafletHelpers) {
+angular.module("leaflet-directive").directive('maxbounds', function (leafletLogger, leafletMapDefaults, leafletBoundsHelpers, leafletHelpers) {
     // var $log = leafletLogger;
     return {
         restrict: "A",
@@ -4619,9 +4623,9 @@ angular.module("leaflet-directive").directive('maxbounds', ["leafletLogger", "le
             });
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").directive('paths', ["leafletLogger", "$q", "leafletData", "leafletMapDefaults", "leafletHelpers", "leafletPathsHelpers", "leafletPathEvents", function (leafletLogger, $q, leafletData, leafletMapDefaults, leafletHelpers, leafletPathsHelpers, leafletPathEvents) {
+angular.module("leaflet-directive").directive('paths', function (leafletLogger, $q, leafletData, leafletMapDefaults, leafletHelpers, leafletPathsHelpers, leafletPathEvents) {
     var $log = leafletLogger;
     return {
         restrict: "A",
@@ -4770,9 +4774,9 @@ angular.module("leaflet-directive").directive('paths', ["leafletLogger", "$q", "
             });
         }
     };
-}]);
+});
 
-angular.module("leaflet-directive").directive('tiles', ["leafletLogger", "leafletData", "leafletMapDefaults", "leafletHelpers", function (leafletLogger, leafletData, leafletMapDefaults, leafletHelpers) {
+angular.module("leaflet-directive").directive('tiles', function (leafletLogger, leafletData, leafletMapDefaults, leafletHelpers) {
     var $log = leafletLogger;
     return {
         restrict: "A",
@@ -4839,7 +4843,7 @@ angular.module("leaflet-directive").directive('tiles', ["leafletLogger", "leafle
             });
         }
     };
-}]);
+});
 
 /*
     Create multiple similar directives for watchOptions to support directiveControl
@@ -4882,7 +4886,7 @@ angular.module("leaflet-directive").directive('tiles', ["leafletLogger", "leafle
 });
 
 angular.module("leaflet-directive")
-.factory('leafletEventsHelpersFactory', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", function ($rootScope, $q, leafletLogger, leafletHelpers) {
+.factory('leafletEventsHelpersFactory', function ($rootScope, $q, leafletLogger, leafletHelpers) {
         var safeApply = leafletHelpers.safeApply,
             isDefined = leafletHelpers.isDefined,
             isObject = leafletHelpers.isObject,
@@ -5039,13 +5043,13 @@ angular.module("leaflet-directive")
         };
 
         return EventsHelper;
-}])
-.service('leafletEventsHelpers', ["leafletEventsHelpersFactory", function(leafletEventsHelpersFactory){
+})
+.service('leafletEventsHelpers', function(leafletEventsHelpersFactory){
     return new leafletEventsHelpersFactory();
-}]);
+});
 
 angular.module("leaflet-directive")
-.factory('leafletGeoJsonEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletEventsHelpersFactory", "leafletData", function ($rootScope, $q, leafletLogger, leafletHelpers,
+.factory('leafletGeoJsonEvents', function ($rootScope, $q, leafletLogger, leafletHelpers,
   leafletEventsHelpersFactory, leafletData) {
     var safeApply = leafletHelpers.safeApply,
         EventsHelper = leafletEventsHelpersFactory;
@@ -5089,10 +5093,10 @@ angular.module("leaflet-directive")
     };
 
     return new GeoJsonEvents();
-}]);
+});
 
 angular.module("leaflet-directive")
-.factory('leafletLabelEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletEventsHelpersFactory", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpersFactory) {
+.factory('leafletLabelEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpersFactory) {
     var Helpers = leafletHelpers,
         EventsHelper = leafletEventsHelpersFactory;
         //$log = leafletLogger;
@@ -5132,10 +5136,10 @@ angular.module("leaflet-directive")
         LabelEvents.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName) {};
 
         return new LabelEvents();
-}]);
+});
 
 angular.module("leaflet-directive")
-.factory('leafletMapEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletEventsHelpers", "leafletIterators", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpers, leafletIterators) {
+.factory('leafletMapEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpers, leafletIterators) {
     var isDefined = leafletHelpers.isDefined,
         fire = leafletEventsHelpers.fire;
 
@@ -5231,10 +5235,10 @@ angular.module("leaflet-directive")
         notifyCenterUrlHashChanged: _notifyCenterUrlHashChanged,
         addEvents: _addEvents
     };
-}]);
+});
 
 angular.module("leaflet-directive")
-.factory('leafletMarkerEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletEventsHelpersFactory", "leafletLabelEvents", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpersFactory, leafletLabelEvents) {
+.factory('leafletMarkerEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpersFactory, leafletLabelEvents) {
     var safeApply = leafletHelpers.safeApply,
         isDefined = leafletHelpers.isDefined,
         Helpers = leafletHelpers,
@@ -5301,10 +5305,10 @@ angular.module("leaflet-directive")
     };
 
     return new MarkerEvents();
-}]);
+});
 
 angular.module("leaflet-directive")
-.factory('leafletPathEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletLabelEvents", "leafletEventsHelpers", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
+.factory('leafletPathEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
     var isDefined = leafletHelpers.isDefined,
         isObject = leafletHelpers.isObject,
         Helpers = leafletHelpers,
@@ -5449,6 +5453,7 @@ angular.module("leaflet-directive")
         getAvailablePathEvents: _getAvailablePathEvents,
         bindPathEvents: _bindPathEvents
     };
-}]);
+});
 
 }(angular));
+//# sourceMappingURL=ui-leaflet_dev_mapped.js.map

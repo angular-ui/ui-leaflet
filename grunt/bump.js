@@ -13,7 +13,9 @@ module.exports = function (grunt, options) {
                 'bower.json',
                 'dist/<%= pkg.name %>.js',
                 'dist/<%= pkg.name %>.min.js',
+                'dist/<%= pkg.name %>.min.no-header.js',
                 'dist/<%= pkg.name %>.js',
+                'dist/<%= pkg.name %>_dev_mapped.js',
                 'dist/<%= pkg.name %>_dev_mapped.js.map',
                 'dist/architecture/**/*'
             ],

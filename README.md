@@ -1,6 +1,6 @@
 # Angular Leaflet
 
-![](./logo.svg)
+![](https://cdn.rawgit.com/angular-ui/ui-leaflet/master/logo.svg)
 
 ##Why the [fork](https://github.com/tombatossals/angular-leaflet-directive)?
 

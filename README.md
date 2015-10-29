@@ -1,5 +1,9 @@
 # Angular Leaflet Directive
 
+##Why the fork? 
+
+We need to be able to operate as an organization to respond to issues, pull-requests and other various items quicker. We need to be able to add other developers as admins easier via group permissions via github orgs. Lastly this project needs to be more credible via being a group / org.
+
 [AngularJS](http://angularjs.org/) directive for the [Leaflet](http://www.leafletjs.com/) Javascript
 Library. This software aims to easily embed maps managed by Leaflet on your project.
 

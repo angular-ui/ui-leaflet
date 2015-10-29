@@ -2,7 +2,7 @@
   "name": "ui-leaflet",
   "author": "https://github.com/angular-ui/ui-leaflet/graphs/contributors",
   "description": "ui-leaflet - An AngularJS directive to easily interact with Leaflet maps",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "homepage": "http://angular-ui.github.io/ui-leaflet/",
   "keywords": [
     "angularjs",

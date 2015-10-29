@@ -59,7 +59,8 @@
     "protractor": "^2.0.0",
     "q": "^1.2.0",
     "requirejs": "^2.1.20",
-    "shelljs": "^0.4.0"
+    "shelljs": "^0.4.0",
+    "yargs": "^3.29.0"
   },
   "scripts": {
     "test": "grunt travis --verbose",

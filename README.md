@@ -1,32 +1,28 @@
-# Angular Leaflet Directive
+# Angular Leaflet
 
-##Why the fork? 
+##Why the fork?
 
 We need to be able to operate as an organization to respond to issues, pull-requests and other various items quicker. We need to be able to add other developers as admins easier via group permissions via github orgs. Lastly this project needs to be more credible via being a group / org.
+
+## Goal
 
 [AngularJS](http://angularjs.org/) directive for the [Leaflet](http://www.leafletjs.com/) Javascript
 Library. This software aims to easily embed maps managed by Leaflet on your project.
 
-[![Join the chat at https://gitter.im/tombatossals/angular-leaflet-directive](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tombatossals/angular-leaflet-directive?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/angular-ui/ui-leaflet](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angular-ui/ui-leaflet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## [tombatossals](http://github.com/tombatossals/angular-leaflet-directive) — main upstream
+[![Build Status](https://travis-ci.org/angular-ui/ui-leaflet.png?branch=master)](https://travis-ci.org/angular-ui/ui-leaflet) [![Dependencies](https://david-dm.org/angular-ui/ui-leaflet.svg)](https://david-dm.org/angular-ui/ui-leaflet)&nbsp;
+[![Dependencies](https://david-dm.org/angular-ui/ui-leaflet/dev-status.svg)](https://david-dm.org/angular-ui/ui-leaflet) [![Coverage
+Status](https://coveralls.io/repos/angular-ui/ui-leaflet/badge.png?branch=master)](http://angular-ui.github.io/ui-leaflet/coverage/PhantomJS%201.9.7%20%28Linux%29/lcov-report/dist/ui-leaflet.js.html)
 
-[![Build Status](https://travis-ci.org/tombatossals/angular-leaflet-directive.png?branch=master)](https://travis-ci.org/tombatossals/angular-leaflet-directive) [![Dependencies](https://david-dm.org/tombatossals/angular-leaflet-directive.svg)](https://david-dm.org/tombatossals/angular-leaflet-directive)&nbsp;
-[![Dependencies](https://david-dm.org/tombatossals/angular-leaflet-directive/dev-status.svg)](https://david-dm.org/tombatossals/angular-leaflet-directive) [![Coverage
-Status](https://coveralls.io/repos/tombatossals/angular-leaflet-directive/badge.png?branch=master)](http://tombatossals.github.io/angular-leaflet-directive/coverage/PhantomJS%201.9.7%20%28Linux%29/lcov-report/dist/angular-leaflet-directive.js.html)
-
-## [realtymaps](http://github.com/realtymaps/angular-leaflet-directive)
-[![Build Status](https://travis-ci.org/realtymaps/angular-leaflet-directive.png?branch=master)](https://travis-ci.org/realtymaps/angular-leaflet-directive) [![Dependencies](https://david-dm.org/realtymaps/angular-leaflet-directive.svg)](https://david-dm.org/realtymaps/angular-leaflet-directive)&nbsp;
-[![Dependencies](https://david-dm.org/realtymaps/angular-leaflet-directive/dev-status.svg)](https://david-dm.org/realtymaps/angular-leaflet-directive) [![Coverage
-Status](https://coveralls.io/repos/realtymaps/angular-leaflet-directive/badge.png?branch=master)](http://realtymaps.github.io/angular-leaflet-directive/coverage/PhantomJS%201.9.7%20%28Linux%29/lcov-report/dist/angular-leaflet-directive.js.html)
 
 ## Examples
 
-[Browse all the examples](http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html) added by the community to learn about the directive and its possibilities.
+[Browse all the examples](http://angular-ui.github.io/ui-leaflet/examples/0000-viewer.html) added by the community to learn about the directive and its possibilities.
 
 ## Documentation
 
-See https://tombatossals.github.com/angular-leaflet-directive
+See https://angular-ui.github.com/ui-leaflet
 
 ## How to use it
 

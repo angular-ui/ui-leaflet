@@ -72,5 +72,5 @@ You can take a look of this feature on this [demo](http://angular-ui.github.io/u
 
 Development information
 -----------------------
-Each change to our scope defined _center_ object will update the map, or vice versa. This is accomplished via an angularJS watcher, defined [here](https://github.com/tombatossals/angular-leaflet-directive/blob/v0.7.0/src/directives/center.js#L34) in our code. When we change our map center or zoom, our _center_ object will be updated, these events are defined [here](https://github.com/tombatossals/angular-leaflet-directive/blob/v0.7.0/src/directives/center.js#L47) in our code.
+Each change to our scope defined _center_ object will update the map, or vice versa. This is accomplished via an angularJS watcher, defined [here](https://github.com/angular-ui/ui-leaflet/blob/v0.7.0/src/directives/center.js#L34) in our code. When we change our map center or zoom, our _center_ object will be updated, these events are defined [here](https://github.com/angular-ui/ui-leaflet/blob/v0.7.0/src/directives/center.js#L47) in our code.
 

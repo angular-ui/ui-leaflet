@@ -16,7 +16,7 @@ Before detailing how to use the directive and its attributes, let's talk about i
   <head>
      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
      <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
-     <script src="http://tombatossals.github.io/angular-leaflet-directive/dist/angular-leaflet-directive.min.js"></script>
+     <script src="http://tombatossals.github.io/angular-leaflet-directive/dist/ui-leaflet.min.js"></script>
      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
   </head>
 </html>
@@ -60,7 +60,7 @@ Great, let's see now the complete HTML and inline javascript code needed to load
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
-    <script src="http://tombatossals.github.io/angular-leaflet-directive/dist/angular-leaflet-directive.min.js"></script>
+    <script src="http://tombatossals.github.io/angular-leaflet-directive/dist/ui-leaflet.min.js"></script>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
     <script>
        var app = angular.module("demoapp", ['leaflet-directive']);

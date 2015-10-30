@@ -104,9 +104,10 @@ bump-@-major:
  - 'graph'
  - 'bump-commit'
 
-# examples:
-#  - 'shell:examples'
-#  - 'concat:examples'
+#To Update examples for Viewer
+examples:
+ - 'shell:examples'
+ - 'concat:examples'
 
 graph:
  - 'angular_architecture_graph'

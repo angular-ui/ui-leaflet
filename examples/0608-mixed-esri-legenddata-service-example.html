@@ -68,7 +68,7 @@
 
     <script>
         var app = angular.module("demoapp", ['ui-leaflet']);
-        app.controller("LegendEsriMultilayerLegendServiceController", [ "$scope", function($scope) {
+        app.controller("LegendEsriLegendDataLegendServiceController", ["$scope", "$http", "$log", "leafletData", function($scope, $http, $log, leafletData) {
             angular.extend($scope, {
             	options: {
             		controls: {
@@ -110,72 +110,31 @@
 				                opacity: 0.85,
 				                attribution: "Copyright:© 2014 Esri, DeLorme, HERE, TomTom"
 					        }
-				    	},
-				    	usa_social: {
-					    	name: "USA Social Vulnerability Index",
-					        type: "agsDynamic",
-					        url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Social_Vulnerability_Index/MapServer",
-					        visible: true,
-					        layerOptions: {
-				                opacity: 0.85,
-				                attribution: "Copyright:© 2014 Esri, FAO, NOAA"
-					        }
-				    	},
-                        usa_by_sex: {
-					    	name: "USA Population by Sex",
-					        type: "agsDynamic",
-					        url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_by_Sex/MapServer",
-					        visible: false,
-					        layerOptions: {
-				                opacity: 0.85,
-				                attribution: "Copyright:© 2014 Esri, FAO, NOAA"
-					        }
-				    	},
-                        usa_diversity: {
-					    	name: "USA Diversity Index",
-					        type: "agsDynamic",
-					        url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Diversity_Index/MapServer",
-					        visible: false,
-					        layerOptions: {
-				                opacity: 0.85,
-				                attribution: "Copyright:© 2014 Esri, FAO, NOAA"
-					        }
-				    	},
+				    	}
                     },
                 },
-
-                legendURL1: [
-                    "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_1990-2000_Population_Change/MapServer/legend?f=json",
-                    "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Social_Vulnerability_Index/MapServer/legend?f=json"
-                ],
-                legendURL2: [
-                    "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_by_Sex/MapServer/legend?f=json",
-                    "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Diversity_Index/MapServer/legend?f=json"
-                ],
 
                 legend: {
                 	legendClass: "info legend-esri",
 					position: "bottomleft",
-                },
-
-                switchLegend: function() {
-                	$scope.layers.overlays.usa_by_sex.visible = !$scope.layers.overlays.usa_by_sex.visible;
-                	$scope.layers.overlays.usa_diversity.visible = !$scope.layers.overlays.usa_diversity.visible;
-                	$scope.legend.url =
-                		$scope.legend.url == $scope.legendURL1? $scope.legendURL2:$scope.legendURL1;
+                    legendData: null
                 }
             });
 
-            $scope.legend.url = $scope.legendURL1;
+            leafletData.getMap().then(function(map) {
+                $http.get("http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_1990-2000_Population_Change/MapServer/legend?f=json")
+                    .then(function(data) {
+                        $log.debug('data', data);
+                        $scope.legend.legendData = data.data;
+                    });
+            });
         }]);
     </script>
 </head>
-<body ng-controller="LegendEsriMultilayerLegendServiceController">
+<body ng-controller="LegendEsriLegendDataLegendServiceController">
     <leaflet lf-center="usa" layers="layers" markers="markers" height="480px" width="100%"
         legend="legend" defaults="options"></leaflet>
-    <h1>Esri ArcGIS Multilayer Legend Service</h1>
-    <p>Use the button to switch another Esri Legend.</p>
+    <h1>Esri ArcGIS with legend data</h1>
     <br/>
-    <button ng-click="switchLegend()">Switch Legend</button>
 </body>
 </html>

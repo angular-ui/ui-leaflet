@@ -49,7 +49,7 @@ module.exports = function(grunt, options) {
             footer: '})(window.angular);'
           },
           src: ['website/src/js/app.js', 'website/src/js/**/*.js'],
-          dest: 'website/distJs/<%= pkg.name %>-webpage.js',
+          dest: 'website/dist/js/<%= pkg.name %>-webpage.js',
         }
     };
 };

@@ -5,7 +5,7 @@ module.exports = function (grunt, options) {
     return {
         options: JSON.parse(fs.readFileSync('.jshintrc')),
         source: {
-            src: ['src/directives/*.js', 'src/services/*.js']
+            src: ['src/directives/*.js', 'src/services/*.js', 'website/js/**/*.js']
         },
         tests: {
             src: ['test/unit/*.js', 'test/e2e/*.js']

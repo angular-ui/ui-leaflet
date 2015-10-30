@@ -52,6 +52,10 @@ module.exports = function(grunt, options) {
             tasks: [
                 'examples'
             ]
+        },
+        website: {
+          files: ['website/src/js/app.js', 'website/src/js/**/*.js'],
+          tasks: ['jshint', 'concat:website', 'uglify'] //'ngmin'
         }
     };
 };

@@ -50,9 +50,12 @@
     "leaflet-minimap": "~2.2.0",
     "esri-leaflet-clustered-feature-layer": "~1.0.x",
     "esri-leaflet-heatmap-feature-layer": "~1.0.x",
-    "leaflet-search": "~1.5.8"
+    "leaflet-search": "~1.5.8",
+    "highlightjs": "~8.8.0",
+    "angular-highlightjs": "~0.4.3"
   },
   "ignore": [
+    "website/",
     "**/.*",
     "src",
     "doc",

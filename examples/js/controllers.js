@@ -127,7 +127,7 @@ var app = angular.module('webapp');
                 });
             };
         }]);
-        app.controller("BasicDoubleMapEventsController", [ "$scope", "$log", "leafletData", "leafletEvents", function($scope, $log, leafletData, leafletEvents) {
+        app.controller("BasicDoubleMapEventsController", [ "$scope", "$log", "leafletData", "leafletMapEvents", function($scope, $log, leafletData, leafletMapEvents) {
             angular.extend($scope, {
                 london: {
                     lat: 51.505,
@@ -147,11 +147,11 @@ var app = angular.module('webapp');
             });
             $scope.events = {
                 map: {
-                    enable: leafletEvents.getAvailableMapEvents(),
+                    enable: leafletMapEvents.getAvailableMapEvents(),
                     logic: 'emit'
                 }
             };
-            var mapEvents = leafletEvents.getAvailableMapEvents();
+            var mapEvents = leafletMapEvents.getAvailableMapEvents();
             for (var k in mapEvents) {
                 var eventName = 'leafletDirectiveMap.' + mapEvents[k];
                 $scope.$on(eventName, function(event){
@@ -3232,7 +3232,7 @@ var app = angular.module('webapp');
                 },
             });
         } ]);
-        app.controller("MarkersDelayedEventsController", ["$scope", "leafletEvents", function($scope, leafletEvents){
+        app.controller("MarkersDelayedEventsController", ["$scope", "leafletMarkerEvents", function($scope, leafletMarkerEvents){
             angular.extend($scope, {
                 london: {
                     lat: 51.505,
@@ -3261,11 +3261,11 @@ var app = angular.module('webapp');
             };
             $scope.events = {
                 markers: {
-                    enable: leafletEvents.getAvailableMarkerEvents(),
+                    enable: leafletMarkerEvents.getAvailableEvents(),
                 }
             };
             $scope.eventDetected = "No events yet...";
-            var markerEvents = leafletEvents.getAvailableMarkerEvents();
+            var markerEvents = leafletMarkerEvents.getAvailableEvents();
             for (var k in markerEvents){
                 var eventName = 'leafletDirectiveMarker.' + markerEvents[k];
                 $scope.$on(eventName, function(event, args){
@@ -4058,12 +4058,12 @@ var app = angular.module('webapp');
             });
         }, 4000);
         angular.extend($scope, {
-            markersWatchOptions: {
-                doWatch: false,
-                isDeep: false,
-                individual: {
-                    doWatch: false,
-                    isDeep: false
+            watchOptions: {
+                markers: {
+                    type: null
+                    individual: {
+                        type: null
+                    }
                 }
             },
             center: {
@@ -4196,7 +4196,7 @@ var app = angular.module('webapp');
                 console.log(data);
             });
         }]);
-    app.controller("MixedMarkersNestedEventsController", ["$scope", "leafletEvents", function ($scope, leafletEvents) {
+    app.controller("MixedMarkersNestedEventsController", ["$scope", "leafletMarkerEvents", function ($scope, leafletMarkerEvents) {
         $scope.map = {
             show: true
         };
@@ -4238,11 +4238,11 @@ var app = angular.module('webapp');
         };
         $scope.events = {
             markers: {
-                enable: leafletEvents.getAvailableMarkerEvents()
+                enable: leafletMarkerEvents.getAvailableEvents()
             }
         };
         $scope.eventDetected = "No events yet...";
-        var markerEvents = leafletEvents.getAvailableMarkerEvents();
+        var markerEvents = leafletMarkerEvents.getAvailableEvents();
         for (var k in markerEvents) {
             var eventName = 'leafletDirectiveMarker.' + markerEvents[k];
             $scope.$on(eventName, function (event, args) {

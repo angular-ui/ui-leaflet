@@ -17,6 +17,14 @@
                 defaults: {
                     scrollWheelZoom: false
                 },
+                watchOptions: {
+                    paths: {
+                        type: 'watch',
+                        individual: {
+                            type: null
+                        }
+                    }
+                },
                 //restrict map panning for this region
                 maxbounds: {
                     northEast: {
@@ -50,15 +58,19 @@
 
             //bind locationGrid to zoom level
             $scope.$watch("centroid.zoom", function (zoom) {
+                var tempPaths;
                 if (zoom <= 3) {
                     //clear path object
                     $scope.paths = {};
+
+                    //make new paths
+                    tempPaths = {};
 
                     //get location data and initialize leaflet circles
                     LocationDataService.getLocationsTenGrid().then(function (res) {
                         angular.forEach(res.data, function (value, key) {
                             if (value.lat !== null && value.lon !== null) {
-                                $scope.paths['circle' + key] = {
+                                tempPaths['circle' + key] = {
                                     type: 'circle',
                                     className: 'testClass',
                                     fillColor: 'DarkSlateGray',
@@ -73,6 +85,7 @@
                                 };
                             }
                         });
+                        $scope.paths = tempPaths;
                     }, function (error) {
                         console.log('An error occured!', error);
                     });
@@ -81,11 +94,14 @@
                     //clear path object
                     $scope.paths = {};
 
+                    //make new paths
+                    tempPaths = {};
+
                     //get location data and initialize leaflet circles
                     LocationDataService.getLocationsZeroOneGrid().then(function (res) {
                         angular.forEach(res.data, function (value, key) {
                             if (value.lat !== null && value.lon !== null) {
-                                $scope.paths['circle' + key] = {
+                                tempPaths['circle' + key] = {
                                     type: 'circle',
                                     className: 'testClass',
                                     fillColor: 'DarkSlateGray',
@@ -100,6 +116,7 @@
                                 };
                             }
                         });
+                        $scope.paths = tempPaths;
                     }, function (error) {
                         console.log('An error occured!', error);
                     });
@@ -141,7 +158,7 @@
     </script>
   </head>
   <body ng-controller="Paths3000ItemsController">
-      <leaflet watch-paths="false" lf-center="centroid" maxbounds="maxbounds" layers="layers" paths="paths" defaults="defaults" width="100%" height="480px"></leaflet>
+      <leaflet watch-options="watchOptions" lf-center="centroid" maxbounds="maxbounds" layers="layers" paths="paths" defaults="defaults" width="100%" height="480px"></leaflet>
       <h1>3000 items in a map performance</h1>
   </body>
 </html>

@@ -1,4 +1,4 @@
-angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, leafletData, leafletMapDefaults, leafletHelpers, leafletPathsHelpers, leafletPathEvents) {
+angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, leafletData, leafletMapDefaults, leafletHelpers, leafletPathsHelpers, leafletPathEvents, leafletWatchHelpers) {
     var $log = leafletLogger;
     return {
         restrict: "A",
@@ -14,7 +14,8 @@ angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, lea
                 paths     = leafletScope.paths,
                 createPath = leafletPathsHelpers.createPath,
                 bindPathEvents = leafletPathEvents.bindPathEvents,
-                setPathOptions = leafletPathsHelpers.setPathOptions;
+                setPathOptions = leafletPathsHelpers.setPathOptions,
+                maybeWatch = leafletWatchHelpers.maybeWatch;
 
             mapController.getMap().then(function(map) {
                 var defaults = leafletMapDefaults.getDefaults(attrs.id),
@@ -35,17 +36,32 @@ angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, lea
                     return;
                 }
 
+                //legacy behaviour does a watch collection on the paths
+                var _legacyWatchOptions = {
+                    type: 'watchCollection',
+                    individual: {
+                        type: 'watchDeep'
+                    }
+                };
+
+                var watchOptions;
+                if(leafletScope.watchOptions && leafletScope.watchOptions.paths) {
+                    watchOptions = leafletScope.watchOptions.paths;
+                }
+                else {
+                    watchOptions = _legacyWatchOptions;
+                }
+
                 getLayers().then(function(layers) {
 
                     var leafletPaths = {};
                     leafletData.setPaths(leafletPaths, attrs.id);
 
-                    // Should we watch for every specific marker on the map?
-                    var shouldWatch = (!isDefined(attrs.watchPaths) || attrs.watchPaths === 'true');
-
                     // Function for listening every single path once created
-                    var watchPathFn = function(leafletPath, name) {
-                        var clearWatch = leafletScope.$watch("paths[\""+name+"\"]", function(pathData, old) {
+                    var watchPathFn = function(leafletPath, name, watchOptions) {
+                        var pathWatchPath = "paths[\""+name+"\"]";
+
+                        maybeWatch(leafletScope, pathWatchPath, watchOptions, function(pathData, old, clearWatch){
                             if (!isDefined(pathData)) {
                                 if (isDefined(old.layer)) {
                                     for (var i in layers.overlays) {
@@ -58,11 +74,10 @@ angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, lea
                                 return;
                             }
                             setPathOptions(leafletPath, pathData.type, pathData);
-                        }, true);
+                        });
                     };
 
-                    leafletScope.$watchCollection("paths", function (newPaths) {
-
+                    var _clean = function(newPaths){
                         // Delete paths (by name) from the array
                         for (var name in leafletPaths) {
                             if (!isDefined(newPaths[name])) {
@@ -70,7 +85,10 @@ angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, lea
                                 delete leafletPaths[name];
                             }
                         }
+                    };
 
+                    var _create = function(newPaths){
+                        _clean(newPaths);
                         // Create the new paths
                         for (var newName in newPaths) {
                             if (newName.search('\\$') === 0) {
@@ -122,27 +140,32 @@ angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, lea
                                     // The path goes to a correct layer group, so first of all we add it
                                     layerGroup.addLayer(newPath);
 
-                                    if (shouldWatch) {
-                                        watchPathFn(newPath, newName);
+                                    if (watchOptions.individual.type !== null) {
+                                        watchPathFn(newPath, newName, watchOptions.individual);
                                     } else {
-                                        setPathOptions(newPath, pathData.type, pathData);
+                                       setPathOptions(newPath, pathData.type, pathData);
                                     }
                                 } else if (isDefined(newPath)) {
                                     // Listen for changes on the new path
                                     leafletPaths[newName] = newPath;
                                     map.addLayer(newPath);
 
-                                    if (shouldWatch) {
-                                        watchPathFn(newPath, newName);
+                                    if (watchOptions.individual.type !== null) {
+                                        watchPathFn(newPath, newName, watchOptions.individual);
                                     } else {
-                                        setPathOptions(newPath, pathData.type, pathData);
+                                       setPathOptions(newPath, pathData.type, pathData);
                                     }
                                 }
 
                                 bindPathEvents(attrs.id, newPath, newName, pathData, leafletScope);
                             }
                         }
+                    };
+
+                    maybeWatch(leafletScope,'paths', watchOptions, function(newPaths){
+                        _create(newPaths);
                     });
+
                 });
             });
         }

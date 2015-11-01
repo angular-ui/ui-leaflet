@@ -1,4 +1,4 @@
-angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootScope, $timeout, leafletHelpers, leafletLogger, $compile, leafletGeoJsonHelpers) {
+angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootScope, $timeout, leafletHelpers, leafletLogger, $compile, leafletGeoJsonHelpers, leafletWatchHelpers) {
     var isDefined = leafletHelpers.isDefined,
         defaultTo = leafletHelpers.defaultTo,
         MarkerClusterPlugin = leafletHelpers.MarkerClusterPlugin,
@@ -15,6 +15,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
         groups = {},
         geoHlp = leafletGeoJsonHelpers,
         errorHeader = leafletHelpers.errorHeader,
+        maybeWatch = leafletWatchHelpers.maybeWatch,
         $log = leafletLogger;
 
     var _string = function (marker) {
@@ -512,7 +513,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
             groups[groupName].addLayer(marker);
         },
 
-        listenMarkerEvents: function (marker, markerData, leafletScope, doWatch, map) {
+        listenMarkerEvents: function (marker, markerData, leafletScope, watchType, map) {
             marker.on("popupopen", function (/* event */) {
                 safeApply(leafletScope, function () {
                     if (isDefined(marker._popup) || isDefined(marker._popup._contentNode)) {
@@ -536,18 +537,17 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
 
         updateMarker: _updateMarker,
 
-        addMarkerWatcher: function (marker, name, leafletScope, layers, map, isDeepWatch) {
+        addMarkerWatcher: function (marker, name, leafletScope, layers, map, watchOptions) {
             var markerWatchPath = Helpers.getObjectArrayPath("markers." + name);
-            isDeepWatch = defaultTo(isDeepWatch, true);
 
-            var clearWatch = leafletScope.$watch(markerWatchPath, function(markerData, oldMarkerData) {
+            maybeWatch(leafletScope, markerWatchPath, watchOptions, function(markerData, oldMarkerData, clearWatch){
                 if (!isDefined(markerData)) {
                     _deleteMarker(marker, map, layers);
                     clearWatch();
                     return;
                 }
                 _updateMarker(markerData, oldMarkerData, marker, name, leafletScope, layers, map);
-            } , isDeepWatch);
+            });
         },
         string: _string,
         log: _log,

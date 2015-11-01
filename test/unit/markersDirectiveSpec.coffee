@@ -619,7 +619,7 @@ describe 'Directive: leaflet', ->
             scope.markers = mainMarkers
 
         it 'watches marker icon bindings', ->
-            element = angular.element('<leaflet markers="markers" watchMarkers="true"></leaflet>')
+            element = angular.element('<leaflet markers="markers"></leaflet>')
             element = $compile(element)(scope)
             markers = undefined
             leafletData.getMarkers().then (leafletMarkers) ->
@@ -632,7 +632,8 @@ describe 'Directive: leaflet', ->
             expect(markers.m1.options.icon.options.iconUrl).toEqual DEFAULT_URL
 
         it 'does not watch on markers when watch is disabled', ->
-            element = angular.element('<leaflet markers="markers" watch-markers="false"></leaflet>')
+            scope.watchOptions = { markers: { type: null, individual: { type: null } } };
+            element = angular.element('<leaflet markers="markers" watch-options="watchOptions"></leaflet>')
             element = $compile(element)(scope)
             markers = undefined
             leafletData.getMarkers().then (leafletMarkers) ->

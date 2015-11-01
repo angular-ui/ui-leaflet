@@ -1,4 +1,4 @@
-        app.controller("BasicDoubleMapEventsController", [ "$scope", "$log", "leafletData", "leafletEvents", function($scope, $log, leafletData, leafletEvents) {
+        app.controller("BasicDoubleMapEventsController", [ "$scope", "$log", "leafletData", "leafletMapEvents", function($scope, $log, leafletData, leafletMapEvents) {
             angular.extend($scope, {
                 london: {
                     lat: 51.505,
@@ -18,11 +18,11 @@
             });
             $scope.events = {
                 map: {
-                    enable: leafletEvents.getAvailableMapEvents(),
+                    enable: leafletMapEvents.getAvailableMapEvents(),
                     logic: 'emit'
                 }
             };
-            var mapEvents = leafletEvents.getAvailableMapEvents();
+            var mapEvents = leafletMapEvents.getAvailableMapEvents();
             for (var k in mapEvents) {
                 var eventName = 'leafletDirectiveMap.' + mapEvents[k];
                 $scope.$on(eventName, function(event){

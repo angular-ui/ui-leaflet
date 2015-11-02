@@ -6,7 +6,18 @@ module.exports = function (grunt, options) {
         unit: {
             configFile: 'test/karma-unit.conf.js',
             autoWatch: false,
-            singleRun: true
+            singleRun: true,
+            reporters: ['dots', 'coverage'],
+            preprocessors: {
+                'test/**/**/*.coffee': ['coffee'],
+                'dist/<%= pkg.name %>.js': ['coverage']
+            },
+            coverageReporter: {
+                reporters:[
+                  { type : 'html', dir : 'dist/coverage/', subdir: "lib" },
+                  {type: 'text-summary', dir:'dist/coverage/', subdir:'lib'}
+                ]
+            }
         },
         'unit-mocha': {
             configFile: 'test/karma-unit.conf.js',
@@ -38,23 +49,6 @@ module.exports = function (grunt, options) {
             browsers: ['Chrome'],
             autoWatch: true,
             singleRun: true
-        },
-        unit_coverage: {
-            configFile: 'test/karma-unit.conf.js',
-            autoWatch: false,
-            singleRun: true,
-            //logLevel: 'DEBUG',
-            reporters: ['progress', 'coverage'],
-            preprocessors: {
-                'test/**/**/*.coffee': ['coffee'],
-                'dist/<%= pkg.name %>.js': ['coverage']
-            },
-            coverageReporter: {
-                reporters:[
-                    {type: 'lcov', dir:'coverage/', subdir:'report'},
-                    {type: 'text-summary', dir:'coverage/', subdir:'report'}
-                ]
-            }
         }
     };
 };

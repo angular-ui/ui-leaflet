@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-10-30
+*  ui-leaflet 1.0.0 2015-11-02
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -2266,7 +2266,6 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         errorHeader = leafletHelpers.errorHeader,
         $log = leafletLogger;
 
-
     var _string = function (marker) {
         //this exists since JSON.stringify barfs on cyclic
         var retStr = '';
@@ -2676,6 +2675,27 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
                 marker.setLatLng([markerData.lat, markerData.lng]);
             }
         };
+
+    var _getLayerModels = function (models, layerName){
+      if (!isDefined(models))
+        return;
+      if (layerName)
+        return models[layerName];
+      return models;
+    };
+
+    var _getModelFromModels = function (models, id, layerName){
+      if(!isDefined(models))
+        return;
+      if(!id){
+        $log.error(errorHeader + 'marker id missing in getMarker');
+        return;
+      }
+      if(layerName)
+        return models[layerName][id];
+
+      return models[id];
+    };
     return {
         resetMarkerGroup: _resetMarkerGroup,
 
@@ -2779,7 +2799,9 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
             } , isDeepWatch);
         },
         string: _string,
-        log: _log
+        log: _log,
+        getModelFromModels : _getModelFromModels,
+        getLayerModels : _getLayerModels
     };
 }]);
 
@@ -4334,6 +4356,8 @@ angular.module('ui-leaflet').directive('markers',
         addMarkerToGroup = leafletMarkersHelpers.addMarkerToGroup,
         createMarker = leafletMarkersHelpers.createMarker,
         deleteMarker = leafletMarkersHelpers.deleteMarker,
+        getModelFromModels = leafletMarkersHelpers.getModelFromModels,
+        getLayerModels = leafletMarkersHelpers.getLayerModels,
         $it = leafletIterators,
         _markersWatchOptions = leafletHelpers.watchOptions,
         maybeWatch = leafletWatchHelpers.maybeWatch,
@@ -4461,7 +4485,7 @@ angular.module('ui-leaflet').directive('markers',
                 leafletMarkerEvents.bindEvents(mapId, marker, pathToMarker, model, leafletScope, layerName);
             }
             else {
-                var oldModel = isDefined(oldModel)? oldModels[newName] : undefined;
+                var oldModel = getModelFromModels(oldModels, newName, maybeLayerName);
                 updateMarker(model, oldModel, maybeLMarker, pathToMarker, leafletScope, layers, map);
             }
         }
@@ -4552,8 +4576,8 @@ angular.module('ui-leaflet').directive('markers',
                     var _clean = function(models, oldModels){
                         if(isNested) {
                             $it.each(models, function(markerToMaybeDel, layerName) {
-                                var oldModel = isDefined(oldModel)? oldModels[layerName] : undefined;
-                                _destroy(markerToMaybeDel, oldModel, leafletMarkers[layerName], map, layers);
+                              var oldLayerModels = getLayerModels(oldModels, layerName);
+                                _destroy(markerToMaybeDel, oldLayerModels, leafletMarkers[layerName], map, layers);
                             });
                             return;
                         }
@@ -4565,8 +4589,9 @@ angular.module('ui-leaflet').directive('markers',
                         var skips = null;
                         if(isNested) {
                             $it.each(models, function(markersToAdd, layerName) {
-                                var oldModel = isDefined(oldModel)? oldModels[layerName] : undefined;
-                                skips = _getNewModelsToSkipp(models[layerName], oldModel, leafletMarkers[layerName]);
+                                var oldLayerModels = getLayerModels(oldModels, layerName);
+                                var newlayerModels = getLayerModels(models, layerName);
+                                skips = _getNewModelsToSkipp(newlayerModels, oldLayerModels, leafletMarkers[layerName]);
                                 _addMarkers(attrs.id, markersToAdd, oldModels, map, layers, leafletMarkers, leafletScope,
                                     watchOptions, layerName, skips);
                             });

@@ -64,6 +64,7 @@
     "*.md",
     "Gruntfile.js",
     "package.json",
-    "bower.json"
+    "bower.json",
+    "dist/coverage/"
   ]
 }

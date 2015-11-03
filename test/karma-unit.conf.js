@@ -1,10 +1,13 @@
+const pkg = require('../package.json');
+const mainLib = 'dist/' + pkg.name +'.js';
+
 module.exports = function(karma) {
     karma.set({
         // base path, that will be used to resolve files and exclude
         basePath: '../',
 
         preprocessors: {
-            'test/**/**/*.coffee': ['coffee']
+            'test/**/**/*.coffee': ['coffee'],
         },
         coffeePreprocessor: {
             options: {
@@ -23,7 +26,7 @@ module.exports = function(karma) {
             'bower_components/angular-simple-logger/dist/angular-simple-logger.js',//THIS IS BROWSER version
             'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
             'bower_components/leaflet.vector-markers/dist/Leaflet.vector-markers.js',
-            'dist/angular-leaflet-directive_dev_mapped.js',
+            mainLib,
             'test/unit/bootstrap.coffee',
             'test/unit/*.js',
             'test/unit/**/*.js',
@@ -33,13 +36,11 @@ module.exports = function(karma) {
             {pattern:'**/**/**/*.coffee', included: false},
             {pattern: '**/*.js.map', included: false}
         ],
-
         // Frameworks
         frameworks: ["jasmine"],
 
         // list of files to exclude
-        exclude: [
-        ],
+        exclude: [],
 
         // Start these browsers, currently available:
         // - Chrome
@@ -54,7 +55,7 @@ module.exports = function(karma) {
 
         // test results reporter to use
         // possible values: dots || progress
-        reporters: ['progress'],
+        reporters: ['dots'],
 
         // web server port
         port: 9018,

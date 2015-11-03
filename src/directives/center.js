@@ -214,5 +214,5 @@ centerDirectiveTypes.forEach(function(directiveName) {
 });
 
 centerDirectiveTypes.forEach(function(dirType){
-  angular.module("leaflet-directive").directive(dirType, centerDirectives[dirType]);
+  angular.module('ui-leaflet').directive(dirType, centerDirectives[dirType]);
 });

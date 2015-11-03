@@ -7,12 +7,12 @@
     <script src="../bower_components/leaflet/dist/leaflet.js"></script>
     <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
     <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-    <script src="../dist/angular-leaflet-directive_dev_mapped.js"></script>
+    <script src="../dist/ui-leaflet_dev_mapped.js"></script>
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-        angular.module('demoApp', ['leaflet-directive'])
+        angular.module('demoApp', ['ui-leaflet'])
             .controller('Ctrl', ["$scope", function($scope) {
                 var ssmarkers = [];
                 var filterMarkers = function() {

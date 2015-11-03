@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").service('leafletData', function (leafletLogger, $q, leafletHelpers) {
+angular.module('ui-leaflet').service('leafletData', function (leafletLogger, $q, leafletHelpers) {
     var getDefer = leafletHelpers.getDefer,
         getUnresolvedDefer = leafletHelpers.getUnresolvedDefer,
         setResolvedDefer = leafletHelpers.setResolvedDefer;

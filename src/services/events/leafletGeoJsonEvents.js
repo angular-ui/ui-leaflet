@@ -1,4 +1,4 @@
-angular.module("leaflet-directive")
+angular.module('ui-leaflet')
 .factory('leafletGeoJsonEvents', function ($rootScope, $q, leafletLogger, leafletHelpers,
   leafletEventsHelpersFactory, leafletData) {
     var safeApply = leafletHelpers.safeApply,

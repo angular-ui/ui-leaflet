@@ -37,4 +37,4 @@ app.controller("DemoController", [ "$scope", "leafletBoundsHelpers", function($s
 });
 ```
 
-And that's all, we can see how the map is affected when we change the _maxbounds_ scope values, like [this example](http://tombatossals.github.io/angular-leaflet-directive/examples/maxbounds-example.html).
+And that's all, we can see how the map is affected when we change the _maxbounds_ scope values, like [this example](http://angular-ui.github.io/ui-leaflet/examples/maxbounds-example.html).

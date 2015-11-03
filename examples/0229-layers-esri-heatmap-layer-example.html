@@ -9,10 +9,10 @@
     <script src="../bower_components/Leaflet.heat/dist/leaflet-heat.js"></script>
     <script src="../bower_components/esri-leaflet/dist/esri-leaflet.js"></script>
     <script src="../bower_components/esri-leaflet-heatmap-feature-layer/dist/esri-leaflet-heatmap-feature-layer.js"></script>
-    <script src="../dist/angular-leaflet-directive.min.js"></script>
+    <script src="../dist/ui-leaflet.min.js"></script>
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
     <script>
-        var app = angular.module("demoapp", ["leaflet-directive"]);
+        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller("LayersEsriHeatmapLayerController", [ "$scope", function($scope) {
             angular.extend($scope, {
                 center: {

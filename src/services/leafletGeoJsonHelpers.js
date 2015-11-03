@@ -1,4 +1,4 @@
-angular.module("leaflet-directive")
+angular.module('ui-leaflet')
 .service('leafletGeoJsonHelpers', function (leafletHelpers, leafletIterators) {
     var lHlp = leafletHelpers,
     lIt = leafletIterators;

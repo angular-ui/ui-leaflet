@@ -1,4 +1,4 @@
-angular.module("leaflet-directive")
+angular.module('ui-leaflet')
 .factory('leafletLayerHelpers', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletIterators) {
     var Helpers = leafletHelpers;
     var isString = leafletHelpers.isString;

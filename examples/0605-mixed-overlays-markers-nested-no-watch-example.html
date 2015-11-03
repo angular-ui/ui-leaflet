@@ -5,17 +5,17 @@
     <script src="../bower_components/angular/angular.min.js"></script>
     <script src="../bower_components/leaflet/dist/leaflet.js"></script>
     <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
-    <script src="../dist/angular-leaflet-directive_dev_mapped.js"></script>
+    <script src="../dist/ui-leaflet_dev_mapped.js"></script>
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-    var app = angular.module("demoapp", ["leaflet-directive"]);
-    app.controller('MixedMOverlaysMarkersNestedNoWatchController', function ($scope, leafletData, $timeout) {
+    var app = angular.module("demoapp", ['ui-leaflet']);
+    app.controller('MixedMOverlaysMarkersNestedNoWatchController', function ($scope, leafletData, $timeout, leafletLogger) {
+      leafletLogger.currentLevel = leafletLogger.LEVELS.debug;
         var _clonedMarkers;
         $timeout(function () {
             //should do nothing (not watched) and only see one destroy
-            _clonedMarkers = angular.extend({},$scope.markers);
-            $scope.markers = {};
+            _clonedMarkers = angular.copy($scope.markers);
         },1000);
         $timeout(function () {
             leafletData.getDirectiveControls().then(function (controls) {
@@ -28,8 +28,8 @@
                     }
                 }
                 //force manual update
+                controls.markers.create(_clonedMarkers ,$scope.markers);
                 $scope.markers = _clonedMarkers;
-                controls.markers.create($scope.markers);
             });
         }, 4000);
         angular.extend($scope, {

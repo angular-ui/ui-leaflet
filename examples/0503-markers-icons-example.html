@@ -9,7 +9,7 @@
     <script src="../bower_components/Leaflet.vector-markers/dist/Leaflet.vector-markers.js"></script>
     <script src="../bower_components/Leaflet.MakiMarkers/Leaflet.MakiMarkers.js"></script>
     <script src="../bower_components/Leaflet.ExtraMarkers/src/leaflet.extra-markers.js"></script>
-    <script src="../dist/angular-leaflet-directive.min.js"></script>
+    <script src="../dist/ui-leaflet.min.js"></script>
 
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="../bower_components/Leaflet.ExtraMarkers/src/leaflet.extra-markers.css">
 
     <script>
-        var app = angular.module("demoapp", ["leaflet-directive"]);
+        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller('MarkersIconsController', [ '$scope', function($scope) {
             angular.extend($scope, {
                 chicago: {

@@ -2,7 +2,7 @@
 
 (function() {
 
-    var app = angular.module('webapp', ['ngRoute', 'leaflet-directive']);
+    var app = angular.module('webapp', ['ngRoute', 'ui-leaflet']);
 
     app.config(function($routeProvider) {
         $routeProvider.when('/:section/:example', {

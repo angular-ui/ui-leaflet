@@ -7,7 +7,7 @@
 describe('Plugin: VectorMarkers', function() {
     var $compile, $rootScope, scope, leafletData, leafletHelpers;
 
-    beforeEach(module('leaflet-directive'));
+    beforeEach(module('ui-leaflet'));
     beforeEach(inject(function(_$compile_, _$rootScope_, _leafletData_, _leafletHelpers_){
         $compile = _$compile_;
         $rootScope = _$rootScope_;

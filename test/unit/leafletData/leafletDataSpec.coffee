@@ -2,7 +2,7 @@ describe 'leafletData', ->
     $q = geojsonData = mainLayers = leafletHelpers = leafletData = $rootScope = $compile = undefined
 
     beforeEach ->
-        module('leaflet-directive')
+        module('ui-leaflet')
         inject (_$compile_, _$rootScope_, _$timeout_, _leafletData_, _leafletHelpers_, _$q_) ->
             $q = _$q_
             $compile = _$compile_

@@ -1,17 +1,18 @@
 {
-  "name": "angular-leaflet-directive",
-  "author": "https://github.com/tombatossals/angular-leaflet-directive/graphs/contributors",
-  "description": "angular-leaflet-directive - An AngularJS directive to easily interact with Leaflet maps",
-  "version": "1.0.0-dev",
-  "homepage": "http://tombatossals.github.io/angular-leaflet-directive/",
+  "name": "ui-leaflet",
+  "author": "https://github.com/angular-ui/ui-leaflet/graphs/contributors",
+  "description": "ui-leaflet - An AngularJS directive to easily interact with Leaflet maps",
+  "version": "1.0.0",
+  "homepage": "http://angular-ui.github.io/ui-leaflet/",
   "keywords": [
     "angularjs",
     "javascript",
     "directive",
-    "leaflet"
+    "leaflet",
+    "angular-ui"
   ],
   "main": [
-    "dist/angular-leaflet-directive.js"
+    "dist/ui-leaflet.js"
   ],
   "resolutions": {
     "leaflet": "1.0.x"
@@ -52,12 +53,15 @@
     "leaflet-minimap": "~2.2.0",
     "esri-leaflet-clustered-feature-layer": "~1.0.x",
     "esri-leaflet-heatmap-feature-layer": "~1.0.x",
-    "leaflet-search": "~1.5.8"
+    "leaflet-search": "~1.5.8",
+    "highlightjs": "~8.8.0",
+    "angular-highlightjs": "~0.4.3"
   },
   "ignoredDependencies": [
     "leaflet-dist"
   ],
   "ignore": [
+    "website/",
     "**/.*",
     "src",
     "doc",
@@ -66,6 +70,7 @@
     "*.md",
     "Gruntfile.js",
     "package.json",
-    "bower.json"
+    "bower.json",
+    "dist/coverage/"
   ]
 }

@@ -13,7 +13,7 @@ module.exports = function (grunt, options) {
         saucelabs: {
             options: {
                 args: {
-                    baseUrl: "http://tombatossals.github.io/angular-leaflet-directive/examples/",
+                    baseUrl: "http://<%= pkg.org %>.github.io/<%= pkg.name %>/examples/",
                     sauceUser: process.env.SAUCE_USERNAME,
                     sauceKey: process.env.SAUCE_ACCESS_KEY
                 }

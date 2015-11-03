@@ -6,6 +6,7 @@ Thumbs.db
 # Project
 # ===========
 dist/ui-leaflet.pre.js
+dist/coverage/
 js/angular-leaflet-directive-webpage.ngmin.js
 
 # Related ecosystem

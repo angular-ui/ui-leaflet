@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").factory('nominatimService', function ($q, $http, leafletHelpers, leafletMapDefaults) {
+angular.module('ui-leaflet').factory('nominatimService', function ($q, $http, leafletHelpers, leafletMapDefaults) {
     var isDefined = leafletHelpers.isDefined;
 
     return {

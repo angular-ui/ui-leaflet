@@ -1,4 +1,4 @@
-angular.module("leaflet-directive")
+angular.module('ui-leaflet')
 .factory('leafletMarkerEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpersFactory, leafletLabelEvents) {
     var safeApply = leafletHelpers.safeApply,
         isDefined = leafletHelpers.isDefined,

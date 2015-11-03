@@ -9,7 +9,7 @@ When submitting an issue please include context from your test and
 your application. If there's an error, please include the error text.
 
 It isn't always easy to understand the bug/problem visually, you can use this [predefined
-jsfiddle](http://jsfiddle.net/maistho/9jymzymu/) example which loads a simple map. 
+jsfiddle](http://jsfiddle.net/maistho/9jymzymu/) example which loads a simple map.
 Then you can customize it to demonstrate your issue.
 
 Code style
@@ -51,7 +51,7 @@ $
 
 And we must install the client libraries dependencies with _bower_ too:
 ```
-[dave@haddock angular-leaflet-directive]$ bower install
+$ bower install
 bower angular#1.2.x             cached git://github.com/angular/bower-angular.git#1.2.6-build.1989+sha.b0474cb
 bower angular#1.2.x           validate 1.2.6-build.1989+sha.b0474cb against git://github.com/angular/bower-angular.git#1.2.x
 ...
@@ -84,7 +84,7 @@ Running "jshint:grunt" (jshint) task
 >> 1 file lint free.
 
 Running "concat:dist" (concat) task
-File dist/angular-leaflet-directive.pre.js created.
+File dist/ui-leaflet.pre.js created.
 
 Running "ngAnnotate:dist" (ngAnnotate) task
 >> 1 file successfully generated.
@@ -103,13 +103,13 @@ WARN [web-server]: 404: /base/bower_components/leaflet/dist/images/marker-shadow
 PhantomJS 1.9.7 (Windows 7): Executed 140 of 140 SUCCESS (2.693 secs / 2.844 secs)
 
 Running "concat:license" (concat) task
-File dist/angular-leaflet-directive.min.js created.
+File dist/ui-leaflet.min.js created.
 
 Done, without errors.
 ```
 
 After a successful build, a new library distribution file will be generated inside the "dist" folder, which will be ready to use on your project:
 ```
-$ ls -l dist/angular-leaflet-directive.min.js
--rw-r--r-- 1 dave dave 35255 dic 15 10:37 dist/angular-leaflet-directive.min.js
+$ ls -l dist/ui-leaflet.min.js
+-rw-r--r-- 1 dave dave 35255 dic 15 10:37 dist/ui-leaflet.min.js
 ```

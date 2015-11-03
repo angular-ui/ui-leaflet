@@ -24,5 +24,5 @@ The options passed to this object could have a lot of attributes, and are the sa
 
 And that's all, we can see how the map is affected when we change the _tiles_ scope object values, like these examples:
 
-* [tiles-example.html](http://tombatossals.github.io/angular-leaflet-directive/examples/tiles-example.html).
-* [tiles-zoom-changer-example.html](http://tombatossals.github.io/angular-leaflet-directive/examples/tiles-zoom-changer-example.html).
+* [tiles-example.html](http://angular-ui.github.io/ui-leaflet/examples/tiles-example.html).
+* [tiles-zoom-changer-example.html](http://angular-ui.github.io/ui-leaflet/examples/tiles-zoom-changer-example.html).

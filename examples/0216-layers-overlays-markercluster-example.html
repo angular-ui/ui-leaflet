@@ -5,14 +5,14 @@
     <script src="../bower_components/angular/angular.js"></script>
     <script src="../bower_components/leaflet/dist/leaflet.js"></script>
     <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
-    <script src="../dist/angular-leaflet-directive.js"></script>
+    <script src="../dist/ui-leaflet.js"></script>
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
     <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
     <link rel="stylesheet" href="../bower_components/leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-        var app = angular.module("demoapp", ["leaflet-directive"]);
+        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller('LayersOverlaysMarkerclusterController', [ '$scope', function($scope) {
             angular.extend($scope, {
                 ripoll: {

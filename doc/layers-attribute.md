@@ -37,8 +37,8 @@ The layer-switcher-control will only appear if there are more than one layer (ba
 
 BaseLayers are the main tiles shown in the map, they could be interactively changed by the user on the switch control if more than one is visible, but only one can be active at the time (input radio buttons on the control). Overlays are tiles that can be shown on the map overlapped to the main baselayer (normally they use transparency) and more than one can be active at the time (input checkbox buttons). More about these types of layers [here](http://leafletjs.com/reference.html#control-layers).
 
-* [Baselayer simple demo](http://tombatossals.github.io/angular-leaflet-directive/examples/layers-simple-example.html).
-* [Overlays simple demo](http://tombatossals.github.io/angular-leaflet-directive/examples/overlays-simple-example.html).
+* [Baselayer simple demo](http://angular-ui.github.io/ui-leaflet/examples/layers-simple-example.html).
+* [Overlays simple demo](http://angular-ui.github.io/ui-leaflet/examples/overlays-simple-example.html).
 
 Types of layers
 ---------------

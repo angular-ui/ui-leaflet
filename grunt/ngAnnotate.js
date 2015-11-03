@@ -5,7 +5,7 @@
          options: {},
          dist: {
              files: {
-                 'dist/angular-leaflet-directive.js': [ 'dist/angular-leaflet-directive.pre.js' ]
+                 'dist/<%= pkg.name %>.js': [ 'dist/<%= pkg.name %>.pre.js' ]
              }
          }
      };

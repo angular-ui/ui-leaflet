@@ -5,10 +5,10 @@
     <script src="../bower_components/angular/angular.min.js"></script>
     <script src="../bower_components/leaflet/dist/leaflet.js"></script>
     <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
-    <script src="../dist/angular-leaflet-directive.min.js"></script>
+    <script src="../dist/ui-leaflet.min.js"></script>
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
     <script>
-      var app = angular.module("demoapp", ["leaflet-directive"]);
+      var app = angular.module("demoapp", ['ui-leaflet']);
       app.controller("BasicGeoJSONUpdateController", [ '$scope', '$http', 'leafletData', function($scope, $http, leafletData) {
             angular.extend($scope, {
                 center: {
@@ -100,7 +100,7 @@
                                       }
                                     }
                                   ]
-                                }
+                              };
                         }
                 }]);
               </script>

@@ -25,6 +25,12 @@ module.exports = function (grunt, options) {
             options: {
                 logConcurrentOutput: true
             }
+        },
+        website: {
+            tasks: ['concat:website', 'watch:website', 'connect:webserver'],
+            options: {
+                logConcurrentOutput: true
+            }
         }
     };
 };

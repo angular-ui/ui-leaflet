@@ -1,4 +1,4 @@
-angular.module('leaflet-directive').service('leafletIterators', function (leafletLogger, leafletHelpers) {
+angular.module('ui-leaflet').service('leafletIterators', function (leafletLogger, leafletHelpers) {
 
   var lHlp = leafletHelpers,
   errorHeader = leafletHelpers.errorHeader + 'leafletIterators: ';

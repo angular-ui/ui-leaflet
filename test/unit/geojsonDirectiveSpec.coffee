@@ -1,7 +1,7 @@
 describe 'Directive: geojson', ->
     leafletMapDefaults= leafletData = scope = $compile = $rootScope = null
 
-    beforeEach module('leaflet-directive')
+    beforeEach module('ui-leaflet')
 
     beforeEach inject (_$compile_, _$rootScope_, _leafletData_, _leafletMapDefaults_) ->
         $compile = _$compile_

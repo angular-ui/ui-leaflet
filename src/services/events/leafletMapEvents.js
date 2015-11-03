@@ -1,4 +1,4 @@
-angular.module("leaflet-directive")
+angular.module('ui-leaflet')
 .factory('leafletMapEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpers, leafletIterators) {
     var isDefined = leafletHelpers.isDefined,
         fire = leafletEventsHelpers.fire;

@@ -1,4 +1,4 @@
-angular.module("leaflet-directive").directive('layercontrol', function ($filter, leafletLogger, leafletData, leafletHelpers) {
+angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafletLogger, leafletData, leafletHelpers) {
     var $log = leafletLogger;
     return {
         restrict: "E",

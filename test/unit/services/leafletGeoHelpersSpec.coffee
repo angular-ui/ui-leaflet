@@ -1,7 +1,7 @@
 describe 'leafletGeoJsonHelpers', ->
 
   beforeEach ->
-      module('leaflet-directive')
+      module('ui-leaflet')
       inject (_$compile_, _$rootScope_, _leafletGeoJsonHelpers_) ->
           @$compile = _$compile_
           @$rootScope = _$rootScope_

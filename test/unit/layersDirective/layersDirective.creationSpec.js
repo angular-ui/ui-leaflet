@@ -6,7 +6,7 @@
 describe("Directive: leaflet: layers.creation", function () {
     var $compile, $rootScope, leafletData, scope;
 
-    beforeEach(module('leaflet-directive'));
+    beforeEach(module('ui-leaflet'));
     beforeEach(inject(function (_$compile_, _$rootScope_, _leafletData_) {
         $compile = _$compile_;
         $rootScope = _$rootScope_;

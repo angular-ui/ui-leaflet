@@ -8,7 +8,7 @@ describe 'Directive: leaflet: layers.overlays.markers', ->
     $timeout = $q = scope = leafletData = $rootScope = $compile = leafletMarkersHelper = undefined
     beforeEach ->
 
-        module('leaflet-directive')
+        module('ui-leaflet')
 
 
         inject (_$compile_, _$rootScope_, _leafletData_, _leafletMarkersHelpers_, _$q_, _$timeout_) ->

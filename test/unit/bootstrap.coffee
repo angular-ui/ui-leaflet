@@ -2,7 +2,7 @@ window.ngLeafLetTestGlobals = {}
 
 beforeEach ->
 
-    angular.module('leaflet-directive')
+    angular.module('ui-leaflet')
     .config ($provide) ->
         $provide.value('$log', console)
         $provide.decorator '$timeout', ($delegate, $browser) ->

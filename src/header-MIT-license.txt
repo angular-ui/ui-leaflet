@@ -1,7 +1,9 @@
 /**!
  * The MIT License
  *
- * Copyright (c) 2013 the angular-leaflet-directive Team, http://tombatossals.github.io/angular-leaflet-directive
+ * Copyright (c) the ui-leaflet Team, http://angular-ui.github.io/ui-leaflet
+ *
+ * Original Copyright (c) https://github.com/angular-ui/ui-leaflet
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * angular-leaflet-directive
- * https://github.com/tombatossals/angular-leaflet-directive
+ * ui-leaflet
+ * https://github.com/angular-ui/ui-leaflet
  *
- * @authors https://github.com/tombatossals/angular-leaflet-directive/graphs/contributors
+ * @authors https://github.com/angular-ui/ui-leaflet/graphs/contributors
  */

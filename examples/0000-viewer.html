@@ -38,7 +38,7 @@
         <script src="../bower_components/leaflet-plugins/layer/Marker.Rotate.js"></script>
         <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
         <script src="../bower_components/esri-leaflet-clustered-feature-layer/dist/esri-leaflet-clustered-feature-layer.js"></script>
-        <script src="../bower_components/Leaflet.PolylineDecorator/leaflet.polylineDecorator.min.js"></script>
+        <script src="../bower_components/Leaflet.PolylineDecorator/leaflet.polylineDecorator.js"></script>
         <script src="../bower_components/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
         <script src="../bower_components/Leaflet.MakiMarkers/Leaflet.MakiMarkers.js"></script>
         <script src="../bower_components/Leaflet.ExtraMarkers/src/leaflet.extra-markers.js"></script>
@@ -54,7 +54,7 @@
         <script src="../bower_components/angular/angular.min.js"></script>
         <script src="../bower_components/angular-route/angular-route.min.js"></script>
         <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
-        <script src="../dist/angular-leaflet-directive.js"></script>
+        <script src="../dist/ui-leaflet.min.js"></script>
         <script src="js/viewer.js"></script>
         <script src="js/controllers.js"></script>
     </head>
@@ -62,11 +62,11 @@
     <body ng-app="webapp" ng-controller="MainController">
         <div class="ui divided equal height padded grid leftside">
             <div class="seven wide middle column">
-                <a class="ui right floated blue launch button" href="http://github.com/tombatossals/angular-leaflet-directive">
+                <a class="ui right floated blue launch button" href="http://github.com/angular-ui/ui-leaflet">
                     <i class="social github icon"></i> Github
                 </a>
 
-                <h2 class="ui header"><a href="http://tombatossals.github.io/angular-leaflet-directive">angular-leaflet-directive</a></h2>
+                <h2 class="ui header"><a href="http://angular-ui.github.io/ui-leaflet">angular-leaflet-directive</a></h2>
                 <div class="ui tabular filter menu">
                     <a class="item" ng-repeat="s in sections" ng-class="{ active: s.active }" ng-click="setActiveSection(s.id)" ng-bind="s.name"></a>
                 </div>

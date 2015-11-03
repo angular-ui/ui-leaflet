@@ -1,4 +1,25 @@
-angular.module('ui-leaflet').factory('leafletLegendHelpers', function () {
+angular.module("ui-leaflet").factory('leafletLegendHelpers', function ($http, $q, $log, leafletHelpers) {
+	var requestQueue = {},
+		isDefined = leafletHelpers.isDefined;
+
+	var _execNext = function(mapId) {
+		var queue = requestQueue[mapId];
+		var task = queue[0];
+		$http(task.c).then(function(data) {
+			queue.shift();
+			task.d.resolve(data);
+			if (queue.length > 0) {
+				_execNext(mapId);
+			}
+		}, function(err) {
+			queue.shift();
+			task.d.reject(err);
+			if (queue.length > 0) {
+				_execNext(mapId);
+			}
+		});
+	};
+
 	var _updateLegend = function(div, legendData, type, url) {
 		div.innerHTML = '';
 		if(legendData.error) {
@@ -58,6 +79,17 @@ angular.module('ui-leaflet').factory('leafletLegendHelpers', function () {
 	return {
 		getOnAddLegend: _getOnAddLegend,
 		getOnAddArrayLegend: _getOnAddArrayLegend,
-		updateLegend: _updateLegend
+		updateLegend: _updateLegend,
+		addLegendURL: function(mapId, config) {
+			var d = $q.defer();
+			if(!isDefined(requestQueue[mapId])) {
+				requestQueue[mapId] = [];
+			}
+			requestQueue[mapId].push({c:config,d:d});
+			if (requestQueue[mapId].length === 1) {
+				_execNext(mapId);
+			}
+			return d.promise;
+		}
 	};
 });

@@ -17,7 +17,6 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
         errorHeader = leafletHelpers.errorHeader,
         $log = leafletLogger;
 
-
     var _string = function (marker) {
         //this exists since JSON.stringify barfs on cyclic
         var retStr = '';
@@ -427,6 +426,27 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
                 marker.setLatLng([markerData.lat, markerData.lng]);
             }
         };
+
+    var _getLayerModels = function (models, layerName){
+      if (!isDefined(models))
+        return;
+      if (layerName)
+        return models[layerName];
+      return models;
+    };
+
+    var _getModelFromModels = function (models, id, layerName){
+      if(!isDefined(models))
+        return;
+      if(!id){
+        $log.error(errorHeader + 'marker id missing in getMarker');
+        return;
+      }
+      if(layerName)
+        return models[layerName][id];
+
+      return models[id];
+    };
     return {
         resetMarkerGroup: _resetMarkerGroup,
 
@@ -530,6 +550,8 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
             } , isDeepWatch);
         },
         string: _string,
-        log: _log
+        log: _log,
+        getModelFromModels : _getModelFromModels,
+        getLayerModels : _getLayerModels
     };
 });

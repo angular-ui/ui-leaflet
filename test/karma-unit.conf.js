@@ -24,7 +24,11 @@ module.exports = function(karma) {
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
             'bower_components/angular-simple-logger/dist/angular-simple-logger.js',//THIS IS BROWSER version
+            /*
+            See Issue https://github.com/Leaflet/Leaflet.markercluster/issues/528
             'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
+            */
+            'http://pastebin.com/raw.php?i=3ZjK6LtA',
             'bower_components/leaflet.vector-markers/dist/Leaflet.vector-markers.js',
             mainLib,
             'test/unit/bootstrap.coffee',

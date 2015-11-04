@@ -13,3 +13,6 @@ before_script:
   - npm install -g grunt-cli
   - npm install -g bower
   - bower install --config.interactive=false
+  
+notifications:
+  slack: ng-leaflet:DYS8q20K3um7RVFU8D8yGCIq

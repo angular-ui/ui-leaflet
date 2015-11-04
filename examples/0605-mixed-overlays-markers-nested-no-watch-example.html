@@ -33,12 +33,12 @@
             });
         }, 4000);
         angular.extend($scope, {
-            markersWatchOptions: {
-                doWatch: false,
-                isDeep: false,
-                individual: {
-                    doWatch: false,
-                    isDeep: false
+            watchOptions: {
+                markers: {
+                    type: null,
+                    individual: {
+                        type: null
+                    }
                 }
             },
             center: {
@@ -160,7 +160,7 @@
         markers="markers"
         layers="layers"
         markers-nested="true"
-        markers-watch-options="markersWatchOptions"
+        watch-options="watchOptions"
         height="480px" width="100%">
     </leaflet>
     <h1>Overlays with nested markers no watchers example</h1>

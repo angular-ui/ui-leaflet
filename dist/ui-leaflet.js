@@ -25,8 +25,7 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
             controls       : '=',
             decorations    : '=',
             eventBroadcast : '=',
-            markersWatchOptions : '=',
-            geojsonWatchOptions : '='
+            watchOptions   : '='
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',
@@ -1266,19 +1265,15 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
          watchOptions - object to set deep nested watches and turn off watches all together
          (rely on control / functional updates)
          watchOptions - Object
-             doWatch:boolean
-             isDeep:boolean (sets $watch(function,isDeep))
+             type: string. //One of ['watch', 'watchCollection', 'watchDeep', null]
              individual
-                 doWatch:boolean
-                 isDeep:boolean
+                 type: string
          */
         //legacy defaults
         watchOptions: {
-            doWatch:true,
-            isDeep: true,
+            type:'watchDeep',
             individual:{
-                doWatch:true,
-                isDeep: true
+                type: 'watchDeep'
             }
         }
     };
@@ -2279,7 +2274,7 @@ angular.module('ui-leaflet').factory('leafletMapDefaults', ["$q", "leafletHelper
     };
 }]);
 
-angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$timeout", "leafletHelpers", "leafletLogger", "$compile", "leafletGeoJsonHelpers", function ($rootScope, $timeout, leafletHelpers, leafletLogger, $compile, leafletGeoJsonHelpers) {
+angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$timeout", "leafletHelpers", "leafletLogger", "$compile", "leafletGeoJsonHelpers", "leafletWatchHelpers", function ($rootScope, $timeout, leafletHelpers, leafletLogger, $compile, leafletGeoJsonHelpers, leafletWatchHelpers) {
     var isDefined = leafletHelpers.isDefined,
         defaultTo = leafletHelpers.defaultTo,
         MarkerClusterPlugin = leafletHelpers.MarkerClusterPlugin,
@@ -2296,6 +2291,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         groups = {},
         geoHlp = leafletGeoJsonHelpers,
         errorHeader = leafletHelpers.errorHeader,
+        maybeWatch = leafletWatchHelpers.maybeWatch,
         $log = leafletLogger;
 
     var _string = function (marker) {
@@ -2793,7 +2789,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
             groups[groupName].addLayer(marker);
         },
 
-        listenMarkerEvents: function (marker, markerData, leafletScope, doWatch, map) {
+        listenMarkerEvents: function (marker, markerData, leafletScope, watchType, map) {
             marker.on("popupopen", function (/* event */) {
                 safeApply(leafletScope, function () {
                     if (isDefined(marker._popup) || isDefined(marker._popup._contentNode)) {
@@ -2817,18 +2813,17 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
 
         updateMarker: _updateMarker,
 
-        addMarkerWatcher: function (marker, name, leafletScope, layers, map, isDeepWatch) {
+        addMarkerWatcher: function (marker, name, leafletScope, layers, map, watchOptions) {
             var markerWatchPath = Helpers.getObjectArrayPath("markers." + name);
-            isDeepWatch = defaultTo(isDeepWatch, true);
 
-            var clearWatch = leafletScope.$watch(markerWatchPath, function(markerData, oldMarkerData) {
+            maybeWatch(leafletScope, markerWatchPath, watchOptions, function(markerData, oldMarkerData, clearWatch){
                 if (!isDefined(markerData)) {
                     _deleteMarker(marker, map, layers);
                     clearWatch();
                     return;
                 }
                 _updateMarker(markerData, oldMarkerData, marker, name, leafletScope, layers, map);
-            } , isDeepWatch);
+            });
         },
         string: _string,
         log: _log,
@@ -3095,12 +3090,12 @@ angular.module('ui-leaflet')
 .service('leafletWatchHelpers', function (){
 
     var _maybe = function(scope, watchFunctionName, thingToWatchStr, watchOptions, initCb){
-        //watchOptions.isDeep is/should be ignored in $watchCollection
         var unWatch = scope[watchFunctionName](thingToWatchStr, function(newValue, oldValue) {
-            initCb(newValue, oldValue);
-            if(!watchOptions.doWatch)
+            //make the unWatch function available to the callback as well.
+            initCb(newValue, oldValue, unWatch);
+            if(watchOptions.type === null)
                 unWatch();
-        }, watchOptions.isDeep);
+        }, watchOptions.type === 'watchDeep');
 
         return unWatch;
     };
@@ -3109,27 +3104,25 @@ angular.module('ui-leaflet')
   @name: maybeWatch
   @description: Utility to watch something once or forever.
   @returns unWatch function
-  @param watchOptions - see markersWatchOptions and or derrivatives. This object is used
-  to set watching to once and its watch depth.
+  @param watchOptions - This object is used to determine the type of
+  watch used.
   */
   var _maybeWatch = function(scope, thingToWatchStr, watchOptions, initCb){
-      return _maybe(scope, '$watch', thingToWatchStr, watchOptions, initCb);
-  };
+      var watchMethod;
 
-  /*
-  @name: _maybeWatchCollection
-  @description: Utility to watch something once or forever.
-  @returns unWatch function
-  @param watchOptions - see markersWatchOptions and or derrivatives. This object is used
-  to set watching to once and its watch depth.
-  */
-  var _maybeWatchCollection = function(scope, thingToWatchStr, watchOptions, initCb){
-      return _maybe(scope, '$watchCollection', thingToWatchStr, watchOptions, initCb);
+      if(watchOptions.type === 'watchCollection') {
+          watchMethod = '$watchCollection';
+      }
+      else {
+          watchMethod = '$watch';
+      }
+
+
+      return _maybe(scope, watchMethod, thingToWatchStr, watchOptions, initCb);
   };
 
   return {
-    maybeWatch: _maybeWatch,
-    maybeWatchCollection: _maybeWatchCollection
+    maybeWatch: _maybeWatch
   };
 });
 
@@ -3655,7 +3648,7 @@ angular.module('ui-leaflet')
 .directive('geojson', ["leafletLogger", "$rootScope", "leafletData", "leafletHelpers", "leafletWatchHelpers", "leafletDirectiveControlsHelpers", "leafletIterators", "leafletGeoJsonEvents", function (leafletLogger, $rootScope, leafletData, leafletHelpers,
     leafletWatchHelpers, leafletDirectiveControlsHelpers,leafletIterators, leafletGeoJsonEvents) {
     var _maybeWatch = leafletWatchHelpers.maybeWatch,
-        _watchOptions = leafletHelpers.watchOptions,
+        _defaultWatchOptions = leafletHelpers.watchOptions,
         _extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
         hlp = leafletHelpers,
         $it = leafletIterators;
@@ -3674,7 +3667,13 @@ angular.module('ui-leaflet')
                 _hasSetLeafletData = false;
 
             controller.getMap().then(function(map) {
-                var watchOptions = leafletScope.geojsonWatchOptions || _watchOptions;
+                var watchOptions;
+                 if(leafletScope.watchOptions && leafletScope.watchOptions.geojson) {
+                    watchOptions = leafletScope.watchOptions.geojson;
+                 }
+                 else {
+                    watchOptions = _defaultWatchOptions;
+                 }
 
                 var _hookUpEvents = function(geojson, maybeName){
                     var onEachFeature;
@@ -4422,7 +4421,7 @@ angular.module('ui-leaflet').directive('markers',
         getModelFromModels = leafletMarkersHelpers.getModelFromModels,
         getLayerModels = leafletMarkersHelpers.getLayerModels,
         $it = leafletIterators,
-        _markersWatchOptions = leafletHelpers.watchOptions,
+        _defaultWatchOptions = leafletHelpers.watchOptions,
         maybeWatch = leafletWatchHelpers.maybeWatch,
         extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
         $log = leafletLogger;
@@ -4448,7 +4447,7 @@ angular.module('ui-leaflet').directive('markers',
         return lObject;
     };
 
-    var _maybeAddMarkerToLayer = function(layerName, layers, model, marker, doIndividualWatch, map){
+    var _maybeAddMarkerToLayer = function(layerName, layers, model, marker, watchType, map){
 
         if (!isString(layerName)) {
             $log.error(errorHeader + ' A layername must be a string');
@@ -4475,7 +4474,7 @@ angular.module('ui-leaflet').directive('markers',
 
         // The marker is automatically added to the map depending on the visibility
         // of the layer, so we only have to open the popup if the marker is in the map
-        if (!doIndividualWatch && map.hasLayer(marker) && model.focus === true) {
+        if (watchType === null && map.hasLayer(marker) && model.focus === true) {
             marker.openPopup();
         }
         return true;
@@ -4528,23 +4527,23 @@ angular.module('ui-leaflet').directive('markers',
                 if (isDefined(model) && (isDefined(model.layer) || isDefined(maybeLayerName))){
 
                     var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker,
-                        watchOptions.individual.doWatch, map);
+                        watchOptions.individual.type, map);
                     if(!pass)
                         continue; //something went wrong move on in the loop
                 } else if (!isDefined(model.group)) {
                     // We do not have a layer attr, so the marker goes to the map layer
                     map.addLayer(marker);
-                    if (!watchOptions.individual.doWatch && model.focus === true) {
+                    if (watchOptions.individual.type === null && model.focus === true) {
                         marker.openPopup();
                     }
                 }
 
-                if (watchOptions.individual.doWatch) {
+                if (watchOptions.individual.type !== null) {
                     addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map,
-                        watchOptions.individual.isDeep);
+                        watchOptions.individual);
                 }
 
-                listenMarkerEvents(marker, model, leafletScope, watchOptions.individual.doWatch, map);
+                listenMarkerEvents(marker, model, leafletScope, watchOptions.individual.type, map);
                 leafletMarkerEvents.bindEvents(mapId, marker, pathToMarker, model, leafletScope, layerName);
             }
             else {
@@ -4626,12 +4625,13 @@ angular.module('ui-leaflet').directive('markers',
                     };
                 }
 
-                var watchOptions = leafletScope.markersWatchOptions || _markersWatchOptions;
-
-                // backwards compat
-                if(isDefined(attrs.watchMarkers))
-                    watchOptions.doWatch = watchOptions.individual.doWatch =
-                        (!isDefined(attrs.watchMarkers) || Helpers.isTruthy(attrs.watchMarkers));
+                var watchOptions;
+                 if(leafletScope.watchOptions && leafletScope.watchOptions.markers) {
+                    watchOptions = leafletScope.watchOptions.markers;
+                 }
+                 else {
+                    watchOptions = _defaultWatchOptions;
+                 }
 
                 var isNested = (isDefined(attrs.markersNested) && Helpers.isTruthy(attrs.markersNested));
 
@@ -4713,7 +4713,7 @@ angular.module('ui-leaflet').directive('maxbounds', ["leafletLogger", "leafletMa
     };
 }]);
 
-angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leafletData", "leafletMapDefaults", "leafletHelpers", "leafletPathsHelpers", "leafletPathEvents", function (leafletLogger, $q, leafletData, leafletMapDefaults, leafletHelpers, leafletPathsHelpers, leafletPathEvents) {
+angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leafletData", "leafletMapDefaults", "leafletHelpers", "leafletPathsHelpers", "leafletPathEvents", "leafletWatchHelpers", function (leafletLogger, $q, leafletData, leafletMapDefaults, leafletHelpers, leafletPathsHelpers, leafletPathEvents, leafletWatchHelpers) {
     var $log = leafletLogger;
     return {
         restrict: "A",
@@ -4729,7 +4729,8 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                 paths     = leafletScope.paths,
                 createPath = leafletPathsHelpers.createPath,
                 bindPathEvents = leafletPathEvents.bindPathEvents,
-                setPathOptions = leafletPathsHelpers.setPathOptions;
+                setPathOptions = leafletPathsHelpers.setPathOptions,
+                maybeWatch = leafletWatchHelpers.maybeWatch;
 
             mapController.getMap().then(function(map) {
                 var defaults = leafletMapDefaults.getDefaults(attrs.id),
@@ -4750,17 +4751,32 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                     return;
                 }
 
+                //legacy behaviour does a watch collection on the paths
+                var _legacyWatchOptions = {
+                    type: 'watchCollection',
+                    individual: {
+                        type: 'watchDeep'
+                    }
+                };
+
+                var watchOptions;
+                if(leafletScope.watchOptions && leafletScope.watchOptions.paths) {
+                    watchOptions = leafletScope.watchOptions.paths;
+                }
+                else {
+                    watchOptions = _legacyWatchOptions;
+                }
+
                 getLayers().then(function(layers) {
 
                     var leafletPaths = {};
                     leafletData.setPaths(leafletPaths, attrs.id);
 
-                    // Should we watch for every specific marker on the map?
-                    var shouldWatch = (!isDefined(attrs.watchPaths) || attrs.watchPaths === 'true');
-
                     // Function for listening every single path once created
-                    var watchPathFn = function(leafletPath, name) {
-                        var clearWatch = leafletScope.$watch("paths[\""+name+"\"]", function(pathData, old) {
+                    var watchPathFn = function(leafletPath, name, watchOptions) {
+                        var pathWatchPath = "paths[\""+name+"\"]";
+
+                        maybeWatch(leafletScope, pathWatchPath, watchOptions, function(pathData, old, clearWatch){
                             if (!isDefined(pathData)) {
                                 if (isDefined(old.layer)) {
                                     for (var i in layers.overlays) {
@@ -4773,11 +4789,10 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                                 return;
                             }
                             setPathOptions(leafletPath, pathData.type, pathData);
-                        }, true);
+                        });
                     };
 
-                    leafletScope.$watchCollection("paths", function (newPaths) {
-
+                    var _clean = function(newPaths){
                         // Delete paths (by name) from the array
                         for (var name in leafletPaths) {
                             if (!isDefined(newPaths[name])) {
@@ -4785,7 +4800,10 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                                 delete leafletPaths[name];
                             }
                         }
+                    };
 
+                    var _create = function(newPaths){
+                        _clean(newPaths);
                         // Create the new paths
                         for (var newName in newPaths) {
                             if (newName.search('\\$') === 0) {
@@ -4837,27 +4855,32 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                                     // The path goes to a correct layer group, so first of all we add it
                                     layerGroup.addLayer(newPath);
 
-                                    if (shouldWatch) {
-                                        watchPathFn(newPath, newName);
+                                    if (watchOptions.individual.type !== null) {
+                                        watchPathFn(newPath, newName, watchOptions.individual);
                                     } else {
-                                        setPathOptions(newPath, pathData.type, pathData);
+                                       setPathOptions(newPath, pathData.type, pathData);
                                     }
                                 } else if (isDefined(newPath)) {
                                     // Listen for changes on the new path
                                     leafletPaths[newName] = newPath;
                                     map.addLayer(newPath);
 
-                                    if (shouldWatch) {
-                                        watchPathFn(newPath, newName);
+                                    if (watchOptions.individual.type !== null) {
+                                        watchPathFn(newPath, newName, watchOptions.individual);
                                     } else {
-                                        setPathOptions(newPath, pathData.type, pathData);
+                                       setPathOptions(newPath, pathData.type, pathData);
                                     }
                                 }
 
                                 bindPathEvents(attrs.id, newPath, newName, pathData, leafletScope);
                             }
                         }
+                    };
+
+                    maybeWatch(leafletScope,'paths', watchOptions, function(newPaths){
+                        _create(newPaths);
                     });
+
                 });
             });
         }
@@ -4933,45 +4956,52 @@ angular.module('ui-leaflet').directive('tiles', ["leafletLogger", "leafletData",
     };
 }]);
 
-/*
-    Create multiple similar directives for watchOptions to support directiveControl
-    instead. (when watches are disabled)
-    NgAnnotate does not work here due to the functional creation
-*/
-['markers', 'geojson'].forEach(function(name){
-    angular.module('ui-leaflet').directive(name + 'WatchOptions', [
-        '$log', '$rootScope', '$q', 'leafletData', 'leafletHelpers',
-        function (leafletLogger, $rootScope, $q, leafletData, leafletHelpers) {
+angular.module('ui-leaflet').directive('watchOptions', [
+    '$log', '$rootScope', '$q', 'leafletData', 'leafletHelpers',
+    function (leafletLogger, $rootScope, $q, leafletData, leafletHelpers) {
 
-            var isDefined = leafletHelpers.isDefined,
-                errorHeader = leafletHelpers.errorHeader,
-                isObject = leafletHelpers.isObject,
-                _watchOptions = leafletHelpers.watchOptions,
-                $log = leafletLogger;
+        var isDefined = leafletHelpers.isDefined,
+            errorHeader = leafletHelpers.errorHeader,
+            isObject = leafletHelpers.isObject,
+            $log = leafletLogger;
 
-            return {
-                restrict: "A",
-                scope: false,
-                replace: false,
-                require: ['leaflet'],
+        return {
+            restrict: "A",
+            scope: false,
+            replace: false,
+            require: ['leaflet'],
 
-                link: function (scope, element, attrs, controller) {
-                    var mapController = controller[0],
-                        leafletScope = mapController.getLeafletScope();
+            link: function (scope, element, attrs, controller) {
+                var mapController = controller[0],
+                    leafletScope = mapController.getLeafletScope();
 
-                    mapController.getMap().then(function () {
-                        if (isDefined(scope[name + 'WatchOptions'])) {
-                            if (isObject(scope[name + 'WatchOptions']))
-                                angular.extend(_watchOptions, scope[name + 'WatchOptions']);
-                            else
-                                $log.error(errorHeader + '[' + name + 'WatchOptions] is not an object');
-                            leafletScope[name + 'WatchOptions'] = _watchOptions;
+                var _isValidWatchType = function(type) {
+                    return type === 'watch' ||
+                            type === 'watchCollection' ||
+                            type === 'watchDeep' ||
+                            type === null;
+                };
+
+                if(isDefined(leafletScope.watchOptions) && isObject(leafletScope.watchOptions)) {
+                    angular.forEach(['markers', 'geojson', 'paths'], function(name) {
+                        if (isDefined(leafletScope.watchOptions[name])) {
+                            if(!_isValidWatchType(leafletScope.watchOptions[name].type)) {
+                                $log.error(errorHeader + ' watchOptions.' + name + '.type is not a valid type.');
+                            }
+                            if(isDefined(leafletScope.watchOptions[name].individual)) {
+                                if(!_isValidWatchType(leafletScope.watchOptions[name].individual.type)) {
+                                    $log.error(errorHeader + ' watchOptions.' + name + '.individual.type is not a valid type.');
+                                }
+                            }
+                            else {
+                                $log.error(errorHeader + ' watchOptions.' + name + '.type.individual must be defined.');
+                            }
                         }
                     });
                 }
-            };
-    }]);
-});
+            }
+        };
+}]);
 
 angular.module('ui-leaflet')
 .factory('leafletEventsHelpersFactory', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", function ($rootScope, $q, leafletLogger, leafletHelpers) {

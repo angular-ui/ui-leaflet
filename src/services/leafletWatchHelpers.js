@@ -2,12 +2,12 @@ angular.module('ui-leaflet')
 .service('leafletWatchHelpers', function (){
 
     var _maybe = function(scope, watchFunctionName, thingToWatchStr, watchOptions, initCb){
-        //watchOptions.isDeep is/should be ignored in $watchCollection
         var unWatch = scope[watchFunctionName](thingToWatchStr, function(newValue, oldValue) {
-            initCb(newValue, oldValue);
-            if(!watchOptions.doWatch)
+            //make the unWatch function available to the callback as well.
+            initCb(newValue, oldValue, unWatch);
+            if(watchOptions.type === null)
                 unWatch();
-        }, watchOptions.isDeep);
+        }, watchOptions.type === 'watchDeep');
 
         return unWatch;
     };
@@ -16,26 +16,24 @@ angular.module('ui-leaflet')
   @name: maybeWatch
   @description: Utility to watch something once or forever.
   @returns unWatch function
-  @param watchOptions - see markersWatchOptions and or derrivatives. This object is used
-  to set watching to once and its watch depth.
+  @param watchOptions - This object is used to determine the type of
+  watch used.
   */
   var _maybeWatch = function(scope, thingToWatchStr, watchOptions, initCb){
-      return _maybe(scope, '$watch', thingToWatchStr, watchOptions, initCb);
-  };
+      var watchMethod;
 
-  /*
-  @name: _maybeWatchCollection
-  @description: Utility to watch something once or forever.
-  @returns unWatch function
-  @param watchOptions - see markersWatchOptions and or derrivatives. This object is used
-  to set watching to once and its watch depth.
-  */
-  var _maybeWatchCollection = function(scope, thingToWatchStr, watchOptions, initCb){
-      return _maybe(scope, '$watchCollection', thingToWatchStr, watchOptions, initCb);
+      if(watchOptions.type === 'watchCollection') {
+          watchMethod = '$watchCollection';
+      }
+      else {
+          watchMethod = '$watch';
+      }
+
+
+      return _maybe(scope, watchMethod, thingToWatchStr, watchOptions, initCb);
   };
 
   return {
-    maybeWatch: _maybeWatch,
-    maybeWatchCollection: _maybeWatchCollection
+    maybeWatch: _maybeWatch
   };
 });

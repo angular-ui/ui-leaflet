@@ -96,7 +96,13 @@ Markers watches
 Every marker you add to the map is watched for changes by default, so a change in a marker property will be reflected on the map directly. This feature can be disabled if you don't need to dynamic modification of markers and prefer better performance. This is the command used to disable markers watchers:
 
 ```
-<leaflet markers="markers" watch-markers="false"></leaflet>
+<leaflet markers="markers" watch-options='watchOptions'></leaflet>
+```
+
+where:
+
+```
+scope.watchOptions = { markers: { type: null, individual: { type: null } } };
 ```
 
 By default the markers will be watched, so we can change its properties dynamically, like in [this demo](http://angular-ui.github.io/ui-leaflet/examples/markers-update-example.html).

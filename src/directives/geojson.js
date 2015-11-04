@@ -2,7 +2,7 @@ angular.module('ui-leaflet')
 .directive('geojson', function (leafletLogger, $rootScope, leafletData, leafletHelpers,
     leafletWatchHelpers, leafletDirectiveControlsHelpers,leafletIterators, leafletGeoJsonEvents) {
     var _maybeWatch = leafletWatchHelpers.maybeWatch,
-        _watchOptions = leafletHelpers.watchOptions,
+        _defaultWatchOptions = leafletHelpers.watchOptions,
         _extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
         hlp = leafletHelpers,
         $it = leafletIterators;
@@ -21,7 +21,13 @@ angular.module('ui-leaflet')
                 _hasSetLeafletData = false;
 
             controller.getMap().then(function(map) {
-                var watchOptions = leafletScope.geojsonWatchOptions || _watchOptions;
+                var watchOptions;
+                 if(leafletScope.watchOptions && leafletScope.watchOptions.geojson) {
+                    watchOptions = leafletScope.watchOptions.geojson;
+                 }
+                 else {
+                    watchOptions = _defaultWatchOptions;
+                 }
 
                 var _hookUpEvents = function(geojson, maybeName){
                     var onEachFeature;

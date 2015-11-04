@@ -662,19 +662,15 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
          watchOptions - object to set deep nested watches and turn off watches all together
          (rely on control / functional updates)
          watchOptions - Object
-             doWatch:boolean
-             isDeep:boolean (sets $watch(function,isDeep))
+             type: string. //One of ['watch', 'watchCollection', 'watchDeep', null]
              individual
-                 doWatch:boolean
-                 isDeep:boolean
+                 type: string
          */
         //legacy defaults
         watchOptions: {
-            doWatch:true,
-            isDeep: true,
+            type:'watchDeep',
             individual:{
-                doWatch:true,
-                isDeep: true
+                type: 'watchDeep'
             }
         }
     };

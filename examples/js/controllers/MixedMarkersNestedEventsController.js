@@ -1,4 +1,4 @@
-    app.controller("MixedMarkersNestedEventsController", ["$scope", "leafletEvents", function ($scope, leafletEvents) {
+    app.controller("MixedMarkersNestedEventsController", ["$scope", "leafletMarkerEvents", function ($scope, leafletMarkerEvents) {
         $scope.map = {
             show: true
         };
@@ -40,11 +40,11 @@
         };
         $scope.events = {
             markers: {
-                enable: leafletEvents.getAvailableMarkerEvents()
+                enable: leafletMarkerEvents.getAvailableEvents()
             }
         };
         $scope.eventDetected = "No events yet...";
-        var markerEvents = leafletEvents.getAvailableMarkerEvents();
+        var markerEvents = leafletMarkerEvents.getAvailableEvents();
         for (var k in markerEvents) {
             var eventName = 'leafletDirectiveMarker.' + markerEvents[k];
             $scope.$on(eventName, function (event, args) {

@@ -2,8 +2,9 @@
 var getAvailPort = require('./utils/getAvailPort');
 var port = getAvailPort(7777);
 
-var _files = ['src/**/*.js', 'test/unit/**.js', 'test/unit/**.coffee', 'test/e2e/**.js',
-'test/unit/**/**.js', 'test/unit/**/**.coffee', 'test/e2e/**/**.js'];
+var _files = ['src/**/*.js'];
+var _testFiles = ['test/unit/**.js', 'test/unit/**.coffee',
+ 'test/e2e/**.js', 'test/unit/**/**.js', 'test/unit/**/**.coffee', 'test/e2e/**/**.js'];
 
 module.exports = function(grunt, options) {
     return {
@@ -28,24 +29,10 @@ module.exports = function(grunt, options) {
             ]
         },
         unit: {
-            files: _files,
+            files: _testFiles,
             tasks: [
                 'fast-build',
-                'karma:unit'
-            ]
-        },
-        'unit-mocha': {
-            files: _files,
-            tasks: [
-                'fast-build',
-                'karma:unit-mocha'
-            ]
-        },
-        chrome: {
-            files: _files,
-            tasks: [
-                'fast-build',
-                'karma:unit-chrome'
+                'karma'
             ]
         },
         examples: {

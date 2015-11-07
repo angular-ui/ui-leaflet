@@ -4,10 +4,7 @@ test:
  - 'test-e2e'
 
 test-unit:
- - 'karma:unit'
-
-test-unit-chrome:
- - 'karma:unit-chrome'
+ - 'karma'
 
 test-e2e:
  - 'shell:protractor_update'
@@ -20,10 +17,10 @@ test-e2e-firefox:
  - 'protractor:firefox'
 
 test-coverage:
- - 'karma:unit_coverage'
+ - 'karma'
 
 coverage:
- - 'karma:unit_coverage'
+ - 'karma'
  - 'open:coverage'
  - 'connect:coverage'
 
@@ -44,18 +41,9 @@ dev:
  - 'open:devserver'
  - 'watch:source'
 
-dev-chrome:
- - 'connect:devserver'
- - 'open:devserver'
- - 'watch:chrome'
-
 spec: #continuos running specs
  - 'fast-build'
  - 'concurrent:unit-mocha'
-
-spec-chrome:
- - 'fast-build'
- - 'concurrent:chrome'
 
 serve:
  - 'concurrent:watchServe'
@@ -66,6 +54,7 @@ s:
 fast-build:
  - 'clean:dist'
  - 'jshint'
+ - 'babel'
  - 'concat:dist'
  - 'concat:distMapped'
  - 'ngAnnotate'

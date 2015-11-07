@@ -1,5 +1,5 @@
 angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
-    var _errorHeader = '[AngularJS - Leaflet] ';
+    var _errorHeader = '[ui-leaflet] ';
     var _copy = angular.copy;
     var _clone = _copy;
     /*
@@ -445,7 +445,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                     return false;
                 }
             }
-        },          
+        },
         ChinaLayerPlugin: {
             isLoaded: function() {
                 return angular.isDefined(L.tileLayer.chinaProvider);

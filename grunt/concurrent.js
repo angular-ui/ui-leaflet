@@ -1,36 +1,24 @@
 'use strict';
 
-module.exports = function (grunt, options) {
-    return {
-        watchServe: {
-            tasks: ['watch:fast', 'connect:webserver'],
-            options: {
-                logConcurrentOutput: true
-            }
-        },
-        chrome: {
-            tasks: ['karma:unit-chrome', 'watch:chrome'],
-            options: {
-                logConcurrentOutput: true
-            }
-        },
-        unit: {
-            tasks: ['karma:unit', 'watch:unit'],
-            options: {
-                logConcurrentOutput: true
-            }
-        },
-        'unit-mocha': {
-            tasks: ['karma:unit-mocha', 'watch:unit-mocha'],
-            options: {
-                logConcurrentOutput: true
-            }
-        },
-        website: {
-            tasks: ['concat:website', 'watch:website', 'connect:webserver'],
-            options: {
-                logConcurrentOutput: true
-            }
-        }
-    };
+module.exports = function(grunt, options) {
+  return {
+    watchServe: {
+      tasks: ['watch:fast', 'connect:webserver'],
+      options: {
+        logConcurrentOutput: true
+      }
+    },
+    unit: {
+      tasks: ['karma', 'watch:unit'],
+      options: {
+        logConcurrentOutput: true
+      }
+    },
+    website: {
+      tasks: ['concat:website', 'watch:website', 'connect:webserver'],
+      options: {
+        logConcurrentOutput: true
+      }
+    }
+  };
 };

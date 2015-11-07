@@ -55,6 +55,8 @@
     "angular-highlightjs": "~0.4.3"
   },
   "ignore": [
+    "dist/coverage/",
+    "dist/src/",
     "website/",
     "**/.*",
     "src",

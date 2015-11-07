@@ -24,7 +24,7 @@ describe 'leafletData', ->
             _geoJSON = null
             _markers = null
             _allGet = null
-            console.log $q
+
             @digest $rootScope, =>
                 @setPromise.then ->
                     _allGet = $q.all [
@@ -50,7 +50,7 @@ describe 'leafletData', ->
             #this proves you do not need to call set[Whatever] multiple times.
             @knownMarkers.push 4
             @knownGeoJSON.push "4"
-            console.log $q
+            
             @digest $rootScope, =>
                 @setPromise.then ->
                     _allGet = $q.all [

@@ -1,9 +1,9 @@
 'use strict';
 var _ = require('lodash'),
-    _pkg = require('../package.json'),
-    last = _.last(_pkg.version.split('.')),
-    next = Number(last) + 1,
-    argv = require('yargs').argv;
+  _pkg = require('../package.json'),
+  last = _.last(_pkg.version.split('.')),
+  next = Number(last) + 1,
+  argv = require('yargs').argv;
 
 /*
 _pkg.nextVersion only works for patch updates
@@ -17,10 +17,10 @@ Using Yargs as a workaround which grunt should be used in this way:
 */
 _pkg.nextVersion = _pkg.version.replace(last, String(next));
 
-module.exports = function (grunt, options) {
-    return {
-        options:{
-            version: argv.ui_leaflet_ver || _pkg.nextVersion
-        }
-    };
+module.exports = function(grunt, options) {
+  return {
+    options: {
+      version: argv.ui_leaflet_ver || _pkg.nextVersion
+    }
+  };
 };

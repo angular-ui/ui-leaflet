@@ -105,7 +105,7 @@ describe 'Directive: geojson', ->
 
         scope.$digest()
         scope.$digest()
-        # console.log leafletGeoJSON
+        
         expect(leafletMap.hasLayer(leafletGeoJSON)).toBe true
         scope.geojson = {}
         scope.$digest()

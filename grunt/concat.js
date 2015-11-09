@@ -8,9 +8,9 @@ concatDist = {
         footer: '\n}(angular));'
     },
     src: [
-        'src/directives/leaflet.js',
-        'src/services/*.js',
-        'src/**/*.js'
+        'dist/src/directives/leaflet.js',
+        'dist/src/services/*.js',
+        'dist/src/**/*.js'
 
     ],
     dest: 'dist/<%= pkg.name %>.pre.js'
@@ -22,8 +22,7 @@ concatDistMapped.options.sourceMapName = "dist/<%= pkg.name %>_dev_mapped.js.map
 concatDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.js";
 
 
-
-module.exports = function(grunt, options) {
+module.exports = function (grunt, options) {
     return {
         dist: concatDist,
         distMapped: concatDistMapped,
@@ -42,14 +41,14 @@ module.exports = function(grunt, options) {
             src: ['examples/js/controllers/*.js'],
             dest: 'examples/js/controllers.js'
         },
-        website:{
-          options: {
-            //separator: ';',
-            banner: '(function (angular) {\n',
-            footer: '})(window.angular);'
-          },
-          src: ['website/src/js/app.js', 'website/src/js/**/*.js'],
-          dest: 'website/dist/js/<%= pkg.name %>-webpage.js',
+        website: {
+            options: {
+                //separator: ';',
+                banner: '(function (angular) {\n',
+                footer: '})(window.angular);'
+            },
+            src: ['website/src/js/app.js', 'website/src/js/**/*.js'],
+            dest: 'website/dist/js/<%= pkg.name %>-webpage.js',
         }
     };
 };

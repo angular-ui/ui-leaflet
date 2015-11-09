@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function (grunt, options) {
-    var pkgFunction = function(){
+    var pkgFunction = function () {
         return grunt.file.readJSON('package.json')
     };
     //THIS extension forces the banner or whatever uses pkgFunction to always get the latest version

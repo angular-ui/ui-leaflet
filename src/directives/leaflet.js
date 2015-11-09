@@ -18,8 +18,7 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
             controls       : '=',
             decorations    : '=',
             eventBroadcast : '=',
-            markersWatchOptions : '=',
-            geojsonWatchOptions : '='
+            watchOptions   : '='
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',

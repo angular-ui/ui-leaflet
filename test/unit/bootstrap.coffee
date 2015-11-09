@@ -1,10 +1,14 @@
 window.ngLeafLetTestGlobals = {}
 
+afterEach ->
+    window.doTestLog = false
+
 beforeEach ->
 
     angular.module('ui-leaflet')
     .config ($provide) ->
-        $provide.value('$log', console)
+        if window.doTestLog
+            $provide.value('$log', console)
         $provide.decorator '$timeout', ($delegate, $browser) ->
             $delegate.hasPendingTasks = ->
                 $browser.deferredFns.length > 0

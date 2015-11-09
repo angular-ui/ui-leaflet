@@ -47,7 +47,7 @@ describe 'leafletHelpers', ->
 
     describe 'Object Helpers', ->
         it 'should correctly fetch object values using dot-notation', ->
-          object = { foo: { sea: 'hawks' }}
-          expect(@subject.getObjectValue(object, 'foo.sea')).toEqual('hawks')
-          expect(@subject.getObjectValue(object, 'foo.sea.birds')).toEqual(undefined)
-          expect(@subject.getObjectValue(object, 'boo.hoo')).toEqual(undefined)
+            object = { foo: { sea: 'hawks' }}
+            expect(@subject.getObjectValue(object, 'foo.sea')).toEqual('hawks')
+            expect(@subject.getObjectValue(object, 'foo.sea.birds')).toEqual(undefined)
+            expect(@subject.getObjectValue(object, 'boo.hoo')).toEqual(undefined)

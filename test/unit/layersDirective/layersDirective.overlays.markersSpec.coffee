@@ -64,9 +64,6 @@ describe 'Directive: leaflet: layers.overlays.markers', ->
                 .then (promiseArray) ->
                     [map, markers, layers] = promiseArray
 
-    #                    console.debug("TESTTTTTT!!!")
-    #                    leafletMarkersHelper.log markers.m1, true
-
                     expect(Object.keys(markers).length).toEqual 1
                     expect(Object.keys(markers.cars).length).toEqual 2
                     markerToCheck = markers.cars.m1

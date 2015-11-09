@@ -5,6 +5,8 @@ Thumbs.db
 
 # Project
 # ===========
+dist/coverage/
+dist/src/
 dist/ui-leaflet.pre.js
 js/angular-leaflet-directive-webpage.ngmin.js
 
@@ -44,3 +46,4 @@ package.json
 bower.json
 
 dist/coverage/
+logo.svg

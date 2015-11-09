@@ -4623,6 +4623,9 @@ angular.module('ui-leaflet').directive('maxbounds', ["leafletLogger", "leafletMa
 
                     map.setMaxBounds(leafletBounds);
                     if (!attrs.center && !attrs.lfCenter) {
+                        leafletLogger.debug("Fitting Bounds");
+                        leafletLogger.debug(leafletBounds);
+
                         map.fitBounds(leafletBounds);
                     }
                 });

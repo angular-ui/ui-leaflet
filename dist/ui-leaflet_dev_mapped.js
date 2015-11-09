@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-11-08
+*  ui-leaflet 1.0.0 2015-11-09
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */

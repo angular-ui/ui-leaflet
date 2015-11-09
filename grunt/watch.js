@@ -14,7 +14,7 @@ module.exports = function (grunt, options) {
         fast: {
             files: _files,
             tasks: [
-                'fast-build',
+                'fastbuild',
                 'uglify',
                 'concat:license'
             ]
@@ -22,7 +22,7 @@ module.exports = function (grunt, options) {
         source: {
             files: _files,
             tasks: [
-                'fast-build',
+                'fastbuild',
                 'uglify',
                 'test-unit',
                 'concat:license'
@@ -31,7 +31,7 @@ module.exports = function (grunt, options) {
         unit: {
             files: _testFiles,
             tasks: [
-                'fast-build',
+                'fastbuild',
                 'karma'
             ]
         },

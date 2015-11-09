@@ -1,5 +1,5 @@
 'use strict';
-var fs =  require('fs');
+var fs = require('fs');
 
 module.exports = function (grunt, options) {
     return {

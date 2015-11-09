@@ -1,0 +1,5 @@
+{
+  "directory": "bower_components",
+  "interactive": false,
+  "ignoredDependencies": ["leaflet-dist"]
+}

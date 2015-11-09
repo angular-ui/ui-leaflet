@@ -167,7 +167,7 @@ describe 'Directive: leaflet', ->
             leafletMainMarker = leafletMarkers.marker
 
         @digest $rootScope
-        leafletMainMarker.openPopup()
+        # leafletMainMarker.openPopup()
         @digest $rootScope
         expect(leafletMainMarker._popup._contentNode.innerHTML).toEqual '<p class="ng-binding">blue</p>'
 
@@ -191,7 +191,7 @@ describe 'Directive: leaflet', ->
         leafletData.getMarkers().then (leafletMarkers) ->
             leafletMainMarker = leafletMarkers.marker
         @digest $rootScope
-        leafletMainMarker.openPopup()
+        # leafletMainMarker.openPopup()
         @digest $rootScope
         expect(leafletMainMarker._popup._contentNode.innerHTML).toEqual '<p class="ng-binding">angular</p>'
 

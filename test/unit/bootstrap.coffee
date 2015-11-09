@@ -15,10 +15,10 @@ beforeEach ->
 
             $delegate
     .run (leafletLogger) ->
-        leafletLogger.currentLevel = leafletLogger.LEVELS.info
+        leafletLogger.currentLevel = leafletLogger.LEVELS.debug
 
     @digest = (scope, fn) ->
-        while ngLeafLetTestGlobals.$timeout.hasPendingTasks()
+        while ngLeafLetTestGlobals?.$timeout?.hasPendingTasks()
             ngLeafLetTestGlobals.$timeout.flush()
 
         fn() if fn?

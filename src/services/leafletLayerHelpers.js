@@ -55,6 +55,14 @@ angular.module('ui-leaflet')
                 return L.tileLayer(url, params.options);
             }
         },
+        mapboxGL: {
+            createLayer: function(params) {
+                if (!Helpers.MapboxGL.isLoaded()) {
+                  return;
+                }
+                return new L.mapboxGL(params.options);
+            }
+        },
         geoJSON: {
             mustHaveUrl: true,
             createLayer: function(params) {

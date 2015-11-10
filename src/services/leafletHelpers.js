@@ -658,6 +658,11 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                 }
             }
         },
+        MapboxGL: {
+          isLoaded: function () {
+              return angular.isDefined(L.mapboxGL);
+          }
+        },
         /*
          watchOptions - object to set deep nested watches and turn off watches all together
          (rely on control / functional updates)

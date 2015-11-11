@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-11-09
+*  ui-leaflet 1.0.0 2015-11-10
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1231,6 +1231,11 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                 }
             }
         },
+        MapboxGL: {
+            isLoaded: function isLoaded() {
+                return angular.isDefined(L.mapboxGL);
+            }
+        },
         /*
          watchOptions - object to set deep nested watches and turn off watches all together
          (rely on control / functional updates)
@@ -1481,6 +1486,14 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
                 }
                 var url = version === 3 ? '//{s}.tiles.mapbox.com/v3/' + params.key + '/{z}/{x}/{y}.png' : '//api.tiles.mapbox.com/v4/' + params.key + '/{z}/{x}/{y}.png?access_token=' + params.apiKey;
                 return L.tileLayer(url, params.options);
+            }
+        },
+        mapboxGL: {
+            createLayer: function createLayer(params) {
+                if (!Helpers.MapboxGL.isLoaded()) {
+                    return;
+                }
+                return new L.mapboxGL(params.options);
             }
         },
         geoJSON: {
@@ -1975,6 +1988,7 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
 
     return {
         createLayer: _createLayer,
+        layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
         safeRemoveLayer: safeRemoveLayer
     };

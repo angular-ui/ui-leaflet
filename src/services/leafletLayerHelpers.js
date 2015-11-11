@@ -195,7 +195,7 @@ angular.module('ui-leaflet')
                 }
                 return new L.TileLayer.Provider(provider, params.options);
             }
-        },            
+        },
         china:{
             mustHaveUrl:false,
             createLayer:function(params){
@@ -549,6 +549,7 @@ angular.module('ui-leaflet')
 
     return {
         createLayer: createLayer,
+        layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
         safeRemoveLayer: safeRemoveLayer
     };

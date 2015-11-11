@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-11-09
+*  ui-leaflet 1.0.0 2015-11-11
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1975,6 +1975,7 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
 
     return {
         createLayer: _createLayer,
+        layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
         safeRemoveLayer: safeRemoveLayer
     };

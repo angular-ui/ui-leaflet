@@ -422,18 +422,6 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                 }
             }
         },
-        GoogleLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.Google);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Google;
-                } else {
-                    return false;
-                }
-            }
-        },
         LeafletProviderPlugin: {
             isLoaded: function() {
                 return angular.isDefined(L.TileLayer.Provider);

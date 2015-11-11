@@ -176,16 +176,6 @@ angular.module('ui-leaflet')
                 return L.featureGroup();
             }
         },
-        google: {
-            mustHaveUrl: false,
-            createLayer: function(params) {
-                var type = params.type || 'SATELLITE';
-                if (!Helpers.GoogleLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Google(type, params.options);
-            }
-        },
         here: {
             mustHaveUrl: false,
             createLayer: function(params) {

@@ -995,18 +995,6 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                 }
             }
         },
-        GoogleLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.Google);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Google;
-                } else {
-                    return false;
-                }
-            }
-        },
         LeafletProviderPlugin: {
             isLoaded: function isLoaded() {
                 return angular.isDefined(L.TileLayer.Provider);
@@ -1601,16 +1589,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             mustHaveUrl: false,
             createLayer: function createLayer() {
                 return L.featureGroup();
-            }
-        },
-        google: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var type = params.type || 'SATELLITE';
-                if (!Helpers.GoogleLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Google(type, params.options);
             }
         },
         here: {

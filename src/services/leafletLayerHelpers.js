@@ -3,7 +3,6 @@ angular.module('ui-leaflet')
     var Helpers = leafletHelpers;
     var isString = leafletHelpers.isString;
     var isObject = leafletHelpers.isObject;
-    var isArray = leafletHelpers.isArray;
     var isDefined = leafletHelpers.isDefined;
     var errorHeader = leafletHelpers.errorHeader;
     var $it = leafletIterators;
@@ -91,10 +90,6 @@ angular.module('ui-leaflet')
                 });
             }
         },
-        utfGrid: {
-            mustHaveUrl: true,
-            createLayer: utfGridCreateLayer
-        },
         cartodbTiles: {
             mustHaveKey: true,
             createLayer: function(params) {
@@ -133,21 +128,6 @@ angular.module('ui-leaflet')
                 return L.tileLayer.wmts(params.url, params.options);
             }
         },
-        wfs: {
-            mustHaveUrl: true,
-            mustHaveLayer : true,
-            createLayer: function(params) {
-                if (!Helpers.WFSLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var options = angular.copy(params.options);
-                if(options.crs && 'string' === typeof options.crs) {
-                    /*jshint -W061 */
-                    options.crs = eval(options.crs);
-                }
-                return new L.GeoJSON.WFS(params.url, params.layer, options);
-            }
-        },
         group: {
             mustHaveUrl: false,
             createLayer: function (params) {
@@ -184,16 +164,6 @@ angular.module('ui-leaflet')
                     return;
                 }
                 return new L.TileLayer.Provider(provider, params.options);
-            }
-        },
-        china:{
-            mustHaveUrl:false,
-            createLayer:function(params){
-                var type = params.type || '';
-                if(!Helpers.ChinaLayerPlugin.isLoaded()){
-                    return;
-                }
-                return L.tileLayer.chinaProvider(type, params.options);
             }
         },
         agsBase: {
@@ -327,60 +297,6 @@ angular.module('ui-leaflet')
                     return;
                 }
                 return new L.MarkerClusterGroup(params.options);
-            }
-        },
-        bing: {
-            mustHaveUrl: false,
-            createLayer: function(params) {
-                if (!Helpers.BingLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.BingLayer(params.key, params.options);
-            }
-        },
-        webGLHeatmap: {
-            mustHaveUrl: false,
-            mustHaveData: true,
-            createLayer: function(params) {
-                if (!Helpers.WebGLHeatMapLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var layer = new L.TileLayer.WebGLHeatMap(params.options);
-                if (isDefined(params.data)) {
-                    layer.setData(params.data);
-                }
-
-                return layer;
-            }
-        },
-        heat: {
-            mustHaveUrl: false,
-            mustHaveData: true,
-            createLayer: function(params) {
-                if (!Helpers.HeatLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var layer = new L.heatLayer();
-
-                if (isArray(params.data)) {
-                    layer.setLatLngs(params.data);
-                }
-
-                if (isObject(params.options)) {
-                    layer.setOptions(params.options);
-                }
-
-                return layer;
-            }
-        },
-        yandex: {
-            mustHaveUrl: false,
-            createLayer: function(params) {
-                var type = params.type || 'map';
-                if (!Helpers.YandexLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Yandex(type, params.options);
             }
         },
         imageOverlay: {

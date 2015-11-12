@@ -126,11 +126,11 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
 
 
     /**
-    Converts all accepted directives format into proper directive name.
-    @param name Name to normalize
-     */
+        Converts all accepted directives format into proper directive name.
+        @param name Name to normalize
+    */
 
-     var directiveNormalize = function(name) {
+    var directiveNormalize = function(name) {
       return camelCase(name.replace(PREFIX_REGEXP, ""));
     };
 
@@ -434,45 +434,6 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                 }
             }
         },
-        ChinaLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.tileLayer.chinaProvider);
-            }
-        },
-        HeatLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.heatLayer);
-            }
-        },
-        WebGLHeatMapLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.TileLayer.WebGLHeatMap);
-            }
-        },
-        BingLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.BingLayer);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.BingLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        WFSLayerPlugin: {
-            isLoaded: function() {
-                return L.GeoJSON.WFS !== undefined;
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.GeoJSON.WFS;
-                } else {
-                    return false;
-                }
-            }
-        },
         AGSBaseLayerPlugin: {
             isLoaded: function() {
                 return L.esri !== undefined && L.esri.basemapLayer !== undefined;
@@ -569,18 +530,6 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                 }
             }
         },
-        YandexLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.Yandex);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Yandex;
-                } else {
-                    return false;
-                }
-            }
-        },
         GeoJSONPlugin: {
             isLoaded: function(){
                 return angular.isDefined(L.TileLayer.GeoJSON);
@@ -589,19 +538,6 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                 if (this.isLoaded()) {
                     return layer instanceof L.TileLayer.GeoJSON;
                 } else {
-                    return false;
-                }
-            }
-        },
-        UTFGridPlugin: {
-            isLoaded: function(){
-                return angular.isDefined(L.UtfGrid);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.UtfGrid;
-                } else {
-                    $log.error('[AngularJS - Leaflet] No UtfGrid plugin found.');
                     return false;
                 }
             }

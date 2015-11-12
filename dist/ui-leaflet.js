@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-11-09
+*  ui-leaflet 1.0.0 2015-11-12
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -703,9 +703,9 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
     };
 
     /**
-    Converts all accepted directives format into proper directive name.
-    @param name Name to normalize
-     */
+        Converts all accepted directives format into proper directive name.
+        @param name Name to normalize
+    */
 
     var directiveNormalize = function directiveNormalize(name) {
         return camelCase(name.replace(PREFIX_REGEXP, ""));
@@ -995,18 +995,6 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                 }
             }
         },
-        GoogleLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.Google);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Google;
-                } else {
-                    return false;
-                }
-            }
-        },
         LeafletProviderPlugin: {
             isLoaded: function isLoaded() {
                 return angular.isDefined(L.TileLayer.Provider);
@@ -1014,45 +1002,6 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             is: function is(layer) {
                 if (this.isLoaded()) {
                     return layer instanceof L.TileLayer.Provider;
-                } else {
-                    return false;
-                }
-            }
-        },
-        ChinaLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.tileLayer.chinaProvider);
-            }
-        },
-        HeatLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.heatLayer);
-            }
-        },
-        WebGLHeatMapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.TileLayer.WebGLHeatMap);
-            }
-        },
-        BingLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.BingLayer);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.BingLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        WFSLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.GeoJSON.WFS !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.GeoJSON.WFS;
                 } else {
                     return false;
                 }
@@ -1154,18 +1103,6 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                 }
             }
         },
-        YandexLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.Yandex);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Yandex;
-                } else {
-                    return false;
-                }
-            }
-        },
         GeoJSONPlugin: {
             isLoaded: function isLoaded() {
                 return angular.isDefined(L.TileLayer.GeoJSON);
@@ -1174,19 +1111,6 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                 if (this.isLoaded()) {
                     return layer instanceof L.TileLayer.GeoJSON;
                 } else {
-                    return false;
-                }
-            }
-        },
-        UTFGridPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.UtfGrid);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.UtfGrid;
-                } else {
-                    $log.error('[AngularJS - Leaflet] No UtfGrid plugin found.');
                     return false;
                 }
             }
@@ -1433,7 +1357,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
     var Helpers = leafletHelpers;
     var isString = leafletHelpers.isString;
     var isObject = leafletHelpers.isObject;
-    var isArray = leafletHelpers.isArray;
     var isDefined = leafletHelpers.isDefined;
     var errorHeader = leafletHelpers.errorHeader;
     var $it = leafletIterators;
@@ -1518,10 +1441,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
                 });
             }
         },
-        utfGrid: {
-            mustHaveUrl: true,
-            createLayer: utfGridCreateLayer
-        },
         cartodbTiles: {
             mustHaveKey: true,
             createLayer: function createLayer(params) {
@@ -1560,21 +1479,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
                 return L.tileLayer.wmts(params.url, params.options);
             }
         },
-        wfs: {
-            mustHaveUrl: true,
-            mustHaveLayer: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.WFSLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var options = angular.copy(params.options);
-                if (options.crs && 'string' === typeof options.crs) {
-                    /*jshint -W061 */
-                    options.crs = eval(options.crs);
-                }
-                return new L.GeoJSON.WFS(params.url, params.layer, options);
-            }
-        },
         group: {
             mustHaveUrl: false,
             createLayer: function createLayer(params) {
@@ -1603,16 +1507,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
                 return L.featureGroup();
             }
         },
-        google: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var type = params.type || 'SATELLITE';
-                if (!Helpers.GoogleLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Google(type, params.options);
-            }
-        },
         here: {
             mustHaveUrl: false,
             createLayer: function createLayer(params) {
@@ -1621,16 +1515,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
                     return;
                 }
                 return new L.TileLayer.Provider(provider, params.options);
-            }
-        },
-        china: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var type = params.type || '';
-                if (!Helpers.ChinaLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return L.tileLayer.chinaProvider(type, params.options);
             }
         },
         agsBase: {
@@ -1764,60 +1648,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
                     return;
                 }
                 return new L.MarkerClusterGroup(params.options);
-            }
-        },
-        bing: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                if (!Helpers.BingLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.BingLayer(params.key, params.options);
-            }
-        },
-        webGLHeatmap: {
-            mustHaveUrl: false,
-            mustHaveData: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.WebGLHeatMapLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var layer = new L.TileLayer.WebGLHeatMap(params.options);
-                if (isDefined(params.data)) {
-                    layer.setData(params.data);
-                }
-
-                return layer;
-            }
-        },
-        heat: {
-            mustHaveUrl: false,
-            mustHaveData: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.HeatLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var layer = new L.heatLayer();
-
-                if (isArray(params.data)) {
-                    layer.setLatLngs(params.data);
-                }
-
-                if (isObject(params.options)) {
-                    layer.setOptions(params.options);
-                }
-
-                return layer;
-            }
-        },
-        yandex: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var type = params.type || 'map';
-                if (!Helpers.YandexLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Yandex(type, params.options);
             }
         },
         imageOverlay: {
@@ -1975,6 +1805,7 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
 
     return {
         createLayer: _createLayer,
+        layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
         safeRemoveLayer: safeRemoveLayer
     };

@@ -24,7 +24,7 @@ module.exports = function (grunt, options) {
             tasks: [
                 'fastbuild',
                 'uglify',
-                'test-unit',
+                'testunit',
                 'concat:license'
             ]
         },

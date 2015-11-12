@@ -5,9 +5,10 @@ There should be minimal branches in the main upstream of angular-ui/ui-leaflet.
 
 Currently there should only be:
 
-- master
+- master (2.X)
 - gh-pages (active website)
-- leaflet-1.X (IE Some major next release branch)
+- leaflet-1.X (IE Some major next release branch) (3.X)
+- 1.X is the branch where code is still compatible post 1.0.0
 
 Any an all other items as a dev **INCLUDING** admins and devs that have write permissions to the repo. Should work within their own fork
 and PR changes to this repository.

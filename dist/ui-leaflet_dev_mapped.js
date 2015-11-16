@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-11-12
+*  ui-leaflet 1.0.0 2015-11-16
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -3309,7 +3309,7 @@ angular.module('ui-leaflet').directive('controls', function (leafletLogger, leaf
                         } else {
                             var customControlValue = newControls[newName];
                             if (isArray(customControlValue)) {
-                                for (var i in customControlValue) {
+                                for (var i = 0; i < customControlValue.length; i++) {
                                     var customControl = customControlValue[i];
                                     map.addControl(customControl);
                                     leafletControls[newName] = !isDefined(leafletControls[newName]) ? [customControl] : leafletControls[newName].concat([customControl]);

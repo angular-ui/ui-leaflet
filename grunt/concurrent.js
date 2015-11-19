@@ -14,6 +14,12 @@ module.exports = function (grunt, options) {
                 logConcurrentOutput: true
             }
         },
+        dev: {
+            tasks: ['karma', 'watch:unit', 'watch:source'],
+            options: {
+                logConcurrentOutput: true
+            }
+        },
         website: {
             tasks: ['concat:website', 'watch:website', 'connect:webserver'],
             options: {

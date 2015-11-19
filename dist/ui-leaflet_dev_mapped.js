@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-11-16
+*  ui-leaflet 1.0.0 2015-11-18
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -578,7 +578,7 @@ angular.module('ui-leaflet').service('leafletGeoJsonHelpers', function (leafletH
 
 'use strict';
 
-angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
+angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $timeout) {
     var _errorHeader = '[ui-leaflet] ';
     var _copy = angular.copy;
     var _clone = _copy;
@@ -710,10 +710,25 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
     var directiveNormalize = function directiveNormalize(name) {
         return camelCase(name.replace(PREFIX_REGEXP, ""));
     };
-
     // END AngularJS port
 
+    var _watchTrapDelayMilliSec = 10;
+
+    var _modelChangeInDirective = function _modelChangeInDirective(trapObj, trapField, cbToExec) {
+        if (!trapObj) throw new Error(_errorHeader + 'trapObj is undefined');
+        if (!trapField) throw new Error(_errorHeader + 'trapField is undefined');
+
+        trapObj[trapField] = true;
+        var ret = cbToExec();
+        $timeout(function () {
+            trapObj[trapField] = false;
+        }, _watchTrapDelayMilliSec);
+        return ret;
+    };
+
     return {
+        watchTrapDelayMilliSec: _watchTrapDelayMilliSec,
+        modelChangeInDirective: _modelChangeInDirective,
         camelCase: camelCase,
         directiveNormalize: directiveNormalize,
         copy: _copy,
@@ -3451,12 +3466,13 @@ angular.module('ui-leaflet').directive('eventBroadcast', function (leafletLogger
 
 'use strict';
 
-angular.module('ui-leaflet').directive('geojson', function (leafletLogger, $rootScope, leafletData, leafletHelpers, leafletWatchHelpers, leafletDirectiveControlsHelpers, leafletIterators, leafletGeoJsonEvents) {
+angular.module('ui-leaflet').directive('geojson', function ($timeout, leafletLogger, leafletData, leafletHelpers, leafletWatchHelpers, leafletDirectiveControlsHelpers, leafletIterators, leafletGeoJsonEvents) {
     var _maybeWatch = leafletWatchHelpers.maybeWatch,
         _defaultWatchOptions = leafletHelpers.watchOptions,
         _extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
         hlp = leafletHelpers,
-        $it = leafletIterators;
+        $it = leafletIterators,
+        watchTrap = { changeFromDirective: false };
     // $log = leafletLogger;
 
     return {
@@ -3515,23 +3531,22 @@ angular.module('ui-leaflet').directive('geojson', function (leafletLogger, $root
                     _remove(leafletGeoJSON);
                 };
 
-                var _addGeojson = function _addGeojson(model, maybeName) {
-                    var geojson = angular.copy(model);
+                var _addGeojson = function _addGeojson(geojson, maybeName) {
+
                     if (!(isDefined(geojson) && isDefined(geojson.data))) {
                         return;
                     }
                     var onEachFeature = _hookUpEvents(geojson, maybeName);
 
                     if (!isDefined(geojson.options)) {
-                        //right here is why we use a clone / copy (we modify and thus)
-                        //would kick of a watcher.. we need to be more careful everywhere
-                        //for stuff like this
-                        geojson.options = {
-                            style: geojson.style,
-                            filter: geojson.filter,
-                            onEachFeature: onEachFeature,
-                            pointToLayer: geojson.pointToLayer
-                        };
+                        hlp.modelChangeInDirective(watchTrap, "changeFromDirective", function () {
+                            geojson.options = {
+                                style: geojson.style,
+                                filter: geojson.filter,
+                                onEachFeature: onEachFeature,
+                                pointToLayer: geojson.pointToLayer
+                            };
+                        });
                     }
 
                     var lObject = L.geoJson(geojson.data, geojson.options);
@@ -3568,6 +3583,7 @@ angular.module('ui-leaflet').directive('geojson', function (leafletLogger, $root
                 _extendDirectiveControls(attrs.id, 'geojson', _create, _clean);
 
                 _maybeWatch(leafletScope, 'geojson', watchOptions, function (geojson) {
+                    if (watchTrap.changeFromDirective) return;
                     _create(geojson);
                 });
             });
@@ -4178,7 +4194,8 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
         _defaultWatchOptions = leafletHelpers.watchOptions,
         maybeWatch = leafletWatchHelpers.maybeWatch,
         extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
-        $log = leafletLogger;
+        $log = leafletLogger,
+        watchTrap = { changeFromDirective: false };
 
     var _getLMarker = function _getLMarker(leafletMarkers, name, maybeLayerName) {
         if (!Object.keys(leafletMarkers).length) return;
@@ -4239,61 +4256,60 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
                 continue;
             }
 
-            var model = Helpers.copy(markersToRender[newName]);
+            var model = markersToRender[newName];
             var pathToMarker = Helpers.getObjectDotPath(maybeLayerName ? [maybeLayerName, newName] : [newName]);
             var maybeLMarker = _getLMarker(leafletMarkers, newName, maybeLayerName);
-            if (!isDefined(maybeLMarker)) {
-                //(nmccready) very important to not have model changes when lObject is changed
-                //this might be desirable in some cases but it causes two-way binding to lObject which is not ideal
-                //if it is left as the reference then all changes from oldModel vs newModel are ignored
-                //see _destroy (where modelDiff becomes meaningless if we do not copy here)
-                var marker = createMarker(model);
-                var layerName = (model ? model.layer : undefined) || maybeLayerName; //original way takes pref
-                if (!isDefined(marker)) {
-                    $log.error(errorHeader + ' Received invalid data on the marker ' + newName + '.');
-                    continue;
-                }
-                _setLMarker(marker, leafletMarkers, newName, maybeLayerName);
+            Helpers.modelChangeInDirective(watchTrap, "changeFromDirective", function () {
+                if (!isDefined(maybeLMarker)) {
 
-                // Bind message
-                if (isDefined(model.message)) {
-                    marker.bindPopup(model.message, model.popupOptions);
-                }
+                    var marker = createMarker(model);
+                    var layerName = (model ? model.layer : undefined) || maybeLayerName; //original way takes pref
+                    if (!isDefined(marker)) {
+                        $log.error(errorHeader + ' Received invalid data on the marker ' + newName + '.');
+                        return;
+                    }
+                    _setLMarker(marker, leafletMarkers, newName, maybeLayerName);
 
-                // Add the marker to a cluster group if needed
-                if (isDefined(model.group)) {
-                    var groupOptions = isDefined(model.groupOption) ? model.groupOption : null;
-                    addMarkerToGroup(marker, model.group, groupOptions, map);
-                }
-
-                // Show label if defined
-                if (Helpers.LabelPlugin.isLoaded() && isDefined(model.label) && isDefined(model.label.message)) {
-                    marker.bindLabel(model.label.message, model.label.options);
-                }
-
-                // Check if the marker should be added to a layer
-                if (isDefined(model) && (isDefined(model.layer) || isDefined(maybeLayerName))) {
-
-                    var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker, watchOptions.individual.type, map);
-                    if (!pass) continue; //something went wrong move on in the loop
-                } else if (!isDefined(model.group)) {
-                        // We do not have a layer attr, so the marker goes to the map layer
-                        map.addLayer(marker);
-                        if (watchOptions.individual.type === null && model.focus === true) {
-                            marker.openPopup();
-                        }
+                    // Bind message
+                    if (isDefined(model.message)) {
+                        marker.bindPopup(model.message, model.popupOptions);
                     }
 
-                if (watchOptions.individual.type !== null) {
-                    addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map, watchOptions.individual);
-                }
+                    // Add the marker to a cluster group if needed
+                    if (isDefined(model.group)) {
+                        var groupOptions = isDefined(model.groupOption) ? model.groupOption : null;
+                        addMarkerToGroup(marker, model.group, groupOptions, map);
+                    }
 
-                listenMarkerEvents(marker, model, leafletScope, watchOptions.individual.type, map);
-                leafletMarkerEvents.bindEvents(mapId, marker, pathToMarker, model, leafletScope, layerName);
-            } else {
-                var oldModel = getModelFromModels(oldModels, newName, maybeLayerName);
-                updateMarker(model, oldModel, maybeLMarker, pathToMarker, leafletScope, layers, map);
-            }
+                    // Show label if defined
+                    if (Helpers.LabelPlugin.isLoaded() && isDefined(model.label) && isDefined(model.label.message)) {
+                        marker.bindLabel(model.label.message, model.label.options);
+                    }
+
+                    // Check if the marker should be added to a layer
+                    if (isDefined(model) && (isDefined(model.layer) || isDefined(maybeLayerName))) {
+
+                        var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker, watchOptions.individual.type, map);
+                        if (!pass) return; //something went wrong move on in the loop
+                    } else if (!isDefined(model.group)) {
+                            // We do not have a layer attr, so the marker goes to the map layer
+                            map.addLayer(marker);
+                            if (watchOptions.individual.type === null && model.focus === true) {
+                                marker.openPopup();
+                            }
+                        }
+
+                    if (watchOptions.individual.type !== null) {
+                        addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map, watchOptions.individual);
+                    }
+
+                    listenMarkerEvents(marker, model, leafletScope, watchOptions.individual.type, map);
+                    leafletMarkerEvents.bindEvents(mapId, marker, pathToMarker, model, leafletScope, layerName);
+                } else {
+                    var oldModel = getModelFromModels(oldModels, newName, maybeLayerName);
+                    updateMarker(model, oldModel, maybeLMarker, pathToMarker, leafletScope, layers, map);
+                }
+            });
         }
     };
     var _seeWhatWeAlreadyHave = function _seeWhatWeAlreadyHave(markerModels, oldMarkerModels, lMarkers, isEqual, cb) {
@@ -4403,6 +4419,7 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
                     leafletData.setMarkers(leafletMarkers, attrs.id);
 
                     maybeWatch(leafletScope, 'markers', watchOptions, function (newMarkers, oldMarkers) {
+                        if (watchTrap.changeFromDirective) return;
                         _create(newMarkers, oldMarkers);
                     });
                 });

@@ -1,4 +1,4 @@
-angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
+angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $timeout) {
     var _errorHeader = '[ui-leaflet] ';
     var _copy = angular.copy;
     var _clone = _copy;
@@ -133,10 +133,27 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
     var directiveNormalize = function(name) {
       return camelCase(name.replace(PREFIX_REGEXP, ""));
     };
-
     // END AngularJS port
 
+    var _watchTrapDelayMilliSec = 10;
+
+    var _modelChangeInDirective = function(trapObj, trapField, cbToExec){
+        if(!trapObj)
+            throw new Error(_errorHeader + 'trapObj is undefined');
+        if(!trapField)
+            throw new Error(_errorHeader + 'trapField is undefined');
+
+        trapObj[trapField] = true;
+        let ret = cbToExec();
+        $timeout(()=> {
+            trapObj[trapField] = false;
+        }, _watchTrapDelayMilliSec);
+        return ret;
+    };
+
     return {
+        watchTrapDelayMilliSec: _watchTrapDelayMilliSec,
+        modelChangeInDirective: _modelChangeInDirective,
         camelCase: camelCase,
         directiveNormalize: directiveNormalize,
         copy:_copy,

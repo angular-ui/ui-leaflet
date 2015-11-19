@@ -8,9 +8,10 @@ var _testFiles = ['test/unit/**.js', 'test/unit/**.coffee',
 
 module.exports = function (grunt, options) {
     return {
-        options: {
-            livereload: port
-        },
+        // NOT WORTH THE PINTA when having multiple watches
+        // options: {
+        //     livereload: port
+        // },
         fast: {
             files: _files,
             tasks: [

@@ -18,7 +18,8 @@ module.exports =
     # cause zsh always puts me in grunt folder
     d:['default']
 
-    dev:['connect:devserver', 'open:devserver', 'watch:source' ]
+    #force:on to keep failing specs from killing grunt
+    dev:['force:on', 'connect:devserver', 'open:devserver', 'concurrent:dev' ]
 
     #continuos running specs
     spec: [ 'fastbuild', 'concurrent:unit' ]

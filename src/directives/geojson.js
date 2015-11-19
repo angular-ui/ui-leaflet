@@ -1,11 +1,12 @@
 angular.module('ui-leaflet')
-.directive('geojson', function (leafletLogger, $rootScope, leafletData, leafletHelpers,
+.directive('geojson', function ($timeout, leafletLogger, leafletData, leafletHelpers,
     leafletWatchHelpers, leafletDirectiveControlsHelpers,leafletIterators, leafletGeoJsonEvents) {
     var _maybeWatch = leafletWatchHelpers.maybeWatch,
         _defaultWatchOptions = leafletHelpers.watchOptions,
         _extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
         hlp = leafletHelpers,
-        $it = leafletIterators;
+        $it = leafletIterators,
+        watchTrap = {changeFromDirective: false};
         // $log = leafletLogger;
 
     return {
@@ -69,23 +70,22 @@ angular.module('ui-leaflet')
                     _remove(leafletGeoJSON);
                 };
 
-                var _addGeojson = function(model, maybeName){
-                    var geojson = angular.copy(model);
+                var _addGeojson = function(geojson, maybeName){
+
                     if (!(isDefined(geojson) && isDefined(geojson.data))) {
                         return;
                     }
                     var onEachFeature = _hookUpEvents(geojson, maybeName);
 
                     if (!isDefined(geojson.options)) {
-                        //right here is why we use a clone / copy (we modify and thus)
-                        //would kick of a watcher.. we need to be more careful everywhere
-                        //for stuff like this
-                        geojson.options = {
-                            style: geojson.style,
-                            filter: geojson.filter,
-                            onEachFeature: onEachFeature,
-                            pointToLayer: geojson.pointToLayer
-                        };
+                        hlp.modelChangeInDirective(watchTrap, "changeFromDirective", () => {
+                            geojson.options = {
+                                style: geojson.style,
+                                filter: geojson.filter,
+                                onEachFeature: onEachFeature,
+                                pointToLayer: geojson.pointToLayer
+                            };
+                        });
                     }
 
                     var lObject = L.geoJson(geojson.data, geojson.options);
@@ -123,6 +123,8 @@ angular.module('ui-leaflet')
                 _extendDirectiveControls(attrs.id, 'geojson', _create, _clean);
 
                 _maybeWatch(leafletScope,'geojson', watchOptions, function(geojson){
+                    if(watchTrap.changeFromDirective)
+                        return;
                     _create(geojson);
                 });
             });

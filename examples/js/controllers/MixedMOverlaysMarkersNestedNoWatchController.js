@@ -18,12 +18,12 @@
             });
         }, 4000);
         angular.extend($scope, {
-            watchOptions: {
-                markers: {
-                    type: null
-                    individual: {
-                        type: null
-                    }
+            markersWatchOptions: {
+                doWatch: false,
+                isDeep: false,
+                individual: {
+                    doWatch: false,
+                    isDeep: false
                 }
             },
             center: {

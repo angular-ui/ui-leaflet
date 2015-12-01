@@ -3042,6 +3042,57 @@ var app = angular.module('webapp');
             });
             $scope.legend.url = $scope.legendURL1;
         }]);
+        app.controller('MapboxGLController', function($scope, $timeout) {
+            var defaults = {
+                center: {
+                    lat: 38.91275,
+                    lng: -77.032194,
+                    zoom: 15
+                },
+                layers: {
+                    overlays: {},
+                    baselayers: {}
+                }
+            };
+            angular.extend($scope, defaults);
+            $scope.style = 'mapbox://styles/mapbox/streets-v8';
+            $scope.pitch = 0;
+            var mapboxGlLayer = {
+                name: 'Sample',
+                type: 'mapboxGL',
+                layerOptions: {
+                    accessToken: $scope.accessToken,
+                    style: $scope.style,
+                    pitch: $scope.pitch
+                }
+            };
+            $scope.$watch('accessToken', function (newToken) {
+                if (!newToken) {
+                    $scope.error = 'Mapbox GL Token needed!';
+                    return;
+                }
+                $scope.error = null;
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {accessToken: newToken});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            });
+            $scope.$watch('style', function (newStyle) {
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {style: newStyle});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            })
+            $scope.$watch('pitch', function (pitch) {
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {pitch: pitch});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            });
+        });
         app.controller('MarkersAddRemoveController', [ '$scope', function($scope) {
             angular.extend($scope, {
                 london: {
@@ -3140,21 +3191,30 @@ var app = angular.module('webapp');
                 }
             });
         } ]);
-        app.controller("MarkersClustering10000MarkersController", [ "$scope", "$http", function($scope, $http) {
+        app.controller("MarkersClustering10000MarkersController", ["$scope", "$http", "leafletData",
+        function($scope, $http, leafletData) {
             var addressPointsToMarkers = function(points) {
-              return points.map(function(ap) {
-                return {
-                  layer: 'realworld',
-                  lat: ap[0],
-                  lng: ap[1]
-                };
-              });
+                return points.map(function(ap) {
+                    return {
+                        layer: 'realworld',
+                        lat: ap[0],
+                        lng: ap[1]
+                    };
+                });
             };
             angular.extend($scope, {
                 center: {
                     lat: -37.9212959167,
                     lng: 175.5604435167,
                     zoom: 11
+                },
+                watchOptions: {
+                    markers: {
+                        type: null,
+                        individual: {
+                            type: null
+                        }
+                    }
                 },
                 events: {
                     map: {
@@ -3184,7 +3244,11 @@ var app = angular.module('webapp');
                 }
             });
             $http.get("json/realworld.10000.json").success(function(data) {
-                $scope.markers = addressPointsToMarkers(data);
+                leafletData.getDirectiveControls().then(function (controls) {
+                    var markers = addressPointsToMarkers(data)
+                    controls.markers.create(markers ,$scope.markers);
+                    $scope.markers = markers;
+                });
             });
         }]);
         app.controller("MarkersClusteringController", [ "$scope", function($scope) {
@@ -4141,12 +4205,12 @@ var app = angular.module('webapp');
             });
         }, 4000);
         angular.extend($scope, {
-            watchOptions: {
-                markers: {
-                    type: null
-                    individual: {
-                        type: null
-                    }
+            markersWatchOptions: {
+                doWatch: false,
+                isDeep: false,
+                individual: {
+                    doWatch: false,
+                    isDeep: false
                 }
             },
             center: {
@@ -4485,6 +4549,14 @@ var app = angular.module('webapp');
                 defaults: {
                     scrollWheelZoom: false
                 },
+                watchOptions: {
+                    paths: {
+                        type: 'watch',
+                        individual: {
+                            type: null
+                        }
+                    }
+                },
                 //restrict map panning for this region
                 maxbounds: {
                     northEast: {
@@ -4516,14 +4588,17 @@ var app = angular.module('webapp');
             $scope.paths = {};
             //bind locationGrid to zoom level
             $scope.$watch("centroid.zoom", function (zoom) {
+                var tempPaths;
                 if (zoom <= 3) {
                     //clear path object
                     $scope.paths = {};
+                    //make new paths
+                    tempPaths = {};
                     //get location data and initialize leaflet circles
                     LocationDataService.getLocationsTenGrid().then(function (res) {
                         angular.forEach(res.data, function (value, key) {
                             if (value.lat !== null && value.lon !== null) {
-                                $scope.paths['circle' + key] = {
+                                tempPaths['circle' + key] = {
                                     type: 'circle',
                                     className: 'testClass',
                                     fillColor: 'DarkSlateGray',
@@ -4538,6 +4613,7 @@ var app = angular.module('webapp');
                                 };
                             }
                         });
+                        $scope.paths = tempPaths;
                     }, function (error) {
                         console.log('An error occured!', error);
                     });
@@ -4545,11 +4621,13 @@ var app = angular.module('webapp');
                 if (zoom >= 4) {
                     //clear path object
                     $scope.paths = {};
+                    //make new paths
+                    tempPaths = {};
                     //get location data and initialize leaflet circles
                     LocationDataService.getLocationsZeroOneGrid().then(function (res) {
                         angular.forEach(res.data, function (value, key) {
                             if (value.lat !== null && value.lon !== null) {
-                                $scope.paths['circle' + key] = {
+                                tempPaths['circle' + key] = {
                                     type: 'circle',
                                     className: 'testClass',
                                     fillColor: 'DarkSlateGray',
@@ -4564,6 +4642,7 @@ var app = angular.module('webapp');
                                 };
                             }
                         });
+                        $scope.paths = tempPaths;
                     }, function (error) {
                         console.log('An error occured!', error);
                     });

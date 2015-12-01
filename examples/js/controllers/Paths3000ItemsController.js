@@ -4,6 +4,14 @@
                 defaults: {
                     scrollWheelZoom: false
                 },
+                watchOptions: {
+                    paths: {
+                        type: 'watch',
+                        individual: {
+                            type: null
+                        }
+                    }
+                },
                 //restrict map panning for this region
                 maxbounds: {
                     northEast: {
@@ -35,14 +43,17 @@
             $scope.paths = {};
             //bind locationGrid to zoom level
             $scope.$watch("centroid.zoom", function (zoom) {
+                var tempPaths;
                 if (zoom <= 3) {
                     //clear path object
                     $scope.paths = {};
+                    //make new paths
+                    tempPaths = {};
                     //get location data and initialize leaflet circles
                     LocationDataService.getLocationsTenGrid().then(function (res) {
                         angular.forEach(res.data, function (value, key) {
                             if (value.lat !== null && value.lon !== null) {
-                                $scope.paths['circle' + key] = {
+                                tempPaths['circle' + key] = {
                                     type: 'circle',
                                     className: 'testClass',
                                     fillColor: 'DarkSlateGray',
@@ -57,6 +68,7 @@
                                 };
                             }
                         });
+                        $scope.paths = tempPaths;
                     }, function (error) {
                         console.log('An error occured!', error);
                     });
@@ -64,11 +76,13 @@
                 if (zoom >= 4) {
                     //clear path object
                     $scope.paths = {};
+                    //make new paths
+                    tempPaths = {};
                     //get location data and initialize leaflet circles
                     LocationDataService.getLocationsZeroOneGrid().then(function (res) {
                         angular.forEach(res.data, function (value, key) {
                             if (value.lat !== null && value.lon !== null) {
-                                $scope.paths['circle' + key] = {
+                                tempPaths['circle' + key] = {
                                     type: 'circle',
                                     className: 'testClass',
                                     fillColor: 'DarkSlateGray',
@@ -83,6 +97,7 @@
                                 };
                             }
                         });
+                        $scope.paths = tempPaths;
                     }, function (error) {
                         console.log('An error occured!', error);
                     });

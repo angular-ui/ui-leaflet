@@ -65,7 +65,6 @@
     "*.md",
     "Gruntfile.js",
     "package.json",
-    "bower.json",
     "dist/coverage/",
     "logo.svg"
   ]

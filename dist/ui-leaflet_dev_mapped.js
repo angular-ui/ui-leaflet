@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-12-01
+*  ui-leaflet 1.0.0 2015-11-25
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -147,6 +147,100 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', function ($q, 
         }
     };
 });
+
+'use strict';
+
+(function () {
+    angular.module('ui-leaflet').factory('eventManager', [function () {
+        var EventManager = function EventManager() {
+            this.listeners = {};
+        };
+
+        EventManager.prototype = {
+            addEventListener: function addEventListener(type, callback, scope) {
+                var args = [];
+                var numOfArgs = arguments.length;
+                for (var i = 0; i < numOfArgs; i++) {
+                    args.push(arguments[i]);
+                }
+                args = args.length > 3 ? args.splice(3, args.length - 1) : [];
+                if (typeof this.listeners[type] !== "undefined") {
+                    this.listeners[type].push({ scope: scope, callback: callback, args: args });
+                } else {
+                    this.listeners[type] = [{ scope: scope, callback: callback, args: args }];
+                }
+            },
+            removeEventListener: function removeEventListener(type, callback, scope) {
+                if (typeof this.listeners[type] !== "undefined") {
+                    var numOfCallbacks = this.listeners[type].length;
+                    var newArray = [];
+                    for (var i = 0; i < numOfCallbacks; i++) {
+                        var listener = this.listeners[type][i];
+                        if (listener.scope === scope && listener.callback === callback) {} else {
+                            newArray.push(listener);
+                        }
+                    }
+                    this.listeners[type] = newArray;
+                }
+            },
+            hasEventListener: function hasEventListener(type, callback, scope) {
+                if (typeof this.listeners[type] !== "undefined") {
+                    var numOfCallbacks = this.listeners[type].length;
+                    if (callback === undefined && scope === undefined) {
+                        return numOfCallbacks > 0;
+                    }
+                    for (var i = 0; i < numOfCallbacks; i++) {
+                        var listener = this.listeners[type][i];
+                        if ((scope ? listener.scope === scope : true) && listener.callback === callback) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            },
+            dispatch: function dispatch(type, target) {
+                var numOfListeners = 0;
+                var event = {
+                    type: type,
+                    target: target
+                };
+                var args = [];
+                var numOfArgs = arguments.length;
+                for (var i = 0; i < numOfArgs; i++) {
+                    args.push(arguments[i]);
+                }
+                args = args.length > 2 ? args.splice(2, args.length - 1) : [];
+                args = [event].concat(args);
+                if (typeof this.listeners[type] !== "undefined") {
+                    var numOfCallbacks = this.listeners[type].length;
+                    for (var x = 0; x < numOfCallbacks; x++) {
+                        var listener = this.listeners[type][x];
+                        if (listener && listener.callback) {
+                            var concatArgs = args.concat(listener.args);
+                            listener.callback.apply(listener.scope, concatArgs);
+                            numOfListeners += 1;
+                        }
+                    }
+                }
+            },
+            getEvents: function getEvents() {
+                var str = "";
+                for (var type in this.listeners) {
+                    var numOfCallbacks = this.listeners[type].length;
+                    for (var i = 0; i < numOfCallbacks; i++) {
+                        var listener = this.listeners[type][i];
+                        str += listener.scope && listener.scope.className ? listener.scope.className : "anonymous";
+                        str += " listen for '" + type + "'\n";
+                    }
+                }
+                return str;
+            }
+        };
+        return EventManager;
+    }]).service('eventManager', function (EventManager) {
+        return new EventManager();
+    });
+})();
 
 'use strict';
 
@@ -584,7 +678,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
     var _clone = _copy;
     /*
     For parsing paths to a field in an object
-     Example:
+      Example:
     var obj = {
         bike:{
          1: 'hi'
@@ -4783,7 +4877,7 @@ angular.module('ui-leaflet').factory('leafletEventsHelpersFactory', function ($r
      }
      //would yield name of
      name = "m1"
-      If nested:
+       If nested:
      markerModel : {
      cars: {
      m1: { lat:_, lon: _}
@@ -4954,36 +5048,36 @@ angular.module('ui-leaflet').factory('leafletGeoJsonEvents', function ($rootScop
 'use strict';
 
 angular.module('ui-leaflet').factory('leafletLabelEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpersFactory) {
-    var Helpers = leafletHelpers,
-        EventsHelper = leafletEventsHelpersFactory;
-    //$log = leafletLogger;
+        var Helpers = leafletHelpers,
+            EventsHelper = leafletEventsHelpersFactory;
+        //$log = leafletLogger;
 
-    var LabelEvents = function LabelEvents() {
-        EventsHelper.call(this, 'leafletDirectiveLabel', 'markers');
-    };
-    LabelEvents.prototype = new EventsHelper();
+        var LabelEvents = function LabelEvents() {
+                EventsHelper.call(this, 'leafletDirectiveLabel', 'markers');
+        };
+        LabelEvents.prototype = new EventsHelper();
 
-    LabelEvents.prototype.genDispatchEvent = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
-        var markerName = name.replace('markers.', '');
-        return EventsHelper.prototype.genDispatchEvent.call(this, maybeMapId, eventName, logic, leafletScope, lObject, markerName, model, layerName);
-    };
+        LabelEvents.prototype.genDispatchEvent = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
+                var markerName = name.replace('markers.', '');
+                return EventsHelper.prototype.genDispatchEvent.call(this, maybeMapId, eventName, logic, leafletScope, lObject, markerName, model, layerName);
+        };
 
-    LabelEvents.prototype.getAvailableEvents = function () {
-        return ['click', 'dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
-    };
+        LabelEvents.prototype.getAvailableEvents = function () {
+                return ['click', 'dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
+        };
 
-    LabelEvents.prototype.genEvents = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
-        var _this = this;
-        var labelEvents = this.getAvailableEvents();
-        var scopeWatchName = Helpers.getObjectArrayPath("markers." + name);
-        labelEvents.forEach(function (eventName) {
-            lObject.label.on(eventName, _this.genDispatchEvent(maybeMapId, eventName, logic, leafletScope, lObject.label, scopeWatchName, model, layerName));
-        });
-    };
+        LabelEvents.prototype.genEvents = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
+                var _this = this;
+                var labelEvents = this.getAvailableEvents();
+                var scopeWatchName = Helpers.getObjectArrayPath("markers." + name);
+                labelEvents.forEach(function (eventName) {
+                        lObject.label.on(eventName, _this.genDispatchEvent(maybeMapId, eventName, logic, leafletScope, lObject.label, scopeWatchName, model, layerName));
+                });
+        };
 
-    LabelEvents.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName) {};
+        LabelEvents.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName) {};
 
-    return new LabelEvents();
+        return new LabelEvents();
 });
 
 'use strict';

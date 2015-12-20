@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-11-25
+*  ui-leaflet 1.0.0 2015-12-20
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -678,7 +678,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
     var _clone = _copy;
     /*
     For parsing paths to a field in an object
-      Example:
+     Example:
     var obj = {
         bike:{
          1: 'hi'
@@ -4877,7 +4877,7 @@ angular.module('ui-leaflet').factory('leafletEventsHelpersFactory', function ($r
      }
      //would yield name of
      name = "m1"
-       If nested:
+      If nested:
      markerModel : {
      cars: {
      m1: { lat:_, lon: _}
@@ -5048,36 +5048,36 @@ angular.module('ui-leaflet').factory('leafletGeoJsonEvents', function ($rootScop
 'use strict';
 
 angular.module('ui-leaflet').factory('leafletLabelEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpersFactory) {
-        var Helpers = leafletHelpers,
-            EventsHelper = leafletEventsHelpersFactory;
-        //$log = leafletLogger;
+    var Helpers = leafletHelpers,
+        EventsHelper = leafletEventsHelpersFactory;
+    //$log = leafletLogger;
 
-        var LabelEvents = function LabelEvents() {
-                EventsHelper.call(this, 'leafletDirectiveLabel', 'markers');
-        };
-        LabelEvents.prototype = new EventsHelper();
+    var LabelEvents = function LabelEvents() {
+        EventsHelper.call(this, 'leafletDirectiveLabel', 'markers');
+    };
+    LabelEvents.prototype = new EventsHelper();
 
-        LabelEvents.prototype.genDispatchEvent = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
-                var markerName = name.replace('markers.', '');
-                return EventsHelper.prototype.genDispatchEvent.call(this, maybeMapId, eventName, logic, leafletScope, lObject, markerName, model, layerName);
-        };
+    LabelEvents.prototype.genDispatchEvent = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
+        var markerName = name.replace('markers.', '');
+        return EventsHelper.prototype.genDispatchEvent.call(this, maybeMapId, eventName, logic, leafletScope, lObject, markerName, model, layerName);
+    };
 
-        LabelEvents.prototype.getAvailableEvents = function () {
-                return ['click', 'dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
-        };
+    LabelEvents.prototype.getAvailableEvents = function () {
+        return ['click', 'dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
+    };
 
-        LabelEvents.prototype.genEvents = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
-                var _this = this;
-                var labelEvents = this.getAvailableEvents();
-                var scopeWatchName = Helpers.getObjectArrayPath("markers." + name);
-                labelEvents.forEach(function (eventName) {
-                        lObject.label.on(eventName, _this.genDispatchEvent(maybeMapId, eventName, logic, leafletScope, lObject.label, scopeWatchName, model, layerName));
-                });
-        };
+    LabelEvents.prototype.genEvents = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
+        var _this = this;
+        var labelEvents = this.getAvailableEvents();
+        var scopeWatchName = Helpers.getObjectArrayPath("markers." + name);
+        labelEvents.forEach(function (eventName) {
+            lObject.label.on(eventName, _this.genDispatchEvent(maybeMapId, eventName, logic, leafletScope, lObject.label, scopeWatchName, model, layerName));
+        });
+    };
 
-        LabelEvents.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName) {};
+    LabelEvents.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName) {};
 
-        return new LabelEvents();
+    return new LabelEvents();
 });
 
 'use strict';

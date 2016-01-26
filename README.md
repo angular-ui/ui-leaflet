@@ -28,7 +28,7 @@ See https://angular-ui.github.com/ui-leaflet
 
 ## How to use it
 
-Include [angular-simple-logger](https://github.com/nmccready/angular-simple-logger) before Angular-Leaflet js files. Logger gets installed as a requirement of Angular-Leaflet with `bower install` or `npm install`. Note if your using the browser to load it without CommonJS (browserify, webpack) please use angular-simple-logger.js (not index.js) .
+Include [angular-simple-logger](https://github.com/nmccready/angular-simple-logger) before Angular-Leaflet js files. Logger gets installed as a requirement of Angular-Leaflet with `bower install` or `npm install`. Note that if you're using the browser to load it without CommonJS (browserify, webpack) please use angular-simple-logger.js (not index.js).
 
 Include the `ui-leaflet` dependency on your Angular module:
 ```

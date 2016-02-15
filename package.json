@@ -63,6 +63,7 @@
     "lodash": "3.x",
     "matchdep": "^1.0.0",
     "mkdirp": "0.x",
+    "phantomjs-polyfill": "0.0.1",
     "protractor": "2.x",
     "q": "1.x",
     "requirejs": "^2.1.20",

@@ -78,16 +78,15 @@ angular.module('ui-leaflet').directive('markers',
     //TODO: move to leafletMarkersHelpers??? or make a new class/function file (leafletMarkersHelpers is large already)
     var _addMarkers = function(mapId, markersToRender, oldModels, map, layers, leafletMarkers, leafletScope,
                                watchOptions, maybeLayerName, skips){
-        for (var newName in markersToRender) {
+        $it.each(markersToRender, (model, newName) => {
             if(skips[newName])
-                continue;
+                return;
 
             if (newName.search("-") !== -1) {
                 $log.error('The marker can\'t use a "-" on his key name: "' + newName + '".');
-                continue;
+                return;
             }
 
-            var model = markersToRender[newName];
             var pathToMarker = Helpers.getObjectDotPath(maybeLayerName? [maybeLayerName, newName]: [newName]);
             var maybeLMarker = _getLMarker(leafletMarkers,newName, maybeLayerName);
             Helpers.modelChangeInDirective(watchTrap, "changeFromDirective", () => {
@@ -146,7 +145,7 @@ angular.module('ui-leaflet').directive('markers',
                 }
             });
 
-        }
+        });
     };
     var _seeWhatWeAlreadyHave = function(markerModels, oldMarkerModels, lMarkers, isEqual, cb){
         var hasLogged = false,

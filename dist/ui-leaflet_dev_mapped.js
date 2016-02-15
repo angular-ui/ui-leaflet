@@ -4284,6 +4284,7 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
         deleteMarker = leafletMarkersHelpers.deleteMarker,
         getModelFromModels = leafletMarkersHelpers.getModelFromModels,
         getLayerModels = leafletMarkersHelpers.getLayerModels,
+        resetMarkerGroups = leafletMarkersHelpers.resetMarkerGroups,
         $it = leafletIterators,
         _defaultWatchOptions = leafletHelpers.watchOptions,
         maybeWatch = leafletWatchHelpers.maybeWatch,
@@ -4483,6 +4484,7 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
 
                 getLayers().then(function (layers) {
                     var _clean = function _clean(models, oldModels) {
+                        resetMarkerGroups();
                         if (isNested) {
                             $it.each(models, function (markerToMaybeDel, layerName) {
                                 var oldLayerModels = getLayerModels(oldModels, layerName);

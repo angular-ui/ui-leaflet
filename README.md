@@ -6,6 +6,14 @@
 
 While we are grateful for all the original work at [tombatossals/angular-leaflet-directive](https://github.com/tombatossals/angular-leaflet-directive). We need to be able to operate as an organization to respond to issues, pull-requests and other various items quicker. We need to be able to add other developers as admins easier via group permissions via github orgs. Lastly this project needs to be more credible via being a group / org.
 
+## Master Branch State
+
+Please note the master branch is currently in a "in-progress state" and is not suitable for use at this point. We are trying
+break up the library to be more unix / plugin like. This will reduce the burden of constant changes to the core repo (this repo)
+for each and every unforseeable plugin that leaflet has. Therefore, the new usage plugins will require developers (angular-ui or not)
+to create specific angular directives, services, factories, and etc to extend the main ui-leaflet directive. Where ui-leaflet
+would be the main dependency.
+
 ## Goal
 
 [AngularJS](http://angularjs.org/) directive for the [Leaflet](http://www.leafletjs.com/) Javascript

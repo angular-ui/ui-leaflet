@@ -67,6 +67,10 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
                 }
             }
 
+            // Create the Leaflet Map Object with the options
+            var map = new L.Map(element[0], leafletMapDefaults.getMapCreationDefaults(attrs.id));
+            ctrl._leafletMap.resolve(map);
+
             // If the width attribute defined update css
             // Then watch if bound property changes and update css
             if (isDefined(attrs.width)) {
@@ -92,10 +96,6 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
                     map.invalidateSize();
                 });
             }
-
-            // Create the Leaflet Map Object with the options
-            var map = new L.Map(element[0], leafletMapDefaults.getMapCreationDefaults(attrs.id));
-            ctrl._leafletMap.resolve(map);
 
             if (!isDefined(attrs.center) && !isDefined(attrs.lfCenter)) {
                 map.setView([defaults.center.lat, defaults.center.lng], defaults.center.zoom);
@@ -4343,15 +4343,14 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
     };
     //TODO: move to leafletMarkersHelpers??? or make a new class/function file (leafletMarkersHelpers is large already)
     var _addMarkers = function _addMarkers(mapId, markersToRender, oldModels, map, layers, leafletMarkers, leafletScope, watchOptions, maybeLayerName, skips) {
-        for (var newName in markersToRender) {
-            if (skips[newName]) continue;
+        $it.each(markersToRender, function (model, newName) {
+            if (skips[newName]) return;
 
             if (newName.search("-") !== -1) {
                 $log.error('The marker can\'t use a "-" on his key name: "' + newName + '".');
-                continue;
+                return;
             }
 
-            var model = markersToRender[newName];
             var pathToMarker = Helpers.getObjectDotPath(maybeLayerName ? [maybeLayerName, newName] : [newName]);
             var maybeLMarker = _getLMarker(leafletMarkers, newName, maybeLayerName);
             Helpers.modelChangeInDirective(watchTrap, "changeFromDirective", function () {
@@ -4405,7 +4404,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                     updateMarker(model, oldModel, maybeLMarker, pathToMarker, leafletScope, layers, map);
                 }
             });
-        }
+        });
     };
     var _seeWhatWeAlreadyHave = function _seeWhatWeAlreadyHave(markerModels, oldMarkerModels, lMarkers, isEqual, cb) {
         var hasLogged = false,

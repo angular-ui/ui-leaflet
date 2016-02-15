@@ -6,6 +6,28 @@
 
 While we are grateful for all the original work at [tombatossals/angular-leaflet-directive](https://github.com/tombatossals/angular-leaflet-directive). We need to be able to operate as an organization to respond to issues, pull-requests and other various items quicker. We need to be able to add other developers as admins easier via group permissions via github orgs. Lastly this project needs to be more credible via being a group / org.
 
+## Master Branch State
+
+Please note the master branch is currently in a "in-progress state" and is not suitable for use at this point. We are trying
+break up the library to be more unix / plugin like. This will reduce the burden of constant changes to the core repo (this repo)
+for each and every unforseeable plugin that leaflet has. Therefore, the new usage plugins will require developers (angular-ui or not)
+to create specific angular directives, services, factories, and etc to extend the main ui-leaflet directive. Where ui-leaflet
+would be the main dependency.
+
+Examples:
+
+- [ui-leaflet-draw](https://github.com/angular-ui/ui-leaflet-draw) leaflet draw implemented as a directive
+- [ui-leaflet-layers](https://github.com/elesdoar/ui-leaflet-layers) Most layer directive logic outsourced to support all random layer plugins.
+
+How to extend:
+Create new directives, factories, and services specific to plugins. Use the decorator pattern to extend existing services, factories and directives. Specifically see [ui-leaflet-draw](https://github.com/angular-ui/ui-leaflet-draw) as it decorates ui-leaflet.
+
+More about decorators:
+
+- [Ben Nadel Decorating (Monkey Patching)](http://www.bennadel.com/blog/2775-monkey-patching-the-q-service-using-provide-decorator-in-angularjs.htm)
+- [Ben Nadel - Using Module.decorator() In AngularJS 1.4 (new way)](http://www.bennadel.com/blog/2870-using-module-decorator-in-angularjs-1-4.htm)
+- [Jesus Rodriguez - Experiment: Decorating Directives](http://angular-tips.com/blog/2013/09/experiment-decorating-directives/)
+
 ## Goal
 
 [AngularJS](http://angularjs.org/) directive for the [Leaflet](http://www.leafletjs.com/) Javascript
@@ -28,7 +50,7 @@ See https://angular-ui.github.com/ui-leaflet
 
 ## How to use it
 
-Include [angular-simple-logger](https://github.com/nmccready/angular-simple-logger) before Angular-Leaflet js files. Logger gets installed as a requirement of Angular-Leaflet with `bower install` or `npm install`. Note if your using the browser to load it without CommonJS (browserify, webpack) please use angular-simple-logger.js (not index.js) .
+Include [angular-simple-logger](https://github.com/nmccready/angular-simple-logger) before Angular-Leaflet js files. Logger gets installed as a requirement of Angular-Leaflet with `bower install` or `npm install`. Note that if you're using the browser to load it without CommonJS (browserify, webpack) please use angular-simple-logger.js (not index.js).
 
 Include the `ui-leaflet` dependency on your Angular module:
 ```

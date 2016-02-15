@@ -14,6 +14,20 @@ for each and every unforseeable plugin that leaflet has. Therefore, the new usag
 to create specific angular directives, services, factories, and etc to extend the main ui-leaflet directive. Where ui-leaflet
 would be the main dependency.
 
+Examples:
+
+- [ui-leaflet-draw](https://github.com/angular-ui/ui-leaflet-draw) leaflet draw implemented as a directive
+- [ui-leaflet-layers](https://github.com/elesdoar/ui-leaflet-layers) Most layer directive logic outsourced to support all random layer plugins.
+
+How to extend:
+Create new directives, factories, and services specific to plugins. Use the decorator pattern to extend existing services, factories and directives. Specifically see [ui-leaflet-draw](https://github.com/angular-ui/ui-leaflet-draw) as it decorates ui-leaflet.
+
+More about decorators:
+
+- [Ben Nadel Decorating (Monkey Patching)](http://www.bennadel.com/blog/2775-monkey-patching-the-q-service-using-provide-decorator-in-angularjs.htm)
+- [Ben Nadel - Using Module.decorator() In AngularJS 1.4 (new way)](http://www.bennadel.com/blog/2870-using-module-decorator-in-angularjs-1-4.htm)
+- [Jesus Rodriguez - Experiment: Decorating Directives](http://angular-tips.com/blog/2013/09/experiment-decorating-directives/)
+
 ## Goal
 
 [AngularJS](http://angularjs.org/) directive for the [Leaflet](http://www.leafletjs.com/) Javascript

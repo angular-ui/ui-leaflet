@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-02-15
+*  ui-leaflet 1.0.0 2016-02-19
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1385,7 +1385,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
   // `key:value` pairs.
   var _matcher,
       _matches = null;
-  _matcher = _matches = function _matches(attrs) {
+  _matcher = _matches = function (attrs) {
     attrs = _extendOwn({}, attrs);
     return function (obj) {
       return _isMatch(obj, attrs);
@@ -1404,7 +1404,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
 
   var _every,
       _all = null;
-  _every = _all = function _all(obj, predicate, context) {
+  _every = _all = function (obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = !_isArrayLike(obj) && _keys(obj),
         length = (keys || obj).length;
@@ -3595,7 +3595,7 @@ angular.module('ui-leaflet').directive('geojson', ["$timeout", "leafletLogger", 
                     if (angular.isFunction(geojson.onEachFeature)) {
                         onEachFeature = geojson.onEachFeature;
                     } else {
-                        onEachFeature = function onEachFeature(feature, layer) {
+                        onEachFeature = function (feature, layer) {
                             if (leafletHelpers.LabelPlugin.isLoaded() && isDefined(feature.properties.description)) {
                                 layer.bindLabel(feature.properties.description);
                             }
@@ -4466,7 +4466,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function getLayers() {
+                    getLayers = function () {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -4590,7 +4590,7 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function getLayers() {
+                    getLayers = function () {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -5189,7 +5189,7 @@ angular.module('ui-leaflet').factory('leafletMarkerEvents', ["$rootScope", "$q",
 
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
 angular.module('ui-leaflet').factory('leafletPathEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletLabelEvents", "leafletEventsHelpers", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
     var isDefined = leafletHelpers.isDefined,

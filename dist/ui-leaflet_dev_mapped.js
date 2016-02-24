@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-02-19
+*  ui-leaflet 1.0.0 2016-02-23
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1466,6 +1466,7 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
     var Helpers = leafletHelpers;
     var isString = leafletHelpers.isString;
     var isObject = leafletHelpers.isObject;
+    var isArray = leafletHelpers.isArray;
     var isDefined = leafletHelpers.isDefined;
     var errorHeader = leafletHelpers.errorHeader;
     var $it = leafletIterators;
@@ -1553,7 +1554,8 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
         cartodbTiles: {
             mustHaveKey: true,
             createLayer: function createLayer(params) {
-                var url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                url += '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 return L.tileLayer(url, params.options);
             }
         },
@@ -1561,7 +1563,8 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
             mustHaveKey: true,
             mustHaveLayer: true,
             createLayer: function createLayer(params) {
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                params.url = url + '/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
                 return utfGridCreateLayer(params);
             }
         },
@@ -1569,11 +1572,25 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
             mustHaveKey: true,
             mustHaveLayer: true,
             createLayer: function createLayer(params) {
-                var tilesURL = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                var tilesURL = url + '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 var tileLayer = L.tileLayer(tilesURL, params.options);
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
-                var utfLayer = utfGridCreateLayer(params);
-                return L.layerGroup([tileLayer, utfLayer]);
+                var layers = [tileLayer];
+
+                var addUtfLayer = function addUtfLayer(parent, params, layer) {
+                    var paramsCopy = angular.copy(params);
+                    paramsCopy.url = url + '/api/v1/map/' + paramsCopy.key + '/' + layer + '/{z}/{x}/{y}.grid.json';
+                    parent.push(utfGridCreateLayer(paramsCopy));
+                };
+
+                if (isArray(params.layer)) {
+                    for (var i = 0; i < params.layer.length; i++) {
+                        addUtfLayer(layers, params, params.layer[i]);
+                    }
+                } else {
+                    addUtfLayer(layers, params, params.layer);
+                }
+                return L.layerGroup(layers);
             }
         },
         wms: {

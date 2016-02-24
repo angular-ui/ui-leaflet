@@ -16,20 +16,41 @@ angular.module('ui-leaflet')
         }
         var utfgrid = new L.UtfGrid(params.url, params.pluginOptions);
 
+        var toSend = {
+            model: params.$parent
+        };
+
+        // TODO Use event manager
         utfgrid.on('mouseover', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', toSend);
         });
 
         utfgrid.on('mouseout', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', toSend);
         });
 
         utfgrid.on('click', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', toSend);
         });
 
         utfgrid.on('mousemove', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', toSend);
         });
 
         return utfgrid;
@@ -431,7 +452,8 @@ angular.module('ui-leaflet')
             key: layerDefinition.key,
             apiKey: layerDefinition.apiKey,
             pluginOptions: layerDefinition.pluginOptions,
-            user: layerDefinition.user
+            user: layerDefinition.user,
+            $parent: layerDefinition
         };
 
         //TODO Add $watch to the layer properties

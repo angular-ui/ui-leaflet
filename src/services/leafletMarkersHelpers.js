@@ -31,6 +31,11 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
         logger.debug(_string(marker));
     };
 
+
+    var existDomContainer = function (groupName) {
+        return angular.element(groups[groupName]._map._container).parent().length > 0;
+    };
+
     var createLeafletIcon = function (iconData) {
         if (isDefined(iconData) && isDefined(iconData.type) && iconData.type === 'awesomeMarker') {
             if (!AwesomeMarkersPlugin.isLoaded()) {
@@ -102,12 +107,20 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
 
     var _resetMarkerGroup = function (groupName) {
         if (isDefined(groups[groupName])) {
-            groups.splice(groupName, 1);
+            delete groups[groupName];
         }
     };
 
     var _resetMarkerGroups = function () {
         groups = {};
+    };
+
+    var _resetUnusedMarkerGroups = function (){
+        for(var groupName in groups) {
+            if (!existDomContainer(groupName)) {
+                _resetMarkerGroup(groupName);
+            }
+        }
     };
 
     var _deleteMarker = function (marker, map, layers) {
@@ -452,6 +465,8 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
         resetMarkerGroup: _resetMarkerGroup,
 
         resetMarkerGroups: _resetMarkerGroups,
+
+        resetUnusedMarkerGroups: _resetUnusedMarkerGroups,
 
         deleteMarker: _deleteMarker,
 

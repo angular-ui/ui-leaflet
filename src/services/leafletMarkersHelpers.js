@@ -106,7 +106,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
     };
 
     var _resetMarkerGroup = function (groupName) {
-        if (angular.isDefined(groups[groupName])) {
+        if (isDefined(groups[groupName])) {
             delete groups[groupName];
         }
     };

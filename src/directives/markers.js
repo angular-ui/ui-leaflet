@@ -166,7 +166,7 @@ angular.module('ui-leaflet').directive('markers',
                 //ie the options to only check !== (reference check) instead of angular.equals (slow)
                 newMarker = markerModels[name];
                 oldMarker = oldMarkerModels[name];
-                equals = angular.equals(newMarker,oldMarker) && isEqual;
+                equals = isEqual && angular.equals(newMarker, oldMarker);
             }
             if (!isDefined(markerModels) ||
                 !Object.keys(markerModels).length ||

@@ -2266,6 +2266,10 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         logger.debug(_string(marker));
     };
 
+    var existDomContainer = function existDomContainer(groupName) {
+        return angular.element(groups[groupName]._map._container).parent().length > 0;
+    };
+
     var createLeafletIcon = function createLeafletIcon(iconData) {
         if (isDefined(iconData) && isDefined(iconData.type) && iconData.type === 'awesomeMarker') {
             if (!AwesomeMarkersPlugin.isLoaded()) {
@@ -2337,12 +2341,20 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
 
     var _resetMarkerGroup = function _resetMarkerGroup(groupName) {
         if (isDefined(groups[groupName])) {
-            groups.splice(groupName, 1);
+            delete groups[groupName];
         }
     };
 
     var _resetMarkerGroups = function _resetMarkerGroups() {
         groups = {};
+    };
+
+    var _resetUnusedMarkerGroups = function _resetUnusedMarkerGroups() {
+        for (var groupName in groups) {
+            if (!existDomContainer(groupName)) {
+                _resetMarkerGroup(groupName);
+            }
+        }
     };
 
     var _deleteMarker = function _deleteMarker(marker, map, layers) {
@@ -2682,6 +2694,8 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         resetMarkerGroup: _resetMarkerGroup,
 
         resetMarkerGroups: _resetMarkerGroups,
+
+        resetUnusedMarkerGroups: _resetUnusedMarkerGroups,
 
         deleteMarker: _deleteMarker,
 
@@ -4319,7 +4333,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
         deleteMarker = leafletMarkersHelpers.deleteMarker,
         getModelFromModels = leafletMarkersHelpers.getModelFromModels,
         getLayerModels = leafletMarkersHelpers.getLayerModels,
-        resetMarkerGroups = leafletMarkersHelpers.resetMarkerGroups,
+        resetUnusedMarkerGroups = leafletMarkersHelpers.resetUnusedMarkerGroups,
         $it = leafletIterators,
         _defaultWatchOptions = leafletHelpers.watchOptions,
         maybeWatch = leafletWatchHelpers.maybeWatch,
@@ -4459,7 +4473,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                 //ie the options to only check !== (reference check) instead of angular.equals (slow)
                 newMarker = markerModels[name];
                 oldMarker = oldMarkerModels[name];
-                equals = angular.equals(newMarker, oldMarker) && isEqual;
+                equals = isEqual && angular.equals(newMarker, oldMarker);
             }
             if (!isDefined(markerModels) || !Object.keys(markerModels).length || !isDefined(markerModels[name]) || !Object.keys(markerModels[name]).length || equals) {
                 if (cb && Helpers.isFunction(cb)) cb(newMarker, oldMarker, name);
@@ -4519,7 +4533,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
 
                 getLayers().then(function (layers) {
                     var _clean = function _clean(models, oldModels) {
-                        resetMarkerGroups();
+                        resetUnusedMarkerGroups();
                         if (isNested) {
                             $it.each(models, function (markerToMaybeDel, layerName) {
                                 var oldLayerModels = getLayerModels(oldModels, layerName);

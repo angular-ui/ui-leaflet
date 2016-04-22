@@ -156,6 +156,13 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                         }
                     }
 
+                    let changeOpacity = (op) => {
+                        return (ly) => {
+                            if(isDefined(ly.setOpacity)) {
+                                ly.setOpacity(op);
+                            }
+                        };
+                    };
                     // add new overlays
                     for (var newName in newOverlayLayers) {
                         if (!isDefined(leafletLayers.overlays[newName])) {
@@ -175,6 +182,19 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                             } else if (newOverlayLayers[newName].visible === false && map.hasLayer(leafletLayers.overlays[newName])) {
                                 // Safe remove when ArcGIS layers is loading.
                                 safeRemoveLayer(map, leafletLayers.overlays[newName], newOverlayLayers[newName].layerOptions);
+                            }
+
+                            // check for the .layerOptions.opacity property has changed.
+                            if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity &&
+                                map.hasLayer(leafletLayers.overlays[newName])) {
+
+                                let ly = leafletLayers.overlays[newName];
+                                if(isDefined(ly.setOpacity)) {
+                                    ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                }
+                                if(isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
+                                    ly.eachLayer(changeOpacity(newOverlayLayers[newName].layerOptions.opacity));
+                                }
                             }
                         }
 

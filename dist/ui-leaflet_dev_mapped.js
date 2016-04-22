@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-02-24
+*  ui-leaflet 1.0.0 2016-04-22
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -3826,33 +3826,6 @@ angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafle
                 getGroupIcon: function getGroupIcon(group) {
                     return group.visible ? $scope.icons.check : $scope.icons.uncheck;
                 },
-                changeOpacity: function changeOpacity(layer) {
-                    var op = $scope.layerProperties[layer.name].opacity;
-                    leafletData.getMap().then(function (map) {
-                        leafletData.getLayers().then(function (leafletLayers) {
-                            var ly;
-                            for (var k in $scope.layers.overlays) {
-                                if ($scope.layers.overlays[k] === layer) {
-                                    ly = leafletLayers.overlays[k];
-                                    break;
-                                }
-                            }
-
-                            if (map.hasLayer(ly)) {
-                                if (ly.setOpacity) {
-                                    ly.setOpacity(op / 100);
-                                }
-                                if (ly.getLayers && ly.eachLayer) {
-                                    ly.eachLayer(function (lay) {
-                                        if (lay.setOpacity) {
-                                            lay.setOpacity(op / 100);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    });
-                },
                 changeGroupVisibility: function changeGroupVisibility(groupName) {
                     if (!isDefined($scope.groupProperties[groupName])) {
                         return;
@@ -3875,7 +3848,7 @@ angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafle
                 L.DomEvent.on(div, 'click', L.DomEvent.stopPropagation);
             }
         },
-        template: '<div class="angular-leaflet-control-layers" ng-show="overlaysArray.length">' + '<h4 ng-if="title">{{ title }}</h4>' + '<div class="lf-baselayers">' + '<h5 class="lf-title" ng-if="baseTitle">{{ baseTitle }}</h5>' + '<div class="lf-row" ng-repeat="(key, layer) in baselayersArray">' + '<label class="lf-icon-bl" ng-click="changeBaseLayer(key, $event)">' + '<input class="leaflet-control-layers-selector" type="radio" name="lf-radio" ' + 'ng-show="false" ng-checked="baselayer === key" ng-value="key" /> ' + '<i class="lf-icon lf-icon-radio" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '</div>' + '</div>' + '<div class="lf-overlays">' + '<h5 class="lf-title" ng-if="overlaysTitle">{{ overlaysTitle }}</h5>' + '<div class="lf-container">' + '<div class="lf-row" ng-repeat="layer in (o = (overlaysArray | orderBy:\'index\':order))" ng-init="initIndex(layer, $index)">' + '<label class="lf-icon-ol-group" ng-if="showGroups &amp;&amp; layer.group &amp;&amp; layer.group != o[$index-1].group">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ' + 'ng-change="changeGroupVisibility(layer.group)" ng-model="groupProperties[layer.group].visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="getGroupIcon(groupProperties[layer.group])"></i>' + '<div class="lf-text">{{ layer.group }}</div>' + '</label>' + '<label class="lf-icon-ol">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ng-model="layer.visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '<div class="lf-icons">' + '<i class="lf-icon lf-up" ng-class="icons.up" ng-click="moveLayer(layer, layer.index - orderNumber, $event)"></i> ' + '<i class="lf-icon lf-down" ng-class="icons.down" ng-click="moveLayer(layer, layer.index + orderNumber, $event)"></i> ' + '<i class="lf-icon lf-toggle-legend" ng-class="icons.toggleLegend" ng-if="layer.legend" ng-click="toggleLegend(layer)"></i> ' + '<i class="lf-icon lf-open" ng-class="getOpacityIcon(layer)" ng-click="toggleOpacity($event, layer)"></i>' + '</div>' + '<div class="lf-legend" ng-if="showLegend(layer)" ng-bind-html="unsafeHTML(layer.legend)"></div>' + '<div class="lf-opacity clearfix" ng-if="layer.visible &amp;&amp; layerProperties[layer.name].opacityControl">' + '<label ng-if="rangeIsSupported" class="pull-left" style="width: 50%">0</label>' + '<label ng-if="rangeIsSupported" class="pull-left text-right" style="width: 50%">100</label>' + '<input ng-if="rangeIsSupported" class="clearfix" type="range" min="0" max="100" class="lf-opacity-control" ' + 'ng-model="layerProperties[layer.name].opacity" ng-change="changeOpacity(layer)"/>' + '<h6 ng-if="!rangeIsSupported">Range is not supported in this browser</h6>' + '</div>' + '</div>' + '</div>' + '</div>' + '</div>',
+        template: '<div class="angular-leaflet-control-layers" ng-show="overlaysArray.length">' + '<h4 ng-if="title">{{ title }}</h4>' + '<div class="lf-baselayers">' + '<h5 class="lf-title" ng-if="baseTitle">{{ baseTitle }}</h5>' + '<div class="lf-row" ng-repeat="(key, layer) in baselayersArray">' + '<label class="lf-icon-bl" ng-click="changeBaseLayer(key, $event)">' + '<input class="leaflet-control-layers-selector" type="radio" name="lf-radio" ' + 'ng-show="false" ng-checked="baselayer === key" ng-value="key" /> ' + '<i class="lf-icon lf-icon-radio" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '</div>' + '</div>' + '<div class="lf-overlays">' + '<h5 class="lf-title" ng-if="overlaysTitle">{{ overlaysTitle }}</h5>' + '<div class="lf-container">' + '<div class="lf-row" ng-repeat="layer in (o = (overlaysArray | orderBy:\'index\':order))" ng-init="initIndex(layer, $index)">' + '<label class="lf-icon-ol-group" ng-if="showGroups &amp;&amp; layer.group &amp;&amp; layer.group != o[$index-1].group">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ' + 'ng-change="changeGroupVisibility(layer.group)" ng-model="groupProperties[layer.group].visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="getGroupIcon(groupProperties[layer.group])"></i>' + '<div class="lf-text">{{ layer.group }}</div>' + '</label>' + '<label class="lf-icon-ol">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ng-model="layer.visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '<div class="lf-icons">' + '<i class="lf-icon lf-up" ng-class="icons.up" ng-click="moveLayer(layer, layer.index - orderNumber, $event)"></i> ' + '<i class="lf-icon lf-down" ng-class="icons.down" ng-click="moveLayer(layer, layer.index + orderNumber, $event)"></i> ' + '<i class="lf-icon lf-toggle-legend" ng-class="icons.toggleLegend" ng-if="layer.legend" ng-click="toggleLegend(layer)"></i> ' + '<i class="lf-icon lf-open" ng-class="getOpacityIcon(layer)" ng-click="toggleOpacity($event, layer)"></i>' + '</div>' + '<div class="lf-legend" ng-if="showLegend(layer)" ng-bind-html="unsafeHTML(layer.legend)"></div>' + '<div class="lf-opacity clearfix" ng-if="layer.visible &amp;&amp; layerProperties[layer.name].opacityControl">' + '<label ng-if="rangeIsSupported" class="pull-left" style="width: 50%">0</label>' + '<label ng-if="rangeIsSupported" class="pull-left text-right" style="width: 50%">100</label>' + '<input ng-if="rangeIsSupported" class="clearfix" type="range" min="0" max="1" step="0.05" ' + 'class="lf-opacity-control" ng-model="layerProperties[layer.name].layerOptions.opacity"/>' + '<h6 ng-if="!rangeIsSupported">Range is not supported in this browser</h6>' + '</div>' + '</div>' + '</div>' + '</div>' + '</div>',
         link: function link(scope, element, attrs, controller) {
             var isDefined = leafletHelpers.isDefined,
                 leafletScope = controller.getLeafletScope(),
@@ -3930,11 +3903,17 @@ angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafle
                             var layer = newOverlayLayers[key];
                             layer.icon = scope.icons[layer.visible ? 'check' : 'uncheck'];
                             overlaysArray.push(layer);
+
+                            // TODO Change opacity from overlays watch in layers directive.
                             if (!isDefined(scope.layerProperties[layer.name])) {
+                                if (isDefined(layer.layerOptions.opacity)) {
+                                    layer.layerOptions.opacity = 1;
+                                }
                                 scope.layerProperties[layer.name] = {
                                     opacity: isDefined(layer.layerOptions.opacity) ? layer.layerOptions.opacity * 100 : 100,
                                     opacityControl: false,
-                                    showLegend: true
+                                    showLegend: true,
+                                    layerOptions: layer.layerOptions
                                 };
                             }
                             if (isDefined(layer.group)) {
@@ -4125,6 +4104,13 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                         }
                     }
 
+                    var changeOpacity = function changeOpacity(op) {
+                        return function (ly) {
+                            if (isDefined(ly.setOpacity)) {
+                                ly.setOpacity(op);
+                            }
+                        };
+                    };
                     // add new overlays
                     for (var newName in newOverlayLayers) {
                         if (!isDefined(leafletLayers.overlays[newName])) {
@@ -4144,6 +4130,18 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                             } else if (newOverlayLayers[newName].visible === false && map.hasLayer(leafletLayers.overlays[newName])) {
                                 // Safe remove when ArcGIS layers is loading.
                                 safeRemoveLayer(map, leafletLayers.overlays[newName], newOverlayLayers[newName].layerOptions);
+                            }
+
+                            // check for the .layerOptions.opacity property has changed.
+                            if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity && map.hasLayer(leafletLayers.overlays[newName])) {
+
+                                var ly = leafletLayers.overlays[newName];
+                                if (isDefined(ly.setOpacity)) {
+                                    ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                }
+                                if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
+                                    ly.eachLayer(changeOpacity(newOverlayLayers[newName].layerOptions.opacity));
+                                }
                             }
                         }
 

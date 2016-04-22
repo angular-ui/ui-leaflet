@@ -222,13 +222,11 @@ angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafle
                             layer.icon = scope.icons[(layer.visible? 'check':'uncheck')];
                             overlaysArray.push(layer);
 
-                            // TODO Change opacity from overlays watch in layers directive.
                             if(!isDefined(scope.layerProperties[layer.name])) {
                                 if(isDefined(layer.layerOptions.opacity)) {
                                     layer.layerOptions.opacity = 1;
                                 }
                                 scope.layerProperties[layer.name] = {
-                                    opacity: isDefined(layer.layerOptions.opacity)? layer.layerOptions.opacity*100:100,
                                     opacityControl: false,
                                     showLegend: true,
                                     layerOptions: layer.layerOptions

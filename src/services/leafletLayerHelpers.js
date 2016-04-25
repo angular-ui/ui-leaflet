@@ -3,6 +3,7 @@ angular.module('ui-leaflet')
     var Helpers = leafletHelpers;
     var isString = leafletHelpers.isString;
     var isObject = leafletHelpers.isObject;
+    var isArray = leafletHelpers.isArray;
     var isDefined = leafletHelpers.isDefined;
     var errorHeader = leafletHelpers.errorHeader;
     var $it = leafletIterators;
@@ -15,20 +16,41 @@ angular.module('ui-leaflet')
         }
         var utfgrid = new L.UtfGrid(params.url, params.pluginOptions);
 
+        var toSend = {
+            model: params.$parent
+        };
+
+        // TODO Use event manager
         utfgrid.on('mouseover', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', toSend);
         });
 
         utfgrid.on('mouseout', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', toSend);
         });
 
         utfgrid.on('click', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', toSend);
         });
 
         utfgrid.on('mousemove', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', toSend);
         });
 
         return utfgrid;
@@ -93,7 +115,10 @@ angular.module('ui-leaflet')
         cartodbTiles: {
             mustHaveKey: true,
             createLayer: function(params) {
-                var url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url)?
+                    params.url+'/'+params.user:
+                    '//' + params.user + '.cartodb.com';
+                url += '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 return L.tileLayer(url, params.options);
             }
         },
@@ -101,7 +126,10 @@ angular.module('ui-leaflet')
             mustHaveKey: true,
             mustHaveLayer : true,
             createLayer: function(params) {
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
+                var url = isDefined(params.url)?
+                    params.url+'/'+params.user:
+                    '//' + params.user + '.cartodb.com';
+                params.url = url + '/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
                 return utfGridCreateLayer(params);
             }
         },
@@ -109,11 +137,27 @@ angular.module('ui-leaflet')
             mustHaveKey: true,
             mustHaveLayer : true,
             createLayer: function(params) {
-                var tilesURL = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url)?
+                    params.url+'/'+params.user:
+                    '//' + params.user + '.cartodb.com';
+                var tilesURL = url + '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 var tileLayer = L.tileLayer(tilesURL, params.options);
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
-                var utfLayer = utfGridCreateLayer(params);
-                return L.layerGroup([tileLayer, utfLayer]);
+                var layers = [tileLayer];
+
+                var addUtfLayer = function(parent, params, layer) {
+                    var paramsCopy = angular.copy(params);
+                    paramsCopy.url = url + '/api/v1/map/' + paramsCopy.key + '/' + layer + '/{z}/{x}/{y}.grid.json';
+                    parent.push(utfGridCreateLayer(paramsCopy));
+                };
+
+                if(isArray(params.layer)) {
+                    for(var i = 0; i < params.layer.length; i++) {
+                        addUtfLayer(layers, params, params.layer[i]);
+                    }
+                } else {
+                    addUtfLayer(layers, params, params.layer);
+                }
+                return L.layerGroup(layers);
             }
         },
         wms: {
@@ -408,7 +452,8 @@ angular.module('ui-leaflet')
             key: layerDefinition.key,
             apiKey: layerDefinition.apiKey,
             pluginOptions: layerDefinition.pluginOptions,
-            user: layerDefinition.user
+            user: layerDefinition.user,
+            $parent: layerDefinition
         };
 
         //TODO Add $watch to the layer properties

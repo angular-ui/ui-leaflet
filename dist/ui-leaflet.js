@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-02-29
+*  ui-leaflet 1.0.0 2016-04-22
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1385,7 +1385,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
   // `key:value` pairs.
   var _matcher,
       _matches = null;
-  _matcher = _matches = function _matches(attrs) {
+  _matcher = _matches = function (attrs) {
     attrs = _extendOwn({}, attrs);
     return function (obj) {
       return _isMatch(obj, attrs);
@@ -1404,7 +1404,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
 
   var _every,
       _all = null;
-  _every = _all = function _all(obj, predicate, context) {
+  _every = _all = function (obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = !_isArrayLike(obj) && _keys(obj),
         length = (keys || obj).length;
@@ -1466,6 +1466,7 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
     var Helpers = leafletHelpers;
     var isString = leafletHelpers.isString;
     var isObject = leafletHelpers.isObject;
+    var isArray = leafletHelpers.isArray;
     var isDefined = leafletHelpers.isDefined;
     var errorHeader = leafletHelpers.errorHeader;
     var $it = leafletIterators;
@@ -1478,20 +1479,41 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
         }
         var utfgrid = new L.UtfGrid(params.url, params.pluginOptions);
 
+        var toSend = {
+            model: params.$parent
+        };
+
+        // TODO Use event manager
         utfgrid.on('mouseover', function (e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', toSend);
         });
 
         utfgrid.on('mouseout', function (e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', toSend);
         });
 
         utfgrid.on('click', function (e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', toSend);
         });
 
         utfgrid.on('mousemove', function (e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', toSend);
         });
 
         return utfgrid;
@@ -1553,7 +1575,8 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
         cartodbTiles: {
             mustHaveKey: true,
             createLayer: function createLayer(params) {
-                var url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                url += '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 return L.tileLayer(url, params.options);
             }
         },
@@ -1561,7 +1584,8 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             mustHaveKey: true,
             mustHaveLayer: true,
             createLayer: function createLayer(params) {
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                params.url = url + '/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
                 return utfGridCreateLayer(params);
             }
         },
@@ -1569,11 +1593,25 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             mustHaveKey: true,
             mustHaveLayer: true,
             createLayer: function createLayer(params) {
-                var tilesURL = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                var tilesURL = url + '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 var tileLayer = L.tileLayer(tilesURL, params.options);
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
-                var utfLayer = utfGridCreateLayer(params);
-                return L.layerGroup([tileLayer, utfLayer]);
+                var layers = [tileLayer];
+
+                var addUtfLayer = function addUtfLayer(parent, params, layer) {
+                    var paramsCopy = angular.copy(params);
+                    paramsCopy.url = url + '/api/v1/map/' + paramsCopy.key + '/' + layer + '/{z}/{x}/{y}.grid.json';
+                    parent.push(utfGridCreateLayer(paramsCopy));
+                };
+
+                if (isArray(params.layer)) {
+                    for (var i = 0; i < params.layer.length; i++) {
+                        addUtfLayer(layers, params, params.layer[i]);
+                    }
+                } else {
+                    addUtfLayer(layers, params, params.layer);
+                }
+                return L.layerGroup(layers);
             }
         },
         wms: {
@@ -1867,7 +1905,8 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             key: layerDefinition.key,
             apiKey: layerDefinition.apiKey,
             pluginOptions: layerDefinition.pluginOptions,
-            user: layerDefinition.user
+            user: layerDefinition.user,
+            $parent: layerDefinition
         };
 
         //TODO Add $watch to the layer properties
@@ -3609,7 +3648,7 @@ angular.module('ui-leaflet').directive('geojson', ["$timeout", "leafletLogger", 
                     if (angular.isFunction(geojson.onEachFeature)) {
                         onEachFeature = geojson.onEachFeature;
                     } else {
-                        onEachFeature = function onEachFeature(feature, layer) {
+                        onEachFeature = function (feature, layer) {
                             if (leafletHelpers.LabelPlugin.isLoaded() && isDefined(feature.properties.description)) {
                                 layer.bindLabel(feature.properties.description);
                             }
@@ -3801,33 +3840,6 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                 getGroupIcon: function getGroupIcon(group) {
                     return group.visible ? $scope.icons.check : $scope.icons.uncheck;
                 },
-                changeOpacity: function changeOpacity(layer) {
-                    var op = $scope.layerProperties[layer.name].opacity;
-                    leafletData.getMap().then(function (map) {
-                        leafletData.getLayers().then(function (leafletLayers) {
-                            var ly;
-                            for (var k in $scope.layers.overlays) {
-                                if ($scope.layers.overlays[k] === layer) {
-                                    ly = leafletLayers.overlays[k];
-                                    break;
-                                }
-                            }
-
-                            if (map.hasLayer(ly)) {
-                                if (ly.setOpacity) {
-                                    ly.setOpacity(op / 100);
-                                }
-                                if (ly.getLayers && ly.eachLayer) {
-                                    ly.eachLayer(function (lay) {
-                                        if (lay.setOpacity) {
-                                            lay.setOpacity(op / 100);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    });
-                },
                 changeGroupVisibility: function changeGroupVisibility(groupName) {
                     if (!isDefined($scope.groupProperties[groupName])) {
                         return;
@@ -3850,7 +3862,7 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                 L.DomEvent.on(div, 'click', L.DomEvent.stopPropagation);
             }
         }],
-        template: '<div class="angular-leaflet-control-layers" ng-show="overlaysArray.length">' + '<h4 ng-if="title">{{ title }}</h4>' + '<div class="lf-baselayers">' + '<h5 class="lf-title" ng-if="baseTitle">{{ baseTitle }}</h5>' + '<div class="lf-row" ng-repeat="(key, layer) in baselayersArray">' + '<label class="lf-icon-bl" ng-click="changeBaseLayer(key, $event)">' + '<input class="leaflet-control-layers-selector" type="radio" name="lf-radio" ' + 'ng-show="false" ng-checked="baselayer === key" ng-value="key" /> ' + '<i class="lf-icon lf-icon-radio" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '</div>' + '</div>' + '<div class="lf-overlays">' + '<h5 class="lf-title" ng-if="overlaysTitle">{{ overlaysTitle }}</h5>' + '<div class="lf-container">' + '<div class="lf-row" ng-repeat="layer in (o = (overlaysArray | orderBy:\'index\':order))" ng-init="initIndex(layer, $index)">' + '<label class="lf-icon-ol-group" ng-if="showGroups &amp;&amp; layer.group &amp;&amp; layer.group != o[$index-1].group">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ' + 'ng-change="changeGroupVisibility(layer.group)" ng-model="groupProperties[layer.group].visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="getGroupIcon(groupProperties[layer.group])"></i>' + '<div class="lf-text">{{ layer.group }}</div>' + '</label>' + '<label class="lf-icon-ol">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ng-model="layer.visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '<div class="lf-icons">' + '<i class="lf-icon lf-up" ng-class="icons.up" ng-click="moveLayer(layer, layer.index - orderNumber, $event)"></i> ' + '<i class="lf-icon lf-down" ng-class="icons.down" ng-click="moveLayer(layer, layer.index + orderNumber, $event)"></i> ' + '<i class="lf-icon lf-toggle-legend" ng-class="icons.toggleLegend" ng-if="layer.legend" ng-click="toggleLegend(layer)"></i> ' + '<i class="lf-icon lf-open" ng-class="getOpacityIcon(layer)" ng-click="toggleOpacity($event, layer)"></i>' + '</div>' + '<div class="lf-legend" ng-if="showLegend(layer)" ng-bind-html="unsafeHTML(layer.legend)"></div>' + '<div class="lf-opacity clearfix" ng-if="layer.visible &amp;&amp; layerProperties[layer.name].opacityControl">' + '<label ng-if="rangeIsSupported" class="pull-left" style="width: 50%">0</label>' + '<label ng-if="rangeIsSupported" class="pull-left text-right" style="width: 50%">100</label>' + '<input ng-if="rangeIsSupported" class="clearfix" type="range" min="0" max="100" class="lf-opacity-control" ' + 'ng-model="layerProperties[layer.name].opacity" ng-change="changeOpacity(layer)"/>' + '<h6 ng-if="!rangeIsSupported">Range is not supported in this browser</h6>' + '</div>' + '</div>' + '</div>' + '</div>' + '</div>',
+        template: '<div class="angular-leaflet-control-layers" ng-show="overlaysArray.length">' + '<h4 ng-if="title">{{ title }}</h4>' + '<div class="lf-baselayers">' + '<h5 class="lf-title" ng-if="baseTitle">{{ baseTitle }}</h5>' + '<div class="lf-row" ng-repeat="(key, layer) in baselayersArray">' + '<label class="lf-icon-bl" ng-click="changeBaseLayer(key, $event)">' + '<input class="leaflet-control-layers-selector" type="radio" name="lf-radio" ' + 'ng-show="false" ng-checked="baselayer === key" ng-value="key" /> ' + '<i class="lf-icon lf-icon-radio" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '</div>' + '</div>' + '<div class="lf-overlays">' + '<h5 class="lf-title" ng-if="overlaysTitle">{{ overlaysTitle }}</h5>' + '<div class="lf-container">' + '<div class="lf-row" ng-repeat="layer in (o = (overlaysArray | orderBy:\'index\':order))" ng-init="initIndex(layer, $index)">' + '<label class="lf-icon-ol-group" ng-if="showGroups &amp;&amp; layer.group &amp;&amp; layer.group != o[$index-1].group">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ' + 'ng-change="changeGroupVisibility(layer.group)" ng-model="groupProperties[layer.group].visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="getGroupIcon(groupProperties[layer.group])"></i>' + '<div class="lf-text">{{ layer.group }}</div>' + '</label>' + '<label class="lf-icon-ol">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ng-model="layer.visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '<div class="lf-icons">' + '<i class="lf-icon lf-up" ng-class="icons.up" ng-click="moveLayer(layer, layer.index - orderNumber, $event)"></i> ' + '<i class="lf-icon lf-down" ng-class="icons.down" ng-click="moveLayer(layer, layer.index + orderNumber, $event)"></i> ' + '<i class="lf-icon lf-toggle-legend" ng-class="icons.toggleLegend" ng-if="layer.legend" ng-click="toggleLegend(layer)"></i> ' + '<i class="lf-icon lf-open" ng-class="getOpacityIcon(layer)" ng-click="toggleOpacity($event, layer)"></i>' + '</div>' + '<div class="lf-legend" ng-if="showLegend(layer)" ng-bind-html="unsafeHTML(layer.legend)"></div>' + '<div class="lf-opacity clearfix" ng-if="layer.visible &amp;&amp; layerProperties[layer.name].opacityControl">' + '<label ng-if="rangeIsSupported" class="pull-left" style="width: 50%">0</label>' + '<label ng-if="rangeIsSupported" class="pull-left text-right" style="width: 50%">100</label>' + '<input ng-if="rangeIsSupported" class="clearfix" type="range" min="0" max="1" step="0.05" ' + 'class="lf-opacity-control" ng-model="layerProperties[layer.name].layerOptions.opacity"/>' + '<h6 ng-if="!rangeIsSupported">Range is not supported in this browser</h6>' + '</div>' + '</div>' + '</div>' + '</div>' + '</div>',
         link: function link(scope, element, attrs, controller) {
             var isDefined = leafletHelpers.isDefined,
                 leafletScope = controller.getLeafletScope(),
@@ -3905,11 +3917,15 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                             var layer = newOverlayLayers[key];
                             layer.icon = scope.icons[layer.visible ? 'check' : 'uncheck'];
                             overlaysArray.push(layer);
+
                             if (!isDefined(scope.layerProperties[layer.name])) {
+                                if (isDefined(layer.layerOptions.opacity)) {
+                                    layer.layerOptions.opacity = 1;
+                                }
                                 scope.layerProperties[layer.name] = {
-                                    opacity: isDefined(layer.layerOptions.opacity) ? layer.layerOptions.opacity * 100 : 100,
                                     opacityControl: false,
-                                    showLegend: true
+                                    showLegend: true,
+                                    layerOptions: layer.layerOptions
                                 };
                             }
                             if (isDefined(layer.group)) {
@@ -4100,6 +4116,13 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                         }
                     }
 
+                    var changeOpacity = function changeOpacity(op) {
+                        return function (ly) {
+                            if (isDefined(ly.setOpacity)) {
+                                ly.setOpacity(op);
+                            }
+                        };
+                    };
                     // add new overlays
                     for (var newName in newOverlayLayers) {
                         if (!isDefined(leafletLayers.overlays[newName])) {
@@ -4119,6 +4142,18 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                             } else if (newOverlayLayers[newName].visible === false && map.hasLayer(leafletLayers.overlays[newName])) {
                                 // Safe remove when ArcGIS layers is loading.
                                 safeRemoveLayer(map, leafletLayers.overlays[newName], newOverlayLayers[newName].layerOptions);
+                            }
+
+                            // check for the .layerOptions.opacity property has changed.
+                            if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity && map.hasLayer(leafletLayers.overlays[newName])) {
+
+                                var ly = leafletLayers.overlays[newName];
+                                if (isDefined(ly.setOpacity)) {
+                                    ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                }
+                                if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
+                                    ly.eachLayer(changeOpacity(newOverlayLayers[newName].layerOptions.opacity));
+                                }
                             }
                         }
 
@@ -4480,7 +4515,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function getLayers() {
+                    getLayers = function () {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -4604,7 +4639,7 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function getLayers() {
+                    getLayers = function () {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -5203,7 +5238,7 @@ angular.module('ui-leaflet').factory('leafletMarkerEvents', ["$rootScope", "$q",
 
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
 angular.module('ui-leaflet').factory('leafletPathEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletLabelEvents", "leafletEventsHelpers", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
     var isDefined = leafletHelpers.isDefined,

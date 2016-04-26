@@ -1951,11 +1951,20 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
         }
     }
 
+    var changeOpacityListener = function changeOpacityListener(op) {
+        return function (ly) {
+            if (isDefined(ly.setOpacity)) {
+                ly.setOpacity(op);
+            }
+        };
+    };
+
     return {
         createLayer: _createLayer,
         layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
-        safeRemoveLayer: safeRemoveLayer
+        safeRemoveLayer: safeRemoveLayer,
+        changeOpacityListener: changeOpacityListener
     };
 });
 
@@ -3982,6 +3991,7 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                 createLayer = leafletLayerHelpers.createLayer,
                 safeAddLayer = leafletLayerHelpers.safeAddLayer,
                 safeRemoveLayer = leafletLayerHelpers.safeRemoveLayer,
+                changeOpacityListener = leafletLayerHelpers.changeOpacityListener,
                 updateLayersControl = leafletControlHelpers.updateLayersControl,
                 isLayersControlVisible = false;
 
@@ -4116,13 +4126,6 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                         }
                     }
 
-                    var changeOpacity = function changeOpacity(op) {
-                        return function (ly) {
-                            if (isDefined(ly.setOpacity)) {
-                                ly.setOpacity(op);
-                            }
-                        };
-                    };
                     // add new overlays
                     for (var newName in newOverlayLayers) {
                         if (!isDefined(leafletLayers.overlays[newName])) {
@@ -4152,7 +4155,7 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                                     ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
                                 }
                                 if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
-                                    ly.eachLayer(changeOpacity(newOverlayLayers[newName].layerOptions.opacity));
+                                    ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
                                 }
                             }
                         }

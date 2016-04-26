@@ -498,10 +498,19 @@ angular.module('ui-leaflet')
         }
     }
 
+    let changeOpacityListener = (op) => {
+        return (ly) => {
+            if(isDefined(ly.setOpacity)) {
+                ly.setOpacity(op);
+            }
+        };
+    };
+
     return {
         createLayer: createLayer,
         layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
-        safeRemoveLayer: safeRemoveLayer
+        safeRemoveLayer: safeRemoveLayer,
+        changeOpacityListener: changeOpacityListener
     };
 });

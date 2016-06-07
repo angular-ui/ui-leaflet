@@ -7,7 +7,7 @@ module.exports = function(karma) {
         basePath: '../',
 
         preprocessors: {
-            'test/**/**/*.coffee': ['coffee'],
+            'test/unit/**/*.coffee': ['coffee'],
         },
         coffeePreprocessor: {
             options: {
@@ -28,13 +28,12 @@ module.exports = function(karma) {
             'bower_components/leaflet.vector-markers/dist/Leaflet.vector-markers.js',
             mainLib,
             'test/unit/bootstrap.coffee',
-            'test/unit/*.js',
             'test/unit/**/*.js',
             'test/unit/**/*.coffee',
             'bower_components/Leaflet.PolylineDecorator/leaflet.polylineDecorator.js',
             //do not include those specs for jasmine html runner by karma kama_jasmine_runner.html
-            {pattern:'**/**/**/*.coffee', included: false},
-            {pattern: '**/*.js.map', included: false}
+            {pattern:'test/**/**/*.coffee', included: false},
+            {pattern: 'dist/**/*.js.map', included: false}
         ],
         // Frameworks
         frameworks: ["jasmine"],

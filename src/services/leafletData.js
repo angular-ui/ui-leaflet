@@ -27,8 +27,8 @@ angular.module('ui-leaflet').service('leafletData', function (leafletLogger, $q,
         _private[itemName] = {};
     });
 
-    this.unresolveMap = function (scopeId) {
-        var id = leafletHelpers.obtainEffectiveMapId(_private.map, scopeId);
+    this.unresolveMap = function (mapId) {
+        var id = leafletHelpers.obtainEffectiveMapId(_private.map, mapId);
         _privateItems.forEach(function (itemName) {
             _private[itemName][id] = undefined;
         });
@@ -37,14 +37,14 @@ angular.module('ui-leaflet').service('leafletData', function (leafletLogger, $q,
     //int repetitive stuff (get and sets)
     _privateItems.forEach(function (itemName) {
         var name = upperFirst(itemName);
-        self['set' + name] = function (lObject, scopeId) {
-            var defer = getUnresolvedDefer(_private[itemName], scopeId);
+        self['set' + name] = function (lObject, mapId) {
+            var defer = getUnresolvedDefer(_private[itemName], mapId);
             defer.resolve(lObject);
-            setResolvedDefer(_private[itemName], scopeId);
+            setResolvedDefer(_private[itemName], mapId);
         };
 
-        self['get' + name] = function (scopeId) {
-            var defer = getDefer(_private[itemName], scopeId);
+        self['get' + name] = function (mapId) {
+            var defer = getDefer(_private[itemName], mapId);
             return defer.promise;
         };
     });

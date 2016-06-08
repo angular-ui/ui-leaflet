@@ -75,8 +75,5 @@
     "angular": "1.x",
     "angular-simple-logger": "0.1.x",
     "leaflet": "0.7.x"
-  },
-  "engines": {
-    "npm": ">=3.0.0"
   }
 }

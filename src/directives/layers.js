@@ -19,6 +19,7 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                 createLayer = leafletLayerHelpers.createLayer,
                 safeAddLayer = leafletLayerHelpers.safeAddLayer,
                 safeRemoveLayer = leafletLayerHelpers.safeRemoveLayer,
+                changeOpacityListener = leafletLayerHelpers.changeOpacityListener,
                 updateLayersControl = leafletControlHelpers.updateLayersControl,
                 isLayersControlVisible = false;
 
@@ -156,13 +157,6 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                         }
                     }
 
-                    let changeOpacity = (op) => {
-                        return (ly) => {
-                            if(isDefined(ly.setOpacity)) {
-                                ly.setOpacity(op);
-                            }
-                        };
-                    };
                     // add new overlays
                     for (var newName in newOverlayLayers) {
                         if (!isDefined(leafletLayers.overlays[newName])) {
@@ -193,7 +187,7 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                                     ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
                                 }
                                 if(isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
-                                    ly.eachLayer(changeOpacity(newOverlayLayers[newName].layerOptions.opacity));
+                                    ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
                                 }
                             }
                         }

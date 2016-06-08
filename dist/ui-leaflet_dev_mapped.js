@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-04-22
+*  ui-leaflet 1.0.0 2016-06-08
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1385,7 +1385,7 @@ angular.module('ui-leaflet').service('leafletIterators', function (leafletLogger
   // `key:value` pairs.
   var _matcher,
       _matches = null;
-  _matcher = _matches = function (attrs) {
+  _matcher = _matches = function _matches(attrs) {
     attrs = _extendOwn({}, attrs);
     return function (obj) {
       return _isMatch(obj, attrs);
@@ -1404,7 +1404,7 @@ angular.module('ui-leaflet').service('leafletIterators', function (leafletLogger
 
   var _every,
       _all = null;
-  _every = _all = function (obj, predicate, context) {
+  _every = _all = function _all(obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = !_isArrayLike(obj) && _keys(obj),
         length = (keys || obj).length;
@@ -1951,11 +1951,20 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
         }
     }
 
+    var changeOpacityListener = function changeOpacityListener(op) {
+        return function (ly) {
+            if (isDefined(ly.setOpacity)) {
+                ly.setOpacity(op);
+            }
+        };
+    };
+
     return {
         createLayer: _createLayer,
         layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
-        safeRemoveLayer: safeRemoveLayer
+        safeRemoveLayer: safeRemoveLayer,
+        changeOpacityListener: changeOpacityListener
     };
 });
 
@@ -3648,7 +3657,7 @@ angular.module('ui-leaflet').directive('geojson', function ($timeout, leafletLog
                     if (angular.isFunction(geojson.onEachFeature)) {
                         onEachFeature = geojson.onEachFeature;
                     } else {
-                        onEachFeature = function (feature, layer) {
+                        onEachFeature = function onEachFeature(feature, layer) {
                             if (leafletHelpers.LabelPlugin.isLoaded() && isDefined(feature.properties.description)) {
                                 layer.bindLabel(feature.properties.description);
                             }
@@ -3982,6 +3991,7 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                 createLayer = leafletLayerHelpers.createLayer,
                 safeAddLayer = leafletLayerHelpers.safeAddLayer,
                 safeRemoveLayer = leafletLayerHelpers.safeRemoveLayer,
+                changeOpacityListener = leafletLayerHelpers.changeOpacityListener,
                 updateLayersControl = leafletControlHelpers.updateLayersControl,
                 isLayersControlVisible = false;
 
@@ -4116,13 +4126,6 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                         }
                     }
 
-                    var changeOpacity = function changeOpacity(op) {
-                        return function (ly) {
-                            if (isDefined(ly.setOpacity)) {
-                                ly.setOpacity(op);
-                            }
-                        };
-                    };
                     // add new overlays
                     for (var newName in newOverlayLayers) {
                         if (!isDefined(leafletLayers.overlays[newName])) {
@@ -4152,7 +4155,7 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                                     ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
                                 }
                                 if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
-                                    ly.eachLayer(changeOpacity(newOverlayLayers[newName].layerOptions.opacity));
+                                    ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
                                 }
                             }
                         }
@@ -4515,7 +4518,7 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function () {
+                    getLayers = function getLayers() {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -4639,7 +4642,7 @@ angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, lea
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function () {
+                    getLayers = function getLayers() {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;

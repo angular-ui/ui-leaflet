@@ -17,6 +17,10 @@
   "dependencies": {
     "angular": "1.x",
     "angular-simple-logger": "~0.1.4",
+    "leaflet": "~0.7.x"
+  },
+  "resolutions": {
+    "angular": "~1.5.x",
     "leaflet": "0.7.x"
   },
   "devDependencies": {
@@ -34,7 +38,7 @@
     "Leaflet.utfgrid": "danzel/Leaflet.utfgrid",
     "Leaflet.awesome-markers": "*",
     "leaflet-providers": "~1.1.5",
-    "leaflet.vector-markers": "~0.0.3",
+    "leaflet.vector-markers": "0.0.4",
     "webgl-heatmap-leaflet": "*",
     "leaflet-plugins": "*",
     "esri-leaflet": "*",

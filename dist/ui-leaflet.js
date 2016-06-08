@@ -489,7 +489,7 @@ angular.module('ui-leaflet')
 
     var _errorHeader = _mainErrorHeader + '[leafletDirectiveControlsHelpers';
 
-    var _extend = function(id, thingToAddName, createFn, cleanFn){
+    var extend = function(id, thingToAddName, createFn, cleanFn){
         var _fnHeader = _errorHeader + '.extend] ';
         var extender = {};
         if(!_isDefined(thingToAddName)){
@@ -512,14 +512,15 @@ angular.module('ui-leaflet')
         }
 
         //add external control to create / destroy markers without a watch
-        leafletData.getDirectiveControls().then(function(controls){
+        leafletData.getDirectiveControls(id)
+        .then(function(controls){
             angular.extend(controls, extender);
             leafletData.setDirectiveControls(controls, id);
         });
     };
 
     return {
-        extend: _extend
+        extend: extend
     };
 }]);
 
@@ -602,7 +603,7 @@ angular.module('ui-leaflet')
         };
     }]);
 
-angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function ($q, $log) {
+angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function($q, $log) {
     var _errorHeader = '[AngularJS - Leaflet] ';
     var _copy = angular.copy;
     var _clone = _copy;
@@ -621,7 +622,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
      */
     var _getObjectValue = function(object, pathStr) {
         var obj;
-        if(!object || !angular.isObject(object))
+        if (!object || !angular.isObject(object))
             return;
         //if the key is not a sting then we already have the value
         if ((pathStr === null) || !angular.isString(pathStr)) {
@@ -642,9 +643,9 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
      returns:
      'bike["one"]["two"]'
      */
-    var _getObjectArrayPath = function(pathStr){
+    var _getObjectArrayPath = function(pathStr) {
         return pathStr.split('.').reduce(function(previous, current) {
-            return previous + '["'+ current + '"]';
+            return previous + '["' + current + '"]';
         });
     };
 
@@ -653,25 +654,28 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
      returns:
      "bike.one.two"
      */
-    var _getObjectDotPath = function(arrayOfStrings){
+    var _getObjectDotPath = function(arrayOfStrings) {
         return arrayOfStrings.reduce(function(previous, current) {
             return previous + '.' + current;
         });
     };
 
     function _obtainEffectiveMapId(d, mapId) {
-        var id, i;
+        var id,
+            keys = Object.keys(d);
+
         if (!angular.isDefined(mapId)) {
-        if (Object.keys(d).length === 0) {
-            id = "main";
-        } else if (Object.keys(d).length >= 1) {
-            for (i in d) {
-                if (d.hasOwnProperty(i)) {
-                    id = i;
-                }
-            }
-        } else {
-                $log.error(_errorHeader + "- You have more than 1 map on the DOM, you must provide the map ID to the leafletData.getXXX call");
+            if (keys.length === 0 || (keys.length === 1 && keys[0] === 'main')) {
+                //default non id attribute map
+                // OR one key 'main'
+                /*
+                    Main Reason:
+                    Initally if we have only one map and no "id" then d will be undefined initially.
+                    On subsequent runs it will be just d.main so we need to return the last map.
+                */
+                id = "main";
+            } else {
+                throw new Error(_errorHeader + "- You have more than 1 map on the DOM, you must provide the map ID to the leafletData.getXXX call. Where one of the following mapIds " + Object.keys(d).join(',') + ' are available.');
             }
         } else {
             id = mapId;
@@ -700,7 +704,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
     var _isDefined = function(value) {
         return angular.isDefined(value) && value !== null;
     };
-    var _isUndefined = function(value){
+    var _isUndefined = function(value) {
         return !_isDefined(value);
     };
 
@@ -719,13 +723,13 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
      */
 
     var camelCase = function(name) {
-      return name.replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
-        if (offset) {
-          return letter.toUpperCase();
-        } else {
-          return letter;
-        }
-      }).replace(MOZ_HACK_REGEXP, "Moz$1");
+        return name.replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+            if (offset) {
+                return letter.toUpperCase();
+            } else {
+                return letter;
+            }
+        }).replace(MOZ_HACK_REGEXP, "Moz$1");
     };
 
 
@@ -734,8 +738,8 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
     @param name Name to normalize
      */
 
-     var directiveNormalize = function(name) {
-      return camelCase(name.replace(PREFIX_REGEXP, ""));
+    var directiveNormalize = function(name) {
+        return camelCase(name.replace(PREFIX_REGEXP, ""));
     };
 
     // END AngularJS port
@@ -743,17 +747,17 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
     return {
         camelCase: camelCase,
         directiveNormalize: directiveNormalize,
-        copy:_copy,
-        clone:_clone,
+        copy: _copy,
+        clone: _clone,
         errorHeader: _errorHeader,
         getObjectValue: _getObjectValue,
-        getObjectArrayPath:_getObjectArrayPath,
+        getObjectArrayPath: _getObjectArrayPath,
         getObjectDotPath: _getObjectDotPath,
-        defaultTo: function(val, _default){
+        defaultTo: function(val, _default) {
             return _isDefined(val) ? val : _default;
         },
         //mainly for checking attributes of directives lets keep this minimal (on what we accept)
-        isTruthy: function(val){
+        isTruthy: function(val) {
             return val === 'true' || val === true;
         },
         //Determine if a reference is {}
@@ -762,13 +766,13 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
         },
 
         //Determine if a reference is undefined or {}
-        isUndefinedOrEmpty: function (value) {
+        isUndefinedOrEmpty: function(value) {
             return (angular.isUndefined(value) || value === null) || Object.keys(value).length === 0;
         },
 
         // Determine if a reference is defined
         isDefined: _isDefined,
-        isUndefined:_isUndefined,
+        isUndefined: _isUndefined,
         isNumber: angular.isNumber,
         isString: angular.isString,
         isArray: angular.isArray,
@@ -778,7 +782,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
 
         isValidCenter: function(center) {
             return angular.isDefined(center) && angular.isNumber(center.lat) &&
-                   angular.isNumber(center.lng) && angular.isNumber(center.zoom);
+                angular.isNumber(center.lng) && angular.isNumber(center.zoom);
         },
 
         isValidPoint: function(point) {
@@ -798,7 +802,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                 mapCenter.lat.toFixed(4) === centerModel.lat.toFixed(4) &&
                 mapCenter.lng.toFixed(4) === centerModel.lng.toFixed(4) &&
                 zoom === centerModel.zoom) {
-                    return true;
+                return true;
             }
             return false;
         },
@@ -861,7 +865,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -884,7 +888,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -897,21 +901,21 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
         },
 
         DomMarkersPlugin: {
-            isLoaded: function () {
+            isLoaded: function() {
                 if (angular.isDefined(L.DomMarkers) && angular.isDefined(L.DomMarkers.Icon)) {
                     return true;
                 } else {
                     return false;
                 }
             },
-            is: function (icon) {
+            is: function(icon) {
                 if (this.isLoaded()) {
                     return icon instanceof L.DomMarkers.Icon;
                 } else {
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -965,7 +969,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -977,21 +981,21 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             }
         },
         ExtraMarkersPlugin: {
-            isLoaded: function () {
+            isLoaded: function() {
                 if (angular.isDefined(L.ExtraMarkers) && angular.isDefined(L.ExtraMarkers.Icon)) {
                     return true;
                 } else {
                     return false;
                 }
             },
-            is: function (icon) {
+            is: function(icon) {
                 if (this.isLoaded()) {
                     return icon instanceof L.ExtraMarkers.Icon;
                 } else {
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -1049,7 +1053,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                     return false;
                 }
             }
-        },          
+        },
         ChinaLayerPlugin: {
             isLoaded: function() {
                 return angular.isDefined(L.tileLayer.chinaProvider);
@@ -1093,7 +1097,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             isLoaded: function() {
                 return L.esri !== undefined && L.esri.basemapLayer !== undefined;
             },
-            is: function (layer) {
+            is: function(layer) {
                 if (this.isLoaded()) {
                     return layer instanceof L.esri.basemapLayer;
                 } else {
@@ -1117,7 +1121,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             isLoaded: function() {
                 return L.esri !== undefined && L.esri.featureLayer !== undefined;
             },
-            is: function (layer) {
+            is: function(layer) {
                 if (this.isLoaded()) {
                     return layer instanceof L.esri.featureLayer;
                 } else {
@@ -1129,7 +1133,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             isLoaded: function() {
                 return L.esri !== undefined && L.esri.tiledMapLayer !== undefined;
             },
-            is: function (layer) {
+            is: function(layer) {
                 if (this.isLoaded()) {
                     return layer instanceof L.esri.tiledMapLayer;
                 } else {
@@ -1138,10 +1142,10 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             }
         },
         AGSDynamicMapLayerPlugin: {
-            isLoaded: function () {
+            isLoaded: function() {
                 return L.esri !== undefined && L.esri.dynamicMapLayer !== undefined;
             },
-            is: function (layer) {
+            is: function(layer) {
                 if (this.isLoaded()) {
                     return layer instanceof L.esri.dynamicMapLayer;
                 } else {
@@ -1150,10 +1154,10 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             }
         },
         AGSImageMapLayerPlugin: {
-            isLoaded: function () {
+            isLoaded: function() {
                 return L.esri !== undefined && L.esri.imageMapLayer !== undefined;
             },
-            is: function (layer) {
+            is: function(layer) {
                 if (this.isLoaded()) {
                     return layer instanceof L.esri.imageMapLayer;
                 } else {
@@ -1162,10 +1166,10 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             }
         },
         AGSClusteredLayerPlugin: {
-            isLoaded: function () {
+            isLoaded: function() {
                 return L.esri !== undefined && L.esri.clusteredFeatureLayer !== undefined;
             },
-            is: function (layer) {
+            is: function(layer) {
                 if (this.isLoaded()) {
                     return layer instanceof L.esri.clusteredFeatureLayer;
                 } else {
@@ -1174,10 +1178,10 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             }
         },
         AGSHeatmapLayerPlugin: {
-            isLoaded: function () {
+            isLoaded: function() {
                 return L.esri !== undefined && L.esri.heatmapFeatureLayer !== undefined;
             },
-            is: function (layer) {
+            is: function(layer) {
                 if (this.isLoaded()) {
                     return layer instanceof L.esri.heatmapFeatureLayer;
                 } else {
@@ -1198,7 +1202,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             }
         },
         GeoJSONPlugin: {
-            isLoaded: function(){
+            isLoaded: function() {
                 return angular.isDefined(L.TileLayer.GeoJSON);
             },
             is: function(layer) {
@@ -1210,7 +1214,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             }
         },
         UTFGridPlugin: {
-            isLoaded: function(){
+            isLoaded: function() {
                 return angular.isDefined(L.UtfGrid);
             },
             is: function(layer) {
@@ -1223,10 +1227,10 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
             }
         },
         CartoDB: {
-            isLoaded: function(){
+            isLoaded: function() {
                 return cartodb;
             },
-            is: function(/*layer*/) {
+            is: function( /*layer*/ ) {
                 return true;
                 /*
                 if (this.isLoaded()) {
@@ -1274,10 +1278,10 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
          */
         //legacy defaults
         watchOptions: {
-            doWatch:true,
+            doWatch: true,
             isDeep: true,
-            individual:{
-                doWatch:true,
+            individual: {
+                doWatch: true,
                 isDeep: true
             }
         }

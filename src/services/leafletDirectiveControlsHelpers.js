@@ -8,7 +8,7 @@ angular.module('ui-leaflet')
 
     var _errorHeader = _mainErrorHeader + '[leafletDirectiveControlsHelpers';
 
-    var _extend = function(id, thingToAddName, createFn, cleanFn){
+    var extend = function(id, thingToAddName, createFn, cleanFn){
         var _fnHeader = _errorHeader + '.extend] ';
         var extender = {};
         if(!_isDefined(thingToAddName)){
@@ -31,13 +31,14 @@ angular.module('ui-leaflet')
         }
 
         //add external control to create / destroy markers without a watch
-        leafletData.getDirectiveControls().then(function(controls){
+        leafletData.getDirectiveControls(id)
+        .then(function(controls){
             angular.extend(controls, extender);
             leafletData.setDirectiveControls(controls, id);
         });
     };
 
     return {
-        extend: _extend
+        extend: extend
     };
 });

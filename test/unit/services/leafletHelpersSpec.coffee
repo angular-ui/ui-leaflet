@@ -8,46 +8,57 @@ describe 'leafletHelpers', ->
             @subject = _leafletHelpers_
 
     describe 'isTruthy', ->
-        beforeEach ->
-            @subject = @subject.isTruthy
 
         describe 'is true', ->
             it "'true'", ->
-                expect(@subject("true")).toBeTruthy()
+                expect(@subject.isTruthy("true")).toBeTruthy()
             it "true", ->
-                expect(@subject(true)).toBeTruthy()
+                expect(@subject.isTruthy(true)).toBeTruthy()
 
         describe 'is false', ->
             it "'false'", ->
-                expect(@subject("false")).toBeFalsy()
+                expect(@subject.isTruthy("false")).toBeFalsy()
             it "false", ->
-                expect(@subject(false)).toBeFalsy()
+                expect(@subject.isTruthy(false)).toBeFalsy()
             it "undefined", ->
-                expect(@subject(undefined)).toBeFalsy()
+                expect(@subject.isTruthy(undefined)).toBeFalsy()
 
     describe 'defaultTo', ->
-        beforeEach ->
-            @subject = @subject.defaultTo
 
         it 'keeps value', ->
             it 'false', ->
-                expect(@subject(false, true)).toBeTruthy()
+                expect(@subject.defaultTo(false, true)).toBeTruthy()
 
             it 'string', ->
-                expect(@subject('hi', 'nope')).toBe('hi')
+                expect(@subject.defaultTo('hi', 'nope')).toBe('hi')
 
             it '{}', ->
-                expect(@subject({}, null)).toBe({})
+                expect(@subject.defaultTo({}, null)).toBe({})
 
         describe 'gets default', ->
             it 'undefined', ->
-                expect(@subject(undefined, '')).toBe('')
+                expect(@subject.defaultTo(undefined, '')).toBe('')
             it 'null', ->
-                expect(@subject(null, '')).toBe('')
+                expect(@subject.defaultTo(null, '')).toBe('')
 
     describe 'Object Helpers', ->
         it 'should correctly fetch object values using dot-notation', ->
-          object = { foo: { sea: 'hawks' }}
-          expect(@subject.getObjectValue(object, 'foo.sea')).toEqual('hawks')
-          expect(@subject.getObjectValue(object, 'foo.sea.birds')).toEqual(undefined)
-          expect(@subject.getObjectValue(object, 'boo.hoo')).toEqual(undefined)
+            object = { foo: { sea: 'hawks' }}
+            expect(@subject.getObjectValue(object, 'foo.sea')).toEqual('hawks')
+            expect(@subject.getObjectValue(object, 'foo.sea.birds')).toEqual(undefined)
+            expect(@subject.getObjectValue(object, 'boo.hoo')).toEqual(undefined)
+
+    describe 'obtainEffectiveMapId', ->
+        describe 'no mapId', ->
+            it 'zero args bombs', ->
+                expect(=> @subject.obtainEffectiveMapId()).toThrow()
+            it 'root obj only', ->
+                expect(@subject.obtainEffectiveMapId({})).toBe('main')
+            it 'root obj only d: main:{}', ->
+                expect(@subject.obtainEffectiveMapId(main: {})).toBe('main')
+            it 'root many maps no mapId with "main" throws', ->
+                expect( => @subject.obtainEffectiveMapId({main: {}, map2: {}}))
+                .toThrow()
+            it 'root many maps no mapId throws', ->
+                expect( => @subject.obtainEffectiveMapId({map1: {}, map2: {}}))
+                .toThrow()

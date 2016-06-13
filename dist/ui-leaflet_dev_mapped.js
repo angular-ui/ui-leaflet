@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-06-08
+*  ui-leaflet 1.0.0 2016-06-13
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -3292,8 +3292,9 @@ centerDirectiveTypes.forEach(function (directiveName) {
                         var extractCenterFromUrl = function extractCenterFromUrl() {
                             var search = $location.search();
                             var centerParam;
-                            if (isDefined(search.c)) {
-                                var cParam = search.c.split(":");
+                            var centerKey = attrs.urlHashParam ? attrs.urlHashParam : 'c';
+                            if (isDefined(search[centerKey])) {
+                                var cParam = search[centerKey].split(":");
                                 if (cParam.length === 3) {
                                     centerParam = {
                                         lat: parseFloat(cParam[0]),

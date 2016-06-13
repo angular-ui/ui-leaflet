@@ -225,6 +225,16 @@
             "title": "Bounds Nominatim map example"
         }
     ],
+    "custom": [
+        {
+            "date": "2016-06-13T22:25:52.099Z",
+            "section": "custom",
+            "onlyStandAlone": false,
+            "id": "/custom/center-url-hash-example",
+            "extUrl": "0127-custom-center-url-hash-example.html",
+            "title": "Center map with URL synchronization example"
+        }
+    ],
     "layers": [
         {
             "date": "2015-11-03T15:15:10.774Z",

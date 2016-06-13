@@ -965,6 +965,22 @@ var app = angular.module('webapp');
                });
            });
        }]);
+        app.controller('CustomCenterUrlHashController', [ '$scope', '$location', function($scope, $location) {
+            angular.extend($scope, {
+                london: {
+                    lat: 51.505,
+                    lng: -0.09,
+                    zoom: 4
+                }
+            });
+            $scope.$on("centerUrlHash", function(event, centerHash) {
+                console.log("url", centerHash);
+                $location.search({ center: centerHash });
+            });
+            $scope.changeLocation = function(centerHash) {
+                $location.search({ center: centerHash });
+            };
+        }]);
       app.controller("GeoJSONCenterController", [ '$scope', '$http', 'leafletData', function($scope, $http, leafletData) {
         angular.extend($scope, {
             japan: {

@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-06-13
+*  ui-leaflet 1.0.0 2016-06-24
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -3921,7 +3921,7 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                 leafletScope.$watch('layers.overlays', function (newOverlayLayers) {
                     var overlaysArray = [];
                     var groupVisibleCount = {};
-                    leafletData.getLayers().then(function (leafletLayers) {
+                    leafletData.getLayers().then(function () {
                         var key;
                         for (key in newOverlayLayers) {
                             var layer = newOverlayLayers[key];
@@ -3953,9 +3953,11 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                                     groupVisibleCount[layer.group].visibles++;
                                 }
                             }
-                            if (isDefined(layer.index) && leafletLayers.overlays[key].setZIndex) {
+                            /*
+                            if(isDefined(layer.index) && leafletLayers.overlays[key].setZIndex) {
                                 leafletLayers.overlays[key].setZIndex(newOverlayLayers[key].index);
                             }
+                            */
                         }
 
                         for (key in groupVisibleCount) {
@@ -4139,6 +4141,10 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                             if (newOverlayLayers[newName].visible === true) {
                                 safeAddLayer(map, leafletLayers.overlays[newName]);
                             }
+
+                            if (isDefined(newOverlayLayers[newName].index) && leafletLayers.overlays[newName].setZIndex) {
+                                leafletLayers.overlays[newName].setZIndex(newOverlayLayers[newName].index);
+                            }
                         } else {
                             // check for the .visible property to hide/show overLayers
                             if (newOverlayLayers[newName].visible && !map.hasLayer(leafletLayers.overlays[newName])) {
@@ -4149,14 +4155,20 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                             }
 
                             // check for the .layerOptions.opacity property has changed.
-                            if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity && map.hasLayer(leafletLayers.overlays[newName])) {
+                            var ly = leafletLayers.overlays[newName];
+                            if (map.hasLayer(leafletLayers.overlays[newName])) {
+                                if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity) {
 
-                                var ly = leafletLayers.overlays[newName];
-                                if (isDefined(ly.setOpacity)) {
-                                    ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                    if (isDefined(ly.setOpacity)) {
+                                        ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                    }
+                                    if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
+                                        ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
+                                    }
                                 }
-                                if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
-                                    ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
+
+                                if (isDefined(newOverlayLayers[newName].index) && ly.setZIndex && newOverlayLayers[newName].index !== oldOverlayLayers[newName].index) {
+                                    ly.setZIndex(newOverlayLayers[newName].index);
                                 }
                             }
                         }

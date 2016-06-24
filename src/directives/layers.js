@@ -169,6 +169,10 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                             if (newOverlayLayers[newName].visible === true) {
                                 safeAddLayer(map, leafletLayers.overlays[newName]);
                             }
+
+                            if(isDefined(newOverlayLayers[newName].index) && leafletLayers.overlays[newName].setZIndex) {
+                                leafletLayers.overlays[newName].setZIndex(newOverlayLayers[newName].index);
+                            }
                         } else {
                             // check for the .visible property to hide/show overLayers
                             if (newOverlayLayers[newName].visible && !map.hasLayer(leafletLayers.overlays[newName])) {
@@ -179,15 +183,21 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                             }
 
                             // check for the .layerOptions.opacity property has changed.
-                            if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity &&
-                                map.hasLayer(leafletLayers.overlays[newName])) {
+                            let ly = leafletLayers.overlays[newName];
+                            if(map.hasLayer(leafletLayers.overlays[newName])) {
+                                if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity) {
 
-                                let ly = leafletLayers.overlays[newName];
-                                if(isDefined(ly.setOpacity)) {
-                                    ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                    if(isDefined(ly.setOpacity)) {
+                                        ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                    }
+                                    if(isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
+                                        ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
+                                    }
                                 }
-                                if(isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
-                                    ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
+
+                                if(isDefined(newOverlayLayers[newName].index) && ly.setZIndex &&
+                                    newOverlayLayers[newName].index !== oldOverlayLayers[newName].index) {
+                                    ly.setZIndex(newOverlayLayers[newName].index);
                                 }
                             }
                         }

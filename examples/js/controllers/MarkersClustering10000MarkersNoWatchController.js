@@ -1,21 +1,5 @@
-<!DOCTYPE html>
-<html ng-app="demoapp">
-
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../bower_components/angular/angular.min.js"></script>
-    <script src="../bower_components/leaflet/dist/leaflet.js"></script>
-    <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
-    <script src="../bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-    <script src="../dist/ui-leaflet.js"></script>
-    <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="../bower_components/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="../bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    <script>
-        var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller("MarkersClustering10000MarkersNoWatchController", ["$scope", "$http", "leafletData",
         function($scope, $http, leafletData) {
-
             var addressPointsToMarkers = function(points) {
                 return points.map(function(ap) {
                     return {
@@ -25,7 +9,6 @@
                     };
                 });
             };
-
             angular.extend($scope, {
                 center: {
                     lat: -37.9212959167,
@@ -67,7 +50,6 @@
                     }
                 }
             });
-
             $http.get("json/realworld.10000.json").success(function(data) {
                 leafletData.getDirectiveControls().then(function (controls) {
                     var markers = addressPointsToMarkers(data)
@@ -76,13 +58,3 @@
                 });
             });
         }]);
-    </script>
-</head>
-
-<body ng-controller="MarkersClustering10000MarkersNoWatchController">
-    <leaflet lf-center="center" markers="markers" layers="layers" event-broadcast="events" watch-options="watchOptions" width="100%" height="480px">
-    </leaflet>
-    <h1>Marker clustering example (10000 markers)</h1>
-</body>
-
-</html>

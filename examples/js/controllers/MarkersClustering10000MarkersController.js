@@ -44,17 +44,4 @@
             $http.get("json/realworld.10000.json").success(function(data) {
                 $scope.markers = addressPointsToMarkers(data);
             });
-        }]);"markercluster",
-                            visible: true
-                        }
-                    }
-                }
-            });
-            $http.get("json/realworld.10000.json").success(function(data) {
-                leafletData.getDirectiveControls().then(function (controls) {
-                    var markers = addressPointsToMarkers(data)
-                    controls.markers.create(markers ,$scope.markers);
-                    $scope.markers = markers;
-                });
-            });
         }]);

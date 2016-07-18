@@ -269,6 +269,9 @@ angular.module('ui-leaflet').directive('markers',
                             return;
                         _create(newMarkers, oldMarkers);
                     });
+                    scope.$on('$destroy', function () {
+                        _destroy(leafletScope.markers, {}, leafletMarkers, map, layers);
+                    });
                 });
             });
         }

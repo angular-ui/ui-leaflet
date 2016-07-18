@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-06-13
+*  ui-leaflet 1.0.0 2016-07-18
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1385,7 +1385,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
   // `key:value` pairs.
   var _matcher,
       _matches = null;
-  _matcher = _matches = function _matches(attrs) {
+  _matcher = _matches = function (attrs) {
     attrs = _extendOwn({}, attrs);
     return function (obj) {
       return _isMatch(obj, attrs);
@@ -1404,7 +1404,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
 
   var _every,
       _all = null;
-  _every = _all = function _all(obj, predicate, context) {
+  _every = _all = function (obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = !_isArrayLike(obj) && _keys(obj),
         length = (keys || obj).length;
@@ -2319,10 +2319,12 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
             if (!DomMarkersPlugin.isLoaded()) {
                 $log.error(errorHeader + 'The DomMarkers Plugin is not loaded.');
             }
-            var markerScope = angular.isFunction(iconData.getMarkerScope) ? iconData.getMarkerScope() : $rootScope,
+            var markerScope = angular.isFunction(iconData.getMarkerScope) ? iconData.getMarkerScope().$new() : $rootScope,
                 template = $compile(iconData.template)(markerScope),
                 iconDataCopy = angular.copy(iconData);
+            iconDataCopy.ngElement = template;
             iconDataCopy.element = template[0];
+            if (angular.isFunction(iconData.getMarkerScope)) iconDataCopy.scope = markerScope;
             return new L.DomMarkers.icon(iconDataCopy);
         }
 
@@ -2366,8 +2368,23 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         }
     };
 
+    var _cleanDomIcon = function _cleanDomIcon(marker) {
+        if (marker.options.icon.options.ngElement) {
+            marker.options.icon.options.ngElement.remove();
+        }
+        if (marker.options.icon.options.scope) {
+            marker.options.icon.options.scope.$destroy();
+        }
+    };
+
     var _deleteMarker = function _deleteMarker(marker, map, layers) {
         marker.closePopup();
+
+        // if it's a dom icon, clean it
+        if (marker.options.icon && marker.options.icon.options && marker.options.icon.options.type === 'dom') {
+            _cleanDomIcon(marker);
+        }
+
         // There is no easy way to know if a marker is added to a layer, so we search for it
         // if there are overlays
         if (isDefined(layers) && isDefined(layers.overlays)) {
@@ -2561,6 +2578,10 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         if (!isObject(markerData.icon)) {
             // If there is no icon property or it's not an object
             if (isObject(oldMarkerData.icon)) {
+                if (oldMarkerData.icon.type === 'dom') {
+                    // clean previous icon if it's a dom one
+                    _cleanDomIcon(marker);
+                }
                 // If there was an icon before restore to the default
                 marker.setIcon(createLeafletIcon());
                 marker.closePopup();
@@ -2575,6 +2596,10 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
             var dragG = false;
             if (marker.dragging) {
                 dragG = marker.dragging.enabled();
+            }
+            if (oldMarkerData.icon.type === 'dom') {
+                // clean previous icon if it's a dom one
+                _cleanDomIcon(marker);
             }
             marker.setIcon(createLeafletIcon(markerData.icon));
             if (dragG) {
@@ -3658,7 +3683,7 @@ angular.module('ui-leaflet').directive('geojson', ["$timeout", "leafletLogger", 
                     if (angular.isFunction(geojson.onEachFeature)) {
                         onEachFeature = geojson.onEachFeature;
                     } else {
-                        onEachFeature = function onEachFeature(feature, layer) {
+                        onEachFeature = function (feature, layer) {
                             if (leafletHelpers.LabelPlugin.isLoaded() && isDefined(feature.properties.description)) {
                                 layer.bindLabel(feature.properties.description);
                             }
@@ -4519,7 +4544,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function getLayers() {
+                    getLayers = function () {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -4569,6 +4594,9 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                     maybeWatch(leafletScope, 'markers', watchOptions, function (newMarkers, oldMarkers) {
                         if (watchTrap.changeFromDirective) return;
                         _create(newMarkers, oldMarkers);
+                    });
+                    scope.$on('$destroy', function () {
+                        _destroy(leafletScope.markers, {}, leafletMarkers, map, layers);
                     });
                 });
             });
@@ -4643,7 +4671,7 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function getLayers() {
+                    getLayers = function () {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;

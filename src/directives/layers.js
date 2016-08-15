@@ -23,6 +23,10 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                 updateLayersControl = leafletControlHelpers.updateLayersControl,
                 isLayersControlVisible = false;
 
+            scope.$on('$destroy', function () {
+                leafletControlHelpers.destroyMapLayersControl(scope.mapId);
+            });
+
             controller.getMap().then(function(map) {
 
                 // We have baselayers to add to the map

@@ -19,6 +19,10 @@ angular.module('ui-leaflet').directive('controls', function (leafletLogger, leaf
             var leafletControls = {};
             var errorHeader = leafletHelpers.errorHeader + ' [Controls] ';
 
+            scope.$on('$destroy', function () {
+                leafletControlHelpers.destroyMapLayersControl(scope.mapId);
+            });
+
             controller.getMap().then(function(map) {
 
                 leafletScope.$watchCollection('controls', function(newControls) {

@@ -51,7 +51,7 @@ angular.module('ui-leaflet').directive('eventBroadcast', function (leafletLogger
                 }
                 // as long as the map is removed in the root leaflet directive we
                 // do not need ot clean up the events as leaflet does it itself
-                addEvents(map, mapEvents, "eventName", leafletScope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", leafletScope, logic);
             });
         }
     };

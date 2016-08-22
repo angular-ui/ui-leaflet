@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-08-19
+*  ui-leaflet 1.0.0 2016-08-22
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -26,7 +26,8 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', function ($q, 
             controls: '=',
             decorations: '=',
             eventBroadcast: '=',
-            watchOptions: '='
+            watchOptions: '=',
+            id: '@'
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',
@@ -124,7 +125,7 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', function ($q, 
             // if no event-broadcast attribute, all events are broadcasted
             if (!isDefined(attrs.eventBroadcast)) {
                 var logic = "broadcast";
-                addEvents(map, mapEvents, "eventName", scope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", scope, logic);
             }
 
             // Resolve the map object to the promises
@@ -3648,7 +3649,7 @@ angular.module('ui-leaflet').directive('eventBroadcast', function (leafletLogger
                 }
                 // as long as the map is removed in the root leaflet directive we
                 // do not need ot clean up the events as leaflet does it itself
-                addEvents(map, mapEvents, "eventName", leafletScope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", leafletScope, logic);
             });
         }
     };
@@ -5197,7 +5198,9 @@ angular.module('ui-leaflet').factory('leafletMapEvents', function ($rootScope, $
     };
 
     var _genDispatchMapEvent = function _genDispatchMapEvent(scope, eventName, logic, maybeMapId) {
-        if (maybeMapId) maybeMapId = maybeMapId + '.';
+        if (maybeMapId) {
+            maybeMapId = maybeMapId + '.';
+        }
         return function (e) {
             // Put together broadcast name
             var broadcastName = 'leafletDirectiveMap.' + maybeMapId + eventName;
@@ -5223,11 +5226,15 @@ angular.module('ui-leaflet').factory('leafletMapEvents', function ($rootScope, $
         }
     };
 
-    var _addEvents = function _addEvents(map, mapEvents, contextName, scope, logic) {
+    var _addEvents = function _addEvents(map, mapId, mapEvents, contextName, scope, logic) {
         leafletIterators.each(mapEvents, function (eventName) {
             var context = {};
             context[contextName] = eventName;
-            map.on(eventName, _genDispatchMapEvent(scope, eventName, logic, map._container.id || ''), context);
+            if (!mapId) {
+                mapId = map._container.id || '';
+            }
+
+            map.on(eventName, _genDispatchMapEvent(scope, eventName, logic, mapId), context);
         });
     };
 

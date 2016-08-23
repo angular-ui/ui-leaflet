@@ -53,8 +53,9 @@ angular.module('ui-leaflet')
     };
 
     var _genDispatchMapEvent = function(scope, eventName, logic, maybeMapId) {
-        if (maybeMapId)
+        if (maybeMapId) {
           maybeMapId = maybeMapId + '.';
+        }
         return function(e) {
             // Put together broadcast name
             var broadcastName = 'leafletDirectiveMap.' + maybeMapId + eventName;
@@ -80,11 +81,15 @@ angular.module('ui-leaflet')
         }
     };
 
-    var _addEvents =  function(map, mapEvents, contextName, scope, logic){
+    var _addEvents =  function(map, mapId, mapEvents, contextName, scope, logic){
         leafletIterators.each(mapEvents, function(eventName) {
             var context = {};
             context[contextName] = eventName;
-            map.on(eventName, _genDispatchMapEvent(scope, eventName, logic, map._container.id || ''), context);
+            if(!mapId) {
+                mapId = map._container.id || '';
+            }
+
+            map.on(eventName, _genDispatchMapEvent(scope, eventName, logic, mapId), context);
         });
     };
 

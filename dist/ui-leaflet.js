@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-07-18
+*  ui-leaflet 1.0.0 2016-08-22
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -26,7 +26,8 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
             controls: '=',
             decorations: '=',
             eventBroadcast: '=',
-            watchOptions: '='
+            watchOptions: '=',
+            id: '@'
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',
@@ -124,7 +125,7 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
             // if no event-broadcast attribute, all events are broadcasted
             if (!isDefined(attrs.eventBroadcast)) {
                 var logic = "broadcast";
-                addEvents(map, mapEvents, "eventName", scope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", scope, logic);
             }
 
             // Resolve the map object to the promises
@@ -502,6 +503,10 @@ angular.module('ui-leaflet').factory('leafletControlHelpers', ["$rootScope", "le
                 map.addControl(_layersControl);
             }
             return mustBeLoaded;
+        },
+
+        destroyMapLayersControl: function destroyMapLayersControl(mapId) {
+            delete _controls[mapId];
         }
     };
 }]);
@@ -1385,7 +1390,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
   // `key:value` pairs.
   var _matcher,
       _matches = null;
-  _matcher = _matches = function (attrs) {
+  _matcher = _matches = function _matches(attrs) {
     attrs = _extendOwn({}, attrs);
     return function (obj) {
       return _isMatch(obj, attrs);
@@ -1404,7 +1409,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
 
   var _every,
       _all = null;
-  _every = _all = function (obj, predicate, context) {
+  _every = _all = function _all(obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = !_isArrayLike(obj) && _keys(obj),
         length = (keys || obj).length;
@@ -3475,6 +3480,10 @@ angular.module('ui-leaflet').directive('controls', ["leafletLogger", "leafletHel
             var leafletControls = {};
             var errorHeader = leafletHelpers.errorHeader + ' [Controls] ';
 
+            scope.$on('$destroy', function () {
+                leafletControlHelpers.destroyMapLayersControl(scope.mapId);
+            });
+
             controller.getMap().then(function (map) {
 
                 leafletScope.$watchCollection('controls', function (newControls) {
@@ -3640,7 +3649,7 @@ angular.module('ui-leaflet').directive('eventBroadcast', ["leafletLogger", "$roo
                 }
                 // as long as the map is removed in the root leaflet directive we
                 // do not need ot clean up the events as leaflet does it itself
-                addEvents(map, mapEvents, "eventName", leafletScope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", leafletScope, logic);
             });
         }
     };
@@ -3683,7 +3692,7 @@ angular.module('ui-leaflet').directive('geojson', ["$timeout", "leafletLogger", 
                     if (angular.isFunction(geojson.onEachFeature)) {
                         onEachFeature = geojson.onEachFeature;
                     } else {
-                        onEachFeature = function (feature, layer) {
+                        onEachFeature = function onEachFeature(feature, layer) {
                             if (leafletHelpers.LabelPlugin.isLoaded() && isDefined(feature.properties.description)) {
                                 layer.bindLabel(feature.properties.description);
                             }
@@ -3946,7 +3955,7 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                 leafletScope.$watch('layers.overlays', function (newOverlayLayers) {
                     var overlaysArray = [];
                     var groupVisibleCount = {};
-                    leafletData.getLayers().then(function (leafletLayers) {
+                    leafletData.getLayers().then(function () {
                         var key;
                         for (key in newOverlayLayers) {
                             var layer = newOverlayLayers[key];
@@ -3978,9 +3987,11 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                                     groupVisibleCount[layer.group].visibles++;
                                 }
                             }
-                            if (isDefined(layer.index) && leafletLayers.overlays[key].setZIndex) {
+                            /*
+                            if(isDefined(layer.index) && leafletLayers.overlays[key].setZIndex) {
                                 leafletLayers.overlays[key].setZIndex(newOverlayLayers[key].index);
                             }
+                            */
                         }
 
                         for (key in groupVisibleCount) {
@@ -4020,6 +4031,10 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                 changeOpacityListener = leafletLayerHelpers.changeOpacityListener,
                 updateLayersControl = leafletControlHelpers.updateLayersControl,
                 isLayersControlVisible = false;
+
+            scope.$on('$destroy', function () {
+                leafletControlHelpers.destroyMapLayersControl(scope.mapId);
+            });
 
             controller.getMap().then(function (map) {
 
@@ -4164,6 +4179,10 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                             if (newOverlayLayers[newName].visible === true) {
                                 safeAddLayer(map, leafletLayers.overlays[newName]);
                             }
+
+                            if (isDefined(newOverlayLayers[newName].index) && leafletLayers.overlays[newName].setZIndex) {
+                                leafletLayers.overlays[newName].setZIndex(newOverlayLayers[newName].index);
+                            }
                         } else {
                             // check for the .visible property to hide/show overLayers
                             if (newOverlayLayers[newName].visible && !map.hasLayer(leafletLayers.overlays[newName])) {
@@ -4174,14 +4193,20 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                             }
 
                             // check for the .layerOptions.opacity property has changed.
-                            if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity && map.hasLayer(leafletLayers.overlays[newName])) {
+                            var ly = leafletLayers.overlays[newName];
+                            if (map.hasLayer(leafletLayers.overlays[newName])) {
+                                if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity) {
 
-                                var ly = leafletLayers.overlays[newName];
-                                if (isDefined(ly.setOpacity)) {
-                                    ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                    if (isDefined(ly.setOpacity)) {
+                                        ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                    }
+                                    if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
+                                        ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
+                                    }
                                 }
-                                if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
-                                    ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
+
+                                if (isDefined(newOverlayLayers[newName].index) && ly.setZIndex && newOverlayLayers[newName].index !== oldOverlayLayers[newName].index) {
+                                    ly.setZIndex(newOverlayLayers[newName].index);
                                 }
                             }
                         }
@@ -4544,7 +4569,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function () {
+                    getLayers = function getLayers() {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -4671,7 +4696,7 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function () {
+                    getLayers = function getLayers() {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -5173,7 +5198,9 @@ angular.module('ui-leaflet').factory('leafletMapEvents', ["$rootScope", "$q", "l
     };
 
     var _genDispatchMapEvent = function _genDispatchMapEvent(scope, eventName, logic, maybeMapId) {
-        if (maybeMapId) maybeMapId = maybeMapId + '.';
+        if (maybeMapId) {
+            maybeMapId = maybeMapId + '.';
+        }
         return function (e) {
             // Put together broadcast name
             var broadcastName = 'leafletDirectiveMap.' + maybeMapId + eventName;
@@ -5199,11 +5226,15 @@ angular.module('ui-leaflet').factory('leafletMapEvents', ["$rootScope", "$q", "l
         }
     };
 
-    var _addEvents = function _addEvents(map, mapEvents, contextName, scope, logic) {
+    var _addEvents = function _addEvents(map, mapId, mapEvents, contextName, scope, logic) {
         leafletIterators.each(mapEvents, function (eventName) {
             var context = {};
             context[contextName] = eventName;
-            map.on(eventName, _genDispatchMapEvent(scope, eventName, logic, map._container.id || ''), context);
+            if (!mapId) {
+                mapId = map._container.id || '';
+            }
+
+            map.on(eventName, _genDispatchMapEvent(scope, eventName, logic, mapId), context);
         });
     };
 

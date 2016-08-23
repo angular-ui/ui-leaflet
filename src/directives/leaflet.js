@@ -18,7 +18,8 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
             controls       : '=',
             decorations    : '=',
             eventBroadcast : '=',
-            watchOptions   : '='
+            watchOptions   : '=',
+            id             : '@'
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',
@@ -125,7 +126,7 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
             // if no event-broadcast attribute, all events are broadcasted
             if (!isDefined(attrs.eventBroadcast)) {
                 var logic = "broadcast";
-                addEvents(map, mapEvents, "eventName", scope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", scope, logic);
             }
 
             // Resolve the map object to the promises

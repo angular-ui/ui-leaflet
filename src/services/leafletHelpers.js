@@ -58,15 +58,15 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
     function _obtainEffectiveMapId(d, mapId) {
         var id, i;
         if (!angular.isDefined(mapId)) {
-        if (Object.keys(d).length === 0) {
-            id = "main";
-        } else if (Object.keys(d).length >= 1) {
-            for (i in d) {
-                if (d.hasOwnProperty(i)) {
-                    id = i;
+            if (Object.keys(d).length === 0) {
+                id = "main";
+            } else if (Object.keys(d).length >= 1) {
+                for (i in d) {
+                    if (d.hasOwnProperty(i)) {
+                        id = i;
+                    }
                 }
-            }
-        } else {
+            } else {
                 $log.error(_errorHeader + "- You have more than 1 map on the DOM, you must provide the map ID to the leafletData.getXXX call");
             }
         } else {

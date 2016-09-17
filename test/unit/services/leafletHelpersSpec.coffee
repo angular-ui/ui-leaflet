@@ -42,11 +42,30 @@ describe 'leafletHelpers', ->
                 expect(@subject.defaultTo(null, '')).toBe('')
 
     describe 'Object Helpers', ->
-        it 'should correctly fetch object values using dot-notation', ->
-            object = { foo: { sea: 'hawks' }}
-            expect(@subject.getObjectValue(object, 'foo.sea')).toEqual('hawks')
-            expect(@subject.getObjectValue(object, 'foo.sea.birds')).toEqual(undefined)
-            expect(@subject.getObjectValue(object, 'boo.hoo')).toEqual(undefined)
+        describe 'get / getObjectValue', ->
+            it 'should correctly fetch object values using dot-notation', ->
+                object = { foo: { sea: 'hawks' }}
+                expect(@subject.getObjectValue(object, 'foo.sea')).toEqual('hawks')
+                expect(@subject.getObjectValue(object, 'foo.sea.birds')).toEqual(undefined)
+                expect(@subject.getObjectValue(object, 'boo.hoo')).toEqual(undefined)
+
+
+            describe 'undefined tests', ->
+                it 'starts undefined is undefined', ->
+                    object = undefined
+                    expect(@subject.get(object, 'foo.sea')).toBeFalsy()
+
+                it 'second depth field undefined, with attempt to access third depth', ->
+                    object =
+                        second:
+                            third:
+                                fourth: true
+
+                    expect(@subject.get(object, 'second.third.fourth')).toBeTruthy()
+
+                    object.second.third = undefined
+                    expect(@subject.get(object, 'second.third.fourth'))
+
 
     describe 'obtainEffectiveMapId', ->
         describe 'no mapId', ->

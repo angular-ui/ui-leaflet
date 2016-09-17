@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.1 2016-06-08
+*  ui-leaflet 1.0.1 2016-09-17
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -230,6 +230,7 @@ angular.module('ui-leaflet').factory('leafletBoundsHelpers', ["leafletLogger", "
 angular.module('ui-leaflet').factory('leafletControlHelpers', ["$rootScope", "leafletLogger", "leafletHelpers", "leafletLayerHelpers", "leafletMapDefaults", function ($rootScope, leafletLogger, leafletHelpers, leafletLayerHelpers, leafletMapDefaults) {
     var isDefined = leafletHelpers.isDefined,
         isObject = leafletHelpers.isObject,
+        get = leafletHelpers.get,
         createLayer = leafletLayerHelpers.createLayer,
         _controls = {},
         errorHeader = leafletHelpers.errorHeader + ' [Controls] ',
@@ -237,7 +238,7 @@ angular.module('ui-leaflet').factory('leafletControlHelpers', ["$rootScope", "le
 
     var _controlLayersMustBeVisible = function(baselayers, overlays, mapId) {
         var defaults = leafletMapDefaults.getDefaults(mapId);
-        if(!defaults.controls.layers.visible) {
+        if(!get(defaults, 'controls.layers.visible')) {
             return false;
         }
 
@@ -275,7 +276,7 @@ angular.module('ui-leaflet').factory('leafletControlHelpers', ["$rootScope", "le
         angular.extend(controlOptions, defaults.controls.layers.options);
 
         var control;
-        if(defaults.controls.layers && isDefined(defaults.controls.layers.control)) {
+        if(!!get(defaults, 'controls.layers.control')) {
 			control = defaults.controls.layers.control.apply(this, [[], [], controlOptions]);
 		} else {
 			control = new L.control.layers([], [], controlOptions);
@@ -619,21 +620,15 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function($
     };
     _getObjectValue(obj,"bike.1") returns 'hi'
     this is getPath in ui-gmap
+
+    like _.get
+    http://stackoverflow.com/questions/2631001/javascript-test-for-existence-of-nested-object-key?page=1&tab=active#tab-top
      */
-    var _getObjectValue = function(object, pathStr) {
-        var obj;
-        if (!object || !angular.isObject(object))
-            return;
-        //if the key is not a sting then we already have the value
-        if ((pathStr === null) || !angular.isString(pathStr)) {
-            return pathStr;
-        }
-        obj = object;
-        pathStr.split('.').forEach(function(value) {
-            if (obj) {
-                obj = obj[value];
-            }
-        });
+    var _getObjectValue = function (object, path){
+        if(!object) return;
+        path = path.split('.');
+        var obj = object[path.shift()];
+        while(obj && path.length) obj = obj[path.shift()];
         return obj;
     };
 
@@ -751,6 +746,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function($
         clone: _clone,
         errorHeader: _errorHeader,
         getObjectValue: _getObjectValue,
+        get: _getObjectValue,
         getObjectArrayPath: _getObjectArrayPath,
         getObjectDotPath: _getObjectDotPath,
         defaultTo: function(val, _default) {

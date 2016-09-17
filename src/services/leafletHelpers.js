@@ -14,21 +14,15 @@ angular.module('ui-leaflet').service('leafletHelpers', function($q, $log) {
     };
     _getObjectValue(obj,"bike.1") returns 'hi'
     this is getPath in ui-gmap
+
+    like _.get
+    http://stackoverflow.com/questions/2631001/javascript-test-for-existence-of-nested-object-key?page=1&tab=active#tab-top
      */
-    var _getObjectValue = function(object, pathStr) {
-        var obj;
-        if (!object || !angular.isObject(object))
-            return;
-        //if the key is not a sting then we already have the value
-        if ((pathStr === null) || !angular.isString(pathStr)) {
-            return pathStr;
-        }
-        obj = object;
-        pathStr.split('.').forEach(function(value) {
-            if (obj) {
-                obj = obj[value];
-            }
-        });
+    var _getObjectValue = function (object, path){
+        if(!object) return;
+        path = path.split('.');
+        var obj = object[path.shift()];
+        while(obj && path.length) obj = obj[path.shift()];
         return obj;
     };
 
@@ -146,6 +140,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function($q, $log) {
         clone: _clone,
         errorHeader: _errorHeader,
         getObjectValue: _getObjectValue,
+        get: _getObjectValue,
         getObjectArrayPath: _getObjectArrayPath,
         getObjectDotPath: _getObjectDotPath,
         defaultTo: function(val, _default) {

@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-08-22
+*  ui-leaflet 1.0.0 2016-09-27
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1109,114 +1109,6 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
                 }
             }
         },
-        LeafletProviderPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.TileLayer.Provider);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.TileLayer.Provider;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSBaseLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.basemapLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.basemapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return lvector !== undefined && lvector.AGS !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof lvector.AGS;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSFeatureLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.featureLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.featureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSTiledMapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.tiledMapLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.tiledMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSDynamicMapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.dynamicMapLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.dynamicMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSImageMapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.imageMapLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.imageMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSClusteredLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.clusteredFeatureLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.clusteredFeatureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSHeatmapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.heatmapFeatureLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.heatmapFeatureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
         GeoJSONPlugin: {
             isLoaded: function isLoaded() {
                 return angular.isDefined(L.TileLayer.GeoJSON);
@@ -1531,17 +1423,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
                 return L.tileLayer(params.url, params.options);
             }
         },
-        mapbox: {
-            mustHaveKey: true,
-            createLayer: function createLayer(params) {
-                var version = 3;
-                if (isDefined(params.options.version) && params.options.version === 4) {
-                    version = params.options.version;
-                }
-                var url = version === 3 ? '//{s}.tiles.mapbox.com/v3/' + params.key + '/{z}/{x}/{y}.png' : '//api.tiles.mapbox.com/v4/' + params.key + '/{z}/{x}/{y}.png?access_token=' + params.apiKey;
-                return L.tileLayer(url, params.options);
-            }
-        },
         geoJSON: {
             mustHaveUrl: true,
             createLayer: function createLayer(params) {
@@ -1657,139 +1538,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', function ($rootScope
             mustHaveUrl: false,
             createLayer: function createLayer() {
                 return L.featureGroup();
-            }
-        },
-        here: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var provider = params.provider || 'HERE.terrainDay';
-                if (!Helpers.LeafletProviderPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.TileLayer.Provider(provider, params.options);
-            }
-        },
-        agsBase: {
-            mustHaveLayer: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSBaseLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return L.esri.basemapLayer(params.layer, params.options);
-            }
-        },
-        ags: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSLayerPlugin.isLoaded()) {
-                    return;
-                }
-
-                var options = angular.copy(params.options);
-                angular.extend(options, {
-                    url: params.url
-                });
-                var layer = new lvector.AGS(options);
-                layer.onAdd = function (map) {
-                    this.setMap(map);
-                };
-                layer.onRemove = function () {
-                    this.setMap(null);
-                };
-                return layer;
-            }
-        },
-        agsFeature: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSFeatureLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                var layer = L.esri.featureLayer(params.options);
-                var load = function load() {
-                    if (isDefined(params.options.loadedDefer)) {
-                        params.options.loadedDefer.resolve();
-                    }
-                };
-                layer.on('loading', function () {
-                    params.options.loadedDefer = $q.defer();
-                    layer.off('load', load);
-                    layer.on('load', load);
-                });
-
-                return layer;
-            }
-        },
-        agsTiled: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSTiledMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                return L.esri.tiledMapLayer(params.options);
-            }
-        },
-        agsDynamic: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSDynamicMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                return L.esri.dynamicMapLayer(params.options);
-            }
-        },
-        agsImage: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSImageMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-                params.options.url = params.url;
-
-                return L.esri.imageMapLayer(params.options);
-            }
-        },
-        agsClustered: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSClusteredLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri clustered layer plugin is not loaded.');
-                    return;
-                }
-
-                if (!Helpers.MarkerClusterPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The markercluster plugin is not loaded.');
-                    return;
-                }
-                return L.esri.clusteredFeatureLayer(params.url, params.options);
-            }
-        },
-        agsHeatmap: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSHeatmapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri heatmap layer plugin is not loaded.');
-                    return;
-                }
-
-                if (!Helpers.HeatLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The heatlayer plugin is not loaded.');
-                    return;
-                }
-                return L.esri.heatmapFeatureLayer(params.url, params.options);
             }
         },
         markercluster: {
@@ -4489,12 +4237,12 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
                         var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker, watchOptions.individual.type, map);
                         if (!pass) return; //something went wrong move on in the loop
                     } else if (!isDefined(model.group)) {
-                            // We do not have a layer attr, so the marker goes to the map layer
-                            map.addLayer(marker);
-                            if (watchOptions.individual.type === null && model.focus === true) {
-                                marker.openPopup();
-                            }
+                        // We do not have a layer attr, so the marker goes to the map layer
+                        map.addLayer(marker);
+                        if (watchOptions.individual.type === null && model.focus === true) {
+                            marker.openPopup();
                         }
+                    }
 
                     if (watchOptions.individual.type !== null) {
                         addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map, watchOptions.individual);
@@ -5301,7 +5049,7 @@ angular.module('ui-leaflet').factory('leafletMarkerEvents', function ($rootScope
 
 'use strict';
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 angular.module('ui-leaflet').factory('leafletPathEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
     var isDefined = leafletHelpers.isDefined,

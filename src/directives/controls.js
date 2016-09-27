@@ -19,6 +19,10 @@ angular.module('ui-leaflet').directive('controls', function (leafletLogger, leaf
             var leafletControls = {};
             var errorHeader = leafletHelpers.errorHeader + ' [Controls] ';
 
+            scope.$on('$destroy', function () {
+                leafletControlHelpers.destroyMapLayersControl(scope.mapId);
+            });
+
             controller.getMap().then(function(map) {
 
                 leafletScope.$watchCollection('controls', function(newControls) {
@@ -50,7 +54,7 @@ angular.module('ui-leaflet').directive('controls', function (leafletLogger, leaf
                         } else {
                             var customControlValue = newControls[newName];
                             if (isArray(customControlValue)) {
-                                for (var i in customControlValue) {
+                                for (var i = 0; i < customControlValue.length; i++) {
                                     var customControl = customControlValue[i];
                                     map.addControl(customControl);
                                     leafletControls[newName] = !isDefined(leafletControls[newName]) ? [customControl] : leafletControls[newName].concat([customControl]);

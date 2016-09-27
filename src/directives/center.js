@@ -2,8 +2,8 @@ var centerDirectiveTypes = ['center', 'lfCenter'],
     centerDirectives = {};
 
 centerDirectiveTypes.forEach(function(directiveName) {
-    centerDirectives[directiveName] = ['leafletLogger', '$q', '$location', '$timeout', 'leafletMapDefaults', 'leafletHelpers',
-        'leafletBoundsHelpers', 'leafletMapEvents',
+    centerDirectives[directiveName] = ['leafletLogger', '$q', '$location', '$timeout', 'leafletMapDefaults',
+        'leafletHelpers', 'leafletBoundsHelpers', 'leafletMapEvents',
         function(leafletLogger, $q, $location, $timeout, leafletMapDefaults, leafletHelpers,
       leafletBoundsHelpers, leafletMapEvents) {
 
@@ -81,8 +81,9 @@ centerDirectiveTypes.forEach(function(directiveName) {
                         var extractCenterFromUrl = function() {
                             var search = $location.search();
                             var centerParam;
-                            if (isDefined(search.c)) {
-                                var cParam = search.c.split(":");
+                            var centerKey = attrs.urlHashParam? attrs.urlHashParam:'c';
+                            if (isDefined(search[centerKey])) {
+                                var cParam = search[centerKey].split(":");
                                 if (cParam.length === 3) {
                                     centerParam = {
                                         lat: parseFloat(cParam[0]),

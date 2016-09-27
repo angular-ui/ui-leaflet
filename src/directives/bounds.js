@@ -22,7 +22,6 @@ angular.module('ui-leaflet').directive('bounds', function (leafletLogger, $timeo
                 leafletScope.$on('boundsChanged', function (event) {
                     var scope = event.currentScope;
                     var bounds = map.getBounds();
-
                     if (emptyBounds(bounds) || scope.settingBoundsFromScope) {
                         return;
                     }
@@ -48,8 +47,10 @@ angular.module('ui-leaflet').directive('bounds', function (leafletLogger, $timeo
 
                 var lastNominatimQuery;
                 leafletScope.$watch('bounds', function (bounds) {
-                    if (scope.settingBoundsFromLeaflet)
+                    $log.debug('Bounds', bounds);
+                    if (scope.settingBoundsFromLeaflet) {
                         return;
+                    }
                     if (isDefined(bounds.address) && bounds.address !== lastNominatimQuery) {
                         scope.settingBoundsFromScope = true;
                         nominatimService.query(bounds.address, attrs.id).then(function(data) {
@@ -60,7 +61,7 @@ angular.module('ui-leaflet').directive('bounds', function (leafletLogger, $timeo
                             $log.error(errorHeader + ' ' + errMsg + '.');
                         });
                         lastNominatimQuery = bounds.address;
-                        $timeout( function() {
+                        $timeout(() => {
                             scope.settingBoundsFromScope = false;
                         });
                         return;

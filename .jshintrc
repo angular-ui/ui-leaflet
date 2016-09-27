@@ -15,6 +15,9 @@
     "unused": true,
     "trailing": true,
     "smarttabs": true,
+    "latedef": {
+        "nofunc": true
+    },
     "globals": {
         "angular": false,
         "L": false,

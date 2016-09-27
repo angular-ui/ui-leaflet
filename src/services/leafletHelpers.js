@@ -1,4 +1,4 @@
-angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
+angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $timeout) {
     var _errorHeader = '[ui-leaflet] ';
     var _copy = angular.copy;
     var _clone = _copy;
@@ -58,15 +58,15 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
     function _obtainEffectiveMapId(d, mapId) {
         var id, i;
         if (!angular.isDefined(mapId)) {
-        if (Object.keys(d).length === 0) {
-            id = "main";
-        } else if (Object.keys(d).length >= 1) {
-            for (i in d) {
-                if (d.hasOwnProperty(i)) {
-                    id = i;
+            if (Object.keys(d).length === 0) {
+                id = "main";
+            } else if (Object.keys(d).length >= 1) {
+                for (i in d) {
+                    if (d.hasOwnProperty(i)) {
+                        id = i;
+                    }
                 }
-            }
-        } else {
+            } else {
                 $log.error(_errorHeader + "- You have more than 1 map on the DOM, you must provide the map ID to the leafletData.getXXX call");
             }
         } else {
@@ -126,17 +126,34 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
 
 
     /**
-    Converts all accepted directives format into proper directive name.
-    @param name Name to normalize
-     */
+        Converts all accepted directives format into proper directive name.
+        @param name Name to normalize
+    */
 
-     var directiveNormalize = function(name) {
+    var directiveNormalize = function(name) {
       return camelCase(name.replace(PREFIX_REGEXP, ""));
     };
-
     // END AngularJS port
 
+    var _watchTrapDelayMilliSec = 10;
+
+    var _modelChangeInDirective = function(trapObj, trapField, cbToExec){
+        if(!trapObj)
+            throw new Error(_errorHeader + 'trapObj is undefined');
+        if(!trapField)
+            throw new Error(_errorHeader + 'trapField is undefined');
+
+        trapObj[trapField] = true;
+        let ret = cbToExec();
+        $timeout(()=> {
+            trapObj[trapField] = false;
+        }, _watchTrapDelayMilliSec);
+        return ret;
+    };
+
     return {
+        watchTrapDelayMilliSec: _watchTrapDelayMilliSec,
+        modelChangeInDirective: _modelChangeInDirective,
         camelCase: camelCase,
         directiveNormalize: directiveNormalize,
         copy:_copy,
@@ -422,177 +439,6 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                 }
             }
         },
-        GoogleLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.Google);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Google;
-                } else {
-                    return false;
-                }
-            }
-        },
-        LeafletProviderPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.TileLayer.Provider);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.TileLayer.Provider;
-                } else {
-                    return false;
-                }
-            }
-        },
-        ChinaLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.tileLayer.chinaProvider);
-            }
-        },
-        HeatLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.heatLayer);
-            }
-        },
-        WebGLHeatMapLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.TileLayer.WebGLHeatMap);
-            }
-        },
-        BingLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.BingLayer);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.BingLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        WFSLayerPlugin: {
-            isLoaded: function() {
-                return L.GeoJSON.WFS !== undefined;
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.GeoJSON.WFS;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSBaseLayerPlugin: {
-            isLoaded: function() {
-                return L.esri !== undefined && L.esri.basemapLayer !== undefined;
-            },
-            is: function (layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.basemapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSLayerPlugin: {
-            isLoaded: function() {
-                return lvector !== undefined && lvector.AGS !== undefined;
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof lvector.AGS;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSFeatureLayerPlugin: {
-            isLoaded: function() {
-                return L.esri !== undefined && L.esri.featureLayer !== undefined;
-            },
-            is: function (layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.featureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSTiledMapLayerPlugin: {
-            isLoaded: function() {
-                return L.esri !== undefined && L.esri.tiledMapLayer !== undefined;
-            },
-            is: function (layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.tiledMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSDynamicMapLayerPlugin: {
-            isLoaded: function () {
-                return L.esri !== undefined && L.esri.dynamicMapLayer !== undefined;
-            },
-            is: function (layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.dynamicMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSImageMapLayerPlugin: {
-            isLoaded: function () {
-                return L.esri !== undefined && L.esri.imageMapLayer !== undefined;
-            },
-            is: function (layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.imageMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSClusteredLayerPlugin: {
-            isLoaded: function () {
-                return L.esri !== undefined && L.esri.clusteredFeatureLayer !== undefined;
-            },
-            is: function (layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.clusteredFeatureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSHeatmapLayerPlugin: {
-            isLoaded: function () {
-                return L.esri !== undefined && L.esri.heatmapFeatureLayer !== undefined;
-            },
-            is: function (layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.heatmapFeatureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        YandexLayerPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.Yandex);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Yandex;
-                } else {
-                    return false;
-                }
-            }
-        },
         GeoJSONPlugin: {
             isLoaded: function(){
                 return angular.isDefined(L.TileLayer.GeoJSON);
@@ -601,19 +447,6 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log) {
                 if (this.isLoaded()) {
                     return layer instanceof L.TileLayer.GeoJSON;
                 } else {
-                    return false;
-                }
-            }
-        },
-        UTFGridPlugin: {
-            isLoaded: function(){
-                return angular.isDefined(L.UtfGrid);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.UtfGrid;
-                } else {
-                    $log.error('[AngularJS - Leaflet] No UtfGrid plugin found.');
                     return false;
                 }
             }

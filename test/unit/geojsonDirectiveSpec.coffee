@@ -1,13 +1,14 @@
 describe 'Directive: geojson', ->
-    leafletMapDefaults= leafletData = scope = $compile = $rootScope = null
+    leafletMapDefaults = leafletData = scope = $compile = $rootScope = digestor = null
 
     beforeEach module('ui-leaflet')
 
-    beforeEach inject (_$compile_, _$rootScope_, _leafletData_, _leafletMapDefaults_) ->
+    beforeEach inject (_$compile_, _$rootScope_, _leafletData_, _leafletMapDefaults_, _digestor_) ->
         $compile = _$compile_
         $rootScope = _$rootScope_
         leafletData = _leafletData_
         leafletMapDefaults = _leafletMapDefaults_
+        digestor = _digestor_
         scope = $rootScope.$new()
 
     afterEach inject ($rootScope) ->
@@ -61,6 +62,7 @@ describe 'Directive: geojson', ->
 
     it 'should remove the geoJSON layer from the map if geojson object removed from scope', ->
         angular.extend scope, geojson:
+            checkOnMap: true
             data:
                 'type': 'FeatureCollection'
                 'features': [
@@ -99,16 +101,14 @@ describe 'Directive: geojson', ->
         leafletData.getMap().then (map) ->
             leafletMap = map
 
-        scope.$digest()
+        digestor.digest(scope)
         leafletData.getGeoJSON().then (geoJSON) ->
             leafletGeoJSON = geoJSON
 
-        scope.$digest()
-        scope.$digest()
-        
+        digestor.digest(scope)
         expect(leafletMap.hasLayer(leafletGeoJSON)).toBe true
         scope.geojson = {}
-        scope.$digest()
+        digestor.digest(scope)
         expect(leafletMap.hasLayer(leafletGeoJSON)).toBe false
 
     describe 'nested', ->
@@ -218,12 +218,12 @@ describe 'Directive: geojson', ->
             leafletData.getMap().then (map) ->
                 leafletMap = map
 
-            scope.$digest()
+            digestor.digest(scope)
             leafletData.getGeoJSON().then (geoJSON) ->
                 leafletGeoJSON = geoJSON
 
-            scope.$digest()
+            digestor.digest(scope)
             expect(leafletMap.hasLayer(leafletGeoJSON.one)).toBe true
             scope.geojson = {}
-            scope.$digest()
+            digestor.digest(scope)
             expect(leafletMap.hasLayer(leafletGeoJSON.one)).toBe false

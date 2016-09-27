@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2015-11-11
+*  ui-leaflet 1.0.0 2016-09-27
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -26,7 +26,8 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
             controls: '=',
             decorations: '=',
             eventBroadcast: '=',
-            watchOptions: '='
+            watchOptions: '=',
+            id: '@'
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',
@@ -67,6 +68,10 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
                 }
             }
 
+            // Create the Leaflet Map Object with the options
+            var map = new L.Map(element[0], leafletMapDefaults.getMapCreationDefaults(attrs.id));
+            ctrl._leafletMap.resolve(map);
+
             // If the width attribute defined update css
             // Then watch if bound property changes and update css
             if (isDefined(attrs.width)) {
@@ -92,10 +97,6 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
                     map.invalidateSize();
                 });
             }
-
-            // Create the Leaflet Map Object with the options
-            var map = new L.Map(element[0], leafletMapDefaults.getMapCreationDefaults(attrs.id));
-            ctrl._leafletMap.resolve(map);
 
             if (!isDefined(attrs.center) && !isDefined(attrs.lfCenter)) {
                 map.setView([defaults.center.lat, defaults.center.lng], defaults.center.zoom);
@@ -124,7 +125,7 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
             // if no event-broadcast attribute, all events are broadcasted
             if (!isDefined(attrs.eventBroadcast)) {
                 var logic = "broadcast";
-                addEvents(map, mapEvents, "eventName", scope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", scope, logic);
             }
 
             // Resolve the map object to the promises
@@ -147,6 +148,100 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
         }
     };
 }]);
+
+'use strict';
+
+(function () {
+    angular.module('ui-leaflet').factory('eventManager', [function () {
+        var EventManager = function EventManager() {
+            this.listeners = {};
+        };
+
+        EventManager.prototype = {
+            addEventListener: function addEventListener(type, callback, scope) {
+                var args = [];
+                var numOfArgs = arguments.length;
+                for (var i = 0; i < numOfArgs; i++) {
+                    args.push(arguments[i]);
+                }
+                args = args.length > 3 ? args.splice(3, args.length - 1) : [];
+                if (typeof this.listeners[type] !== "undefined") {
+                    this.listeners[type].push({ scope: scope, callback: callback, args: args });
+                } else {
+                    this.listeners[type] = [{ scope: scope, callback: callback, args: args }];
+                }
+            },
+            removeEventListener: function removeEventListener(type, callback, scope) {
+                if (typeof this.listeners[type] !== "undefined") {
+                    var numOfCallbacks = this.listeners[type].length;
+                    var newArray = [];
+                    for (var i = 0; i < numOfCallbacks; i++) {
+                        var listener = this.listeners[type][i];
+                        if (listener.scope === scope && listener.callback === callback) {} else {
+                            newArray.push(listener);
+                        }
+                    }
+                    this.listeners[type] = newArray;
+                }
+            },
+            hasEventListener: function hasEventListener(type, callback, scope) {
+                if (typeof this.listeners[type] !== "undefined") {
+                    var numOfCallbacks = this.listeners[type].length;
+                    if (callback === undefined && scope === undefined) {
+                        return numOfCallbacks > 0;
+                    }
+                    for (var i = 0; i < numOfCallbacks; i++) {
+                        var listener = this.listeners[type][i];
+                        if ((scope ? listener.scope === scope : true) && listener.callback === callback) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            },
+            dispatch: function dispatch(type, target) {
+                var numOfListeners = 0;
+                var event = {
+                    type: type,
+                    target: target
+                };
+                var args = [];
+                var numOfArgs = arguments.length;
+                for (var i = 0; i < numOfArgs; i++) {
+                    args.push(arguments[i]);
+                }
+                args = args.length > 2 ? args.splice(2, args.length - 1) : [];
+                args = [event].concat(args);
+                if (typeof this.listeners[type] !== "undefined") {
+                    var numOfCallbacks = this.listeners[type].length;
+                    for (var x = 0; x < numOfCallbacks; x++) {
+                        var listener = this.listeners[type][x];
+                        if (listener && listener.callback) {
+                            var concatArgs = args.concat(listener.args);
+                            listener.callback.apply(listener.scope, concatArgs);
+                            numOfListeners += 1;
+                        }
+                    }
+                }
+            },
+            getEvents: function getEvents() {
+                var str = "";
+                for (var type in this.listeners) {
+                    var numOfCallbacks = this.listeners[type].length;
+                    for (var i = 0; i < numOfCallbacks; i++) {
+                        var listener = this.listeners[type][i];
+                        str += listener.scope && listener.scope.className ? listener.scope.className : "anonymous";
+                        str += " listen for '" + type + "'\n";
+                    }
+                }
+                return str;
+            }
+        };
+        return EventManager;
+    }]).service('eventManager', ["EventManager", function (EventManager) {
+        return new EventManager();
+    }]);
+})();
 
 'use strict';
 
@@ -408,6 +503,10 @@ angular.module('ui-leaflet').factory('leafletControlHelpers', ["$rootScope", "le
                 map.addControl(_layersControl);
             }
             return mustBeLoaded;
+        },
+
+        destroyMapLayersControl: function destroyMapLayersControl(mapId) {
+            delete _controls[mapId];
         }
     };
 }]);
@@ -578,7 +677,7 @@ angular.module('ui-leaflet').service('leafletGeoJsonHelpers', ["leafletHelpers",
 
 'use strict';
 
-angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function ($q, $log) {
+angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", "$timeout", function ($q, $log, $timeout) {
     var _errorHeader = '[ui-leaflet] ';
     var _copy = angular.copy;
     var _clone = _copy;
@@ -703,17 +802,32 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
     };
 
     /**
-    Converts all accepted directives format into proper directive name.
-    @param name Name to normalize
-     */
+        Converts all accepted directives format into proper directive name.
+        @param name Name to normalize
+    */
 
     var directiveNormalize = function directiveNormalize(name) {
         return camelCase(name.replace(PREFIX_REGEXP, ""));
     };
-
     // END AngularJS port
 
+    var _watchTrapDelayMilliSec = 10;
+
+    var _modelChangeInDirective = function _modelChangeInDirective(trapObj, trapField, cbToExec) {
+        if (!trapObj) throw new Error(_errorHeader + 'trapObj is undefined');
+        if (!trapField) throw new Error(_errorHeader + 'trapField is undefined');
+
+        trapObj[trapField] = true;
+        var ret = cbToExec();
+        $timeout(function () {
+            trapObj[trapField] = false;
+        }, _watchTrapDelayMilliSec);
+        return ret;
+    };
+
     return {
+        watchTrapDelayMilliSec: _watchTrapDelayMilliSec,
+        modelChangeInDirective: _modelChangeInDirective,
         camelCase: camelCase,
         directiveNormalize: directiveNormalize,
         copy: _copy,
@@ -995,177 +1109,6 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                 }
             }
         },
-        GoogleLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.Google);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Google;
-                } else {
-                    return false;
-                }
-            }
-        },
-        LeafletProviderPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.TileLayer.Provider);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.TileLayer.Provider;
-                } else {
-                    return false;
-                }
-            }
-        },
-        ChinaLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.tileLayer.chinaProvider);
-            }
-        },
-        HeatLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.heatLayer);
-            }
-        },
-        WebGLHeatMapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.TileLayer.WebGLHeatMap);
-            }
-        },
-        BingLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.BingLayer);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.BingLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        WFSLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.GeoJSON.WFS !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.GeoJSON.WFS;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSBaseLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.basemapLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.basemapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return lvector !== undefined && lvector.AGS !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof lvector.AGS;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSFeatureLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.featureLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.featureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSTiledMapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.tiledMapLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.tiledMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSDynamicMapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.dynamicMapLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.dynamicMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSImageMapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.imageMapLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.imageMapLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSClusteredLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.clusteredFeatureLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.clusteredFeatureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        AGSHeatmapLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return L.esri !== undefined && L.esri.heatmapFeatureLayer !== undefined;
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.esri.heatmapFeatureLayer;
-                } else {
-                    return false;
-                }
-            }
-        },
-        YandexLayerPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.Yandex);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.Yandex;
-                } else {
-                    return false;
-                }
-            }
-        },
         GeoJSONPlugin: {
             isLoaded: function isLoaded() {
                 return angular.isDefined(L.TileLayer.GeoJSON);
@@ -1174,19 +1117,6 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", function (
                 if (this.isLoaded()) {
                     return layer instanceof L.TileLayer.GeoJSON;
                 } else {
-                    return false;
-                }
-            }
-        },
-        UTFGridPlugin: {
-            isLoaded: function isLoaded() {
-                return angular.isDefined(L.UtfGrid);
-            },
-            is: function is(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.UtfGrid;
-                } else {
-                    $log.error('[AngularJS - Leaflet] No UtfGrid plugin found.');
                     return false;
                 }
             }
@@ -1352,7 +1282,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
   // `key:value` pairs.
   var _matcher,
       _matches = null;
-  _matcher = _matches = function (attrs) {
+  _matcher = _matches = function _matches(attrs) {
     attrs = _extendOwn({}, attrs);
     return function (obj) {
       return _isMatch(obj, attrs);
@@ -1371,7 +1301,7 @@ angular.module('ui-leaflet').service('leafletIterators', ["leafletLogger", "leaf
 
   var _every,
       _all = null;
-  _every = _all = function (obj, predicate, context) {
+  _every = _all = function _all(obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = !_isArrayLike(obj) && _keys(obj),
         length = (keys || obj).length;
@@ -1446,20 +1376,41 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
         }
         var utfgrid = new L.UtfGrid(params.url, params.pluginOptions);
 
+        var toSend = {
+            model: params.$parent
+        };
+
+        // TODO Use event manager
         utfgrid.on('mouseover', function (e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', toSend);
         });
 
         utfgrid.on('mouseout', function (e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', toSend);
         });
 
         utfgrid.on('click', function (e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', toSend);
         });
 
         utfgrid.on('mousemove', function (e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', toSend);
         });
 
         return utfgrid;
@@ -1470,17 +1421,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             mustHaveUrl: true,
             createLayer: function createLayer(params) {
                 return L.tileLayer(params.url, params.options);
-            }
-        },
-        mapbox: {
-            mustHaveKey: true,
-            createLayer: function createLayer(params) {
-                var version = 3;
-                if (isDefined(params.options.version) && params.options.version === 4) {
-                    version = params.options.version;
-                }
-                var url = version === 3 ? '//{s}.tiles.mapbox.com/v3/' + params.key + '/{z}/{x}/{y}.png' : '//api.tiles.mapbox.com/v4/' + params.key + '/{z}/{x}/{y}.png?access_token=' + params.apiKey;
-                return L.tileLayer(url, params.options);
             }
         },
         geoJSON: {
@@ -1518,14 +1458,11 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
                 });
             }
         },
-        utfGrid: {
-            mustHaveUrl: true,
-            createLayer: utfGridCreateLayer
-        },
         cartodbTiles: {
             mustHaveKey: true,
             createLayer: function createLayer(params) {
-                var url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                url += '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 return L.tileLayer(url, params.options);
             }
         },
@@ -1533,7 +1470,8 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             mustHaveKey: true,
             mustHaveLayer: true,
             createLayer: function createLayer(params) {
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                params.url = url + '/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
                 return utfGridCreateLayer(params);
             }
         },
@@ -1541,11 +1479,25 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             mustHaveKey: true,
             mustHaveLayer: true,
             createLayer: function createLayer(params) {
-                var tilesURL = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url) ? params.url + '/' + params.user : '//' + params.user + '.cartodb.com';
+                var tilesURL = url + '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 var tileLayer = L.tileLayer(tilesURL, params.options);
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
-                var utfLayer = utfGridCreateLayer(params);
-                return L.layerGroup([tileLayer, utfLayer]);
+                var layers = [tileLayer];
+
+                var addUtfLayer = function addUtfLayer(parent, params, layer) {
+                    var paramsCopy = angular.copy(params);
+                    paramsCopy.url = url + '/api/v1/map/' + paramsCopy.key + '/' + layer + '/{z}/{x}/{y}.grid.json';
+                    parent.push(utfGridCreateLayer(paramsCopy));
+                };
+
+                if (isArray(params.layer)) {
+                    for (var i = 0; i < params.layer.length; i++) {
+                        addUtfLayer(layers, params, params.layer[i]);
+                    }
+                } else {
+                    addUtfLayer(layers, params, params.layer);
+                }
+                return L.layerGroup(layers);
             }
         },
         wms: {
@@ -1558,21 +1510,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             mustHaveUrl: true,
             createLayer: function createLayer(params) {
                 return L.tileLayer.wmts(params.url, params.options);
-            }
-        },
-        wfs: {
-            mustHaveUrl: true,
-            mustHaveLayer: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.WFSLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var options = angular.copy(params.options);
-                if (options.crs && 'string' === typeof options.crs) {
-                    /*jshint -W061 */
-                    options.crs = eval(options.crs);
-                }
-                return new L.GeoJSON.WFS(params.url, params.layer, options);
             }
         },
         group: {
@@ -1603,159 +1540,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
                 return L.featureGroup();
             }
         },
-        google: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var type = params.type || 'SATELLITE';
-                if (!Helpers.GoogleLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Google(type, params.options);
-            }
-        },
-        here: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var provider = params.provider || 'HERE.terrainDay';
-                if (!Helpers.LeafletProviderPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.TileLayer.Provider(provider, params.options);
-            }
-        },
-        china: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var type = params.type || '';
-                if (!Helpers.ChinaLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return L.tileLayer.chinaProvider(type, params.options);
-            }
-        },
-        agsBase: {
-            mustHaveLayer: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSBaseLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return L.esri.basemapLayer(params.layer, params.options);
-            }
-        },
-        ags: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSLayerPlugin.isLoaded()) {
-                    return;
-                }
-
-                var options = angular.copy(params.options);
-                angular.extend(options, {
-                    url: params.url
-                });
-                var layer = new lvector.AGS(options);
-                layer.onAdd = function (map) {
-                    this.setMap(map);
-                };
-                layer.onRemove = function () {
-                    this.setMap(null);
-                };
-                return layer;
-            }
-        },
-        agsFeature: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSFeatureLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                var layer = L.esri.featureLayer(params.options);
-                var load = function load() {
-                    if (isDefined(params.options.loadedDefer)) {
-                        params.options.loadedDefer.resolve();
-                    }
-                };
-                layer.on('loading', function () {
-                    params.options.loadedDefer = $q.defer();
-                    layer.off('load', load);
-                    layer.on('load', load);
-                });
-
-                return layer;
-            }
-        },
-        agsTiled: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSTiledMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                return L.esri.tiledMapLayer(params.options);
-            }
-        },
-        agsDynamic: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSDynamicMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                return L.esri.dynamicMapLayer(params.options);
-            }
-        },
-        agsImage: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSImageMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-                params.options.url = params.url;
-
-                return L.esri.imageMapLayer(params.options);
-            }
-        },
-        agsClustered: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSClusteredLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri clustered layer plugin is not loaded.');
-                    return;
-                }
-
-                if (!Helpers.MarkerClusterPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The markercluster plugin is not loaded.');
-                    return;
-                }
-                return L.esri.clusteredFeatureLayer(params.url, params.options);
-            }
-        },
-        agsHeatmap: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.AGSHeatmapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri heatmap layer plugin is not loaded.');
-                    return;
-                }
-
-                if (!Helpers.HeatLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The heatlayer plugin is not loaded.');
-                    return;
-                }
-                return L.esri.heatmapFeatureLayer(params.url, params.options);
-            }
-        },
         markercluster: {
             mustHaveUrl: false,
             createLayer: function createLayer(params) {
@@ -1764,60 +1548,6 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
                     return;
                 }
                 return new L.MarkerClusterGroup(params.options);
-            }
-        },
-        bing: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                if (!Helpers.BingLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.BingLayer(params.key, params.options);
-            }
-        },
-        webGLHeatmap: {
-            mustHaveUrl: false,
-            mustHaveData: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.WebGLHeatMapLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var layer = new L.TileLayer.WebGLHeatMap(params.options);
-                if (isDefined(params.data)) {
-                    layer.setData(params.data);
-                }
-
-                return layer;
-            }
-        },
-        heat: {
-            mustHaveUrl: false,
-            mustHaveData: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.HeatLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var layer = new L.heatLayer();
-
-                if (isArray(params.data)) {
-                    layer.setLatLngs(params.data);
-                }
-
-                if (isObject(params.options)) {
-                    layer.setOptions(params.options);
-                }
-
-                return layer;
-            }
-        },
-        yandex: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                var type = params.type || 'map';
-                if (!Helpers.YandexLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Yandex(type, params.options);
             }
         },
         imageOverlay: {
@@ -1928,7 +1658,8 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             key: layerDefinition.key,
             apiKey: layerDefinition.apiKey,
             pluginOptions: layerDefinition.pluginOptions,
-            user: layerDefinition.user
+            user: layerDefinition.user,
+            $parent: layerDefinition
         };
 
         //TODO Add $watch to the layer properties
@@ -1973,11 +1704,20 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
         }
     }
 
+    var changeOpacityListener = function changeOpacityListener(op) {
+        return function (ly) {
+            if (isDefined(ly.setOpacity)) {
+                ly.setOpacity(op);
+            }
+        };
+    };
+
     return {
         createLayer: _createLayer,
         layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
-        safeRemoveLayer: safeRemoveLayer
+        safeRemoveLayer: safeRemoveLayer,
+        changeOpacityListener: changeOpacityListener
     };
 }]);
 
@@ -2288,6 +2028,10 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         logger.debug(_string(marker));
     };
 
+    var existDomContainer = function existDomContainer(groupName) {
+        return angular.element(groups[groupName]._map._container).parent().length > 0;
+    };
+
     var createLeafletIcon = function createLeafletIcon(iconData) {
         if (isDefined(iconData) && isDefined(iconData.type) && iconData.type === 'awesomeMarker') {
             if (!AwesomeMarkersPlugin.isLoaded()) {
@@ -2328,10 +2072,12 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
             if (!DomMarkersPlugin.isLoaded()) {
                 $log.error(errorHeader + 'The DomMarkers Plugin is not loaded.');
             }
-            var markerScope = angular.isFunction(iconData.getMarkerScope) ? iconData.getMarkerScope() : $rootScope,
+            var markerScope = angular.isFunction(iconData.getMarkerScope) ? iconData.getMarkerScope().$new() : $rootScope,
                 template = $compile(iconData.template)(markerScope),
                 iconDataCopy = angular.copy(iconData);
+            iconDataCopy.ngElement = template;
             iconDataCopy.element = template[0];
+            if (angular.isFunction(iconData.getMarkerScope)) iconDataCopy.scope = markerScope;
             return new L.DomMarkers.icon(iconDataCopy);
         }
 
@@ -2359,7 +2105,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
 
     var _resetMarkerGroup = function _resetMarkerGroup(groupName) {
         if (isDefined(groups[groupName])) {
-            groups.splice(groupName, 1);
+            delete groups[groupName];
         }
     };
 
@@ -2367,8 +2113,31 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         groups = {};
     };
 
+    var _resetUnusedMarkerGroups = function _resetUnusedMarkerGroups() {
+        for (var groupName in groups) {
+            if (!existDomContainer(groupName)) {
+                _resetMarkerGroup(groupName);
+            }
+        }
+    };
+
+    var _cleanDomIcon = function _cleanDomIcon(marker) {
+        if (marker.options.icon.options.ngElement) {
+            marker.options.icon.options.ngElement.remove();
+        }
+        if (marker.options.icon.options.scope) {
+            marker.options.icon.options.scope.$destroy();
+        }
+    };
+
     var _deleteMarker = function _deleteMarker(marker, map, layers) {
         marker.closePopup();
+
+        // if it's a dom icon, clean it
+        if (marker.options.icon && marker.options.icon.options && marker.options.icon.options.type === 'dom') {
+            _cleanDomIcon(marker);
+        }
+
         // There is no easy way to know if a marker is added to a layer, so we search for it
         // if there are overlays
         if (isDefined(layers) && isDefined(layers.overlays)) {
@@ -2562,6 +2331,10 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         if (!isObject(markerData.icon)) {
             // If there is no icon property or it's not an object
             if (isObject(oldMarkerData.icon)) {
+                if (oldMarkerData.icon.type === 'dom') {
+                    // clean previous icon if it's a dom one
+                    _cleanDomIcon(marker);
+                }
                 // If there was an icon before restore to the default
                 marker.setIcon(createLeafletIcon());
                 marker.closePopup();
@@ -2576,6 +2349,10 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
             var dragG = false;
             if (marker.dragging) {
                 dragG = marker.dragging.enabled();
+            }
+            if (oldMarkerData.icon.type === 'dom') {
+                // clean previous icon if it's a dom one
+                _cleanDomIcon(marker);
             }
             marker.setIcon(createLeafletIcon(markerData.icon));
             if (dragG) {
@@ -2704,6 +2481,8 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', ["$rootScope", "$t
         resetMarkerGroup: _resetMarkerGroup,
 
         resetMarkerGroups: _resetMarkerGroups,
+
+        resetUnusedMarkerGroups: _resetUnusedMarkerGroups,
 
         deleteMarker: _deleteMarker,
 
@@ -3165,7 +2944,6 @@ angular.module('ui-leaflet').directive('bounds', ["leafletLogger", "$timeout", "
                 leafletScope.$on('boundsChanged', function (event) {
                     var scope = event.currentScope;
                     var bounds = map.getBounds();
-
                     if (emptyBounds(bounds) || scope.settingBoundsFromScope) {
                         return;
                     }
@@ -3191,7 +2969,10 @@ angular.module('ui-leaflet').directive('bounds', ["leafletLogger", "$timeout", "
 
                 var lastNominatimQuery;
                 leafletScope.$watch('bounds', function (bounds) {
-                    if (scope.settingBoundsFromLeaflet) return;
+                    $log.debug('Bounds', bounds);
+                    if (scope.settingBoundsFromLeaflet) {
+                        return;
+                    }
                     if (isDefined(bounds.address) && bounds.address !== lastNominatimQuery) {
                         scope.settingBoundsFromScope = true;
                         nominatimService.query(bounds.address, attrs.id).then(function (data) {
@@ -3304,8 +3085,9 @@ centerDirectiveTypes.forEach(function (directiveName) {
                         var extractCenterFromUrl = function extractCenterFromUrl() {
                             var search = $location.search();
                             var centerParam;
-                            if (isDefined(search.c)) {
-                                var cParam = search.c.split(":");
+                            var centerKey = attrs.urlHashParam ? attrs.urlHashParam : 'c';
+                            if (isDefined(search[centerKey])) {
+                                var cParam = search[centerKey].split(":");
                                 if (cParam.length === 3) {
                                     centerParam = {
                                         lat: parseFloat(cParam[0]),
@@ -3461,6 +3243,10 @@ angular.module('ui-leaflet').directive('controls', ["leafletLogger", "leafletHel
             var leafletControls = {};
             var errorHeader = leafletHelpers.errorHeader + ' [Controls] ';
 
+            scope.$on('$destroy', function () {
+                leafletControlHelpers.destroyMapLayersControl(scope.mapId);
+            });
+
             controller.getMap().then(function (map) {
 
                 leafletScope.$watchCollection('controls', function (newControls) {
@@ -3492,7 +3278,7 @@ angular.module('ui-leaflet').directive('controls', ["leafletLogger", "leafletHel
                         } else {
                             var customControlValue = newControls[newName];
                             if (isArray(customControlValue)) {
-                                for (var i in customControlValue) {
+                                for (var i = 0; i < customControlValue.length; i++) {
                                     var customControl = customControlValue[i];
                                     map.addControl(customControl);
                                     leafletControls[newName] = !isDefined(leafletControls[newName]) ? [customControl] : leafletControls[newName].concat([customControl]);
@@ -3626,7 +3412,7 @@ angular.module('ui-leaflet').directive('eventBroadcast', ["leafletLogger", "$roo
                 }
                 // as long as the map is removed in the root leaflet directive we
                 // do not need ot clean up the events as leaflet does it itself
-                addEvents(map, mapEvents, "eventName", leafletScope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", leafletScope, logic);
             });
         }
     };
@@ -3634,12 +3420,13 @@ angular.module('ui-leaflet').directive('eventBroadcast', ["leafletLogger", "$roo
 
 'use strict';
 
-angular.module('ui-leaflet').directive('geojson', ["leafletLogger", "$rootScope", "leafletData", "leafletHelpers", "leafletWatchHelpers", "leafletDirectiveControlsHelpers", "leafletIterators", "leafletGeoJsonEvents", function (leafletLogger, $rootScope, leafletData, leafletHelpers, leafletWatchHelpers, leafletDirectiveControlsHelpers, leafletIterators, leafletGeoJsonEvents) {
+angular.module('ui-leaflet').directive('geojson', ["$timeout", "leafletLogger", "leafletData", "leafletHelpers", "leafletWatchHelpers", "leafletDirectiveControlsHelpers", "leafletIterators", "leafletGeoJsonEvents", function ($timeout, leafletLogger, leafletData, leafletHelpers, leafletWatchHelpers, leafletDirectiveControlsHelpers, leafletIterators, leafletGeoJsonEvents) {
     var _maybeWatch = leafletWatchHelpers.maybeWatch,
         _defaultWatchOptions = leafletHelpers.watchOptions,
         _extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
         hlp = leafletHelpers,
-        $it = leafletIterators;
+        $it = leafletIterators,
+        watchTrap = { changeFromDirective: false };
     // $log = leafletLogger;
 
     return {
@@ -3668,7 +3455,7 @@ angular.module('ui-leaflet').directive('geojson', ["leafletLogger", "$rootScope"
                     if (angular.isFunction(geojson.onEachFeature)) {
                         onEachFeature = geojson.onEachFeature;
                     } else {
-                        onEachFeature = function (feature, layer) {
+                        onEachFeature = function onEachFeature(feature, layer) {
                             if (leafletHelpers.LabelPlugin.isLoaded() && isDefined(feature.properties.description)) {
                                 layer.bindLabel(feature.properties.description);
                             }
@@ -3698,23 +3485,22 @@ angular.module('ui-leaflet').directive('geojson', ["leafletLogger", "$rootScope"
                     _remove(leafletGeoJSON);
                 };
 
-                var _addGeojson = function _addGeojson(model, maybeName) {
-                    var geojson = angular.copy(model);
+                var _addGeojson = function _addGeojson(geojson, maybeName) {
+
                     if (!(isDefined(geojson) && isDefined(geojson.data))) {
                         return;
                     }
                     var onEachFeature = _hookUpEvents(geojson, maybeName);
 
                     if (!isDefined(geojson.options)) {
-                        //right here is why we use a clone / copy (we modify and thus)
-                        //would kick of a watcher.. we need to be more careful everywhere
-                        //for stuff like this
-                        geojson.options = {
-                            style: geojson.style,
-                            filter: geojson.filter,
-                            onEachFeature: onEachFeature,
-                            pointToLayer: geojson.pointToLayer
-                        };
+                        hlp.modelChangeInDirective(watchTrap, "changeFromDirective", function () {
+                            geojson.options = {
+                                style: geojson.style,
+                                filter: geojson.filter,
+                                onEachFeature: onEachFeature,
+                                pointToLayer: geojson.pointToLayer
+                            };
+                        });
                     }
 
                     var lObject = L.geoJson(geojson.data, geojson.options);
@@ -3751,6 +3537,7 @@ angular.module('ui-leaflet').directive('geojson', ["leafletLogger", "$rootScope"
                 _extendDirectiveControls(attrs.id, 'geojson', _create, _clean);
 
                 _maybeWatch(leafletScope, 'geojson', watchOptions, function (geojson) {
+                    if (watchTrap.changeFromDirective) return;
                     _create(geojson);
                 });
             });
@@ -3860,33 +3647,6 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                 getGroupIcon: function getGroupIcon(group) {
                     return group.visible ? $scope.icons.check : $scope.icons.uncheck;
                 },
-                changeOpacity: function changeOpacity(layer) {
-                    var op = $scope.layerProperties[layer.name].opacity;
-                    leafletData.getMap().then(function (map) {
-                        leafletData.getLayers().then(function (leafletLayers) {
-                            var ly;
-                            for (var k in $scope.layers.overlays) {
-                                if ($scope.layers.overlays[k] === layer) {
-                                    ly = leafletLayers.overlays[k];
-                                    break;
-                                }
-                            }
-
-                            if (map.hasLayer(ly)) {
-                                if (ly.setOpacity) {
-                                    ly.setOpacity(op / 100);
-                                }
-                                if (ly.getLayers && ly.eachLayer) {
-                                    ly.eachLayer(function (lay) {
-                                        if (lay.setOpacity) {
-                                            lay.setOpacity(op / 100);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    });
-                },
                 changeGroupVisibility: function changeGroupVisibility(groupName) {
                     if (!isDefined($scope.groupProperties[groupName])) {
                         return;
@@ -3909,7 +3669,7 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                 L.DomEvent.on(div, 'click', L.DomEvent.stopPropagation);
             }
         }],
-        template: '<div class="angular-leaflet-control-layers" ng-show="overlaysArray.length">' + '<h4 ng-if="title">{{ title }}</h4>' + '<div class="lf-baselayers">' + '<h5 class="lf-title" ng-if="baseTitle">{{ baseTitle }}</h5>' + '<div class="lf-row" ng-repeat="(key, layer) in baselayersArray">' + '<label class="lf-icon-bl" ng-click="changeBaseLayer(key, $event)">' + '<input class="leaflet-control-layers-selector" type="radio" name="lf-radio" ' + 'ng-show="false" ng-checked="baselayer === key" ng-value="key" /> ' + '<i class="lf-icon lf-icon-radio" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '</div>' + '</div>' + '<div class="lf-overlays">' + '<h5 class="lf-title" ng-if="overlaysTitle">{{ overlaysTitle }}</h5>' + '<div class="lf-container">' + '<div class="lf-row" ng-repeat="layer in (o = (overlaysArray | orderBy:\'index\':order))" ng-init="initIndex(layer, $index)">' + '<label class="lf-icon-ol-group" ng-if="showGroups &amp;&amp; layer.group &amp;&amp; layer.group != o[$index-1].group">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ' + 'ng-change="changeGroupVisibility(layer.group)" ng-model="groupProperties[layer.group].visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="getGroupIcon(groupProperties[layer.group])"></i>' + '<div class="lf-text">{{ layer.group }}</div>' + '</label>' + '<label class="lf-icon-ol">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ng-model="layer.visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '<div class="lf-icons">' + '<i class="lf-icon lf-up" ng-class="icons.up" ng-click="moveLayer(layer, layer.index - orderNumber, $event)"></i> ' + '<i class="lf-icon lf-down" ng-class="icons.down" ng-click="moveLayer(layer, layer.index + orderNumber, $event)"></i> ' + '<i class="lf-icon lf-toggle-legend" ng-class="icons.toggleLegend" ng-if="layer.legend" ng-click="toggleLegend(layer)"></i> ' + '<i class="lf-icon lf-open" ng-class="getOpacityIcon(layer)" ng-click="toggleOpacity($event, layer)"></i>' + '</div>' + '<div class="lf-legend" ng-if="showLegend(layer)" ng-bind-html="unsafeHTML(layer.legend)"></div>' + '<div class="lf-opacity clearfix" ng-if="layer.visible &amp;&amp; layerProperties[layer.name].opacityControl">' + '<label ng-if="rangeIsSupported" class="pull-left" style="width: 50%">0</label>' + '<label ng-if="rangeIsSupported" class="pull-left text-right" style="width: 50%">100</label>' + '<input ng-if="rangeIsSupported" class="clearfix" type="range" min="0" max="100" class="lf-opacity-control" ' + 'ng-model="layerProperties[layer.name].opacity" ng-change="changeOpacity(layer)"/>' + '<h6 ng-if="!rangeIsSupported">Range is not supported in this browser</h6>' + '</div>' + '</div>' + '</div>' + '</div>' + '</div>',
+        template: '<div class="angular-leaflet-control-layers" ng-show="overlaysArray.length">' + '<h4 ng-if="title">{{ title }}</h4>' + '<div class="lf-baselayers">' + '<h5 class="lf-title" ng-if="baseTitle">{{ baseTitle }}</h5>' + '<div class="lf-row" ng-repeat="(key, layer) in baselayersArray">' + '<label class="lf-icon-bl" ng-click="changeBaseLayer(key, $event)">' + '<input class="leaflet-control-layers-selector" type="radio" name="lf-radio" ' + 'ng-show="false" ng-checked="baselayer === key" ng-value="key" /> ' + '<i class="lf-icon lf-icon-radio" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '</div>' + '</div>' + '<div class="lf-overlays">' + '<h5 class="lf-title" ng-if="overlaysTitle">{{ overlaysTitle }}</h5>' + '<div class="lf-container">' + '<div class="lf-row" ng-repeat="layer in (o = (overlaysArray | orderBy:\'index\':order))" ng-init="initIndex(layer, $index)">' + '<label class="lf-icon-ol-group" ng-if="showGroups &amp;&amp; layer.group &amp;&amp; layer.group != o[$index-1].group">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ' + 'ng-change="changeGroupVisibility(layer.group)" ng-model="groupProperties[layer.group].visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="getGroupIcon(groupProperties[layer.group])"></i>' + '<div class="lf-text">{{ layer.group }}</div>' + '</label>' + '<label class="lf-icon-ol">' + '<input class="lf-control-layers-selector" type="checkbox" ng-show="false" ng-model="layer.visible"/> ' + '<i class="lf-icon lf-icon-check" ng-class="layer.icon"></i>' + '<div class="lf-text">{{layer.name}}</div>' + '</label>' + '<div class="lf-icons">' + '<i class="lf-icon lf-up" ng-class="icons.up" ng-click="moveLayer(layer, layer.index - orderNumber, $event)"></i> ' + '<i class="lf-icon lf-down" ng-class="icons.down" ng-click="moveLayer(layer, layer.index + orderNumber, $event)"></i> ' + '<i class="lf-icon lf-toggle-legend" ng-class="icons.toggleLegend" ng-if="layer.legend" ng-click="toggleLegend(layer)"></i> ' + '<i class="lf-icon lf-open" ng-class="getOpacityIcon(layer)" ng-click="toggleOpacity($event, layer)"></i>' + '</div>' + '<div class="lf-legend" ng-if="showLegend(layer)" ng-bind-html="unsafeHTML(layer.legend)"></div>' + '<div class="lf-opacity clearfix" ng-if="layer.visible &amp;&amp; layerProperties[layer.name].opacityControl">' + '<label ng-if="rangeIsSupported" class="pull-left" style="width: 50%">0</label>' + '<label ng-if="rangeIsSupported" class="pull-left text-right" style="width: 50%">100</label>' + '<input ng-if="rangeIsSupported" class="clearfix" type="range" min="0" max="1" step="0.05" ' + 'class="lf-opacity-control" ng-model="layerProperties[layer.name].layerOptions.opacity"/>' + '<h6 ng-if="!rangeIsSupported">Range is not supported in this browser</h6>' + '</div>' + '</div>' + '</div>' + '</div>' + '</div>',
         link: function link(scope, element, attrs, controller) {
             var isDefined = leafletHelpers.isDefined,
                 leafletScope = controller.getLeafletScope(),
@@ -3958,17 +3718,21 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                 leafletScope.$watch('layers.overlays', function (newOverlayLayers) {
                     var overlaysArray = [];
                     var groupVisibleCount = {};
-                    leafletData.getLayers().then(function (leafletLayers) {
+                    leafletData.getLayers().then(function () {
                         var key;
                         for (key in newOverlayLayers) {
                             var layer = newOverlayLayers[key];
                             layer.icon = scope.icons[layer.visible ? 'check' : 'uncheck'];
                             overlaysArray.push(layer);
+
                             if (!isDefined(scope.layerProperties[layer.name])) {
+                                if (isDefined(layer.layerOptions.opacity)) {
+                                    layer.layerOptions.opacity = 1;
+                                }
                                 scope.layerProperties[layer.name] = {
-                                    opacity: isDefined(layer.layerOptions.opacity) ? layer.layerOptions.opacity * 100 : 100,
                                     opacityControl: false,
-                                    showLegend: true
+                                    showLegend: true,
+                                    layerOptions: layer.layerOptions
                                 };
                             }
                             if (isDefined(layer.group)) {
@@ -3986,9 +3750,11 @@ angular.module('ui-leaflet').directive('layercontrol', ["$filter", "leafletLogge
                                     groupVisibleCount[layer.group].visibles++;
                                 }
                             }
-                            if (isDefined(layer.index) && leafletLayers.overlays[key].setZIndex) {
+                            /*
+                            if(isDefined(layer.index) && leafletLayers.overlays[key].setZIndex) {
                                 leafletLayers.overlays[key].setZIndex(newOverlayLayers[key].index);
                             }
+                            */
                         }
 
                         for (key in groupVisibleCount) {
@@ -4025,8 +3791,13 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                 createLayer = leafletLayerHelpers.createLayer,
                 safeAddLayer = leafletLayerHelpers.safeAddLayer,
                 safeRemoveLayer = leafletLayerHelpers.safeRemoveLayer,
+                changeOpacityListener = leafletLayerHelpers.changeOpacityListener,
                 updateLayersControl = leafletControlHelpers.updateLayersControl,
                 isLayersControlVisible = false;
+
+            scope.$on('$destroy', function () {
+                leafletControlHelpers.destroyMapLayersControl(scope.mapId);
+            });
 
             controller.getMap().then(function (map) {
 
@@ -4171,6 +3942,10 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                             if (newOverlayLayers[newName].visible === true) {
                                 safeAddLayer(map, leafletLayers.overlays[newName]);
                             }
+
+                            if (isDefined(newOverlayLayers[newName].index) && leafletLayers.overlays[newName].setZIndex) {
+                                leafletLayers.overlays[newName].setZIndex(newOverlayLayers[newName].index);
+                            }
                         } else {
                             // check for the .visible property to hide/show overLayers
                             if (newOverlayLayers[newName].visible && !map.hasLayer(leafletLayers.overlays[newName])) {
@@ -4178,6 +3953,24 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                             } else if (newOverlayLayers[newName].visible === false && map.hasLayer(leafletLayers.overlays[newName])) {
                                 // Safe remove when ArcGIS layers is loading.
                                 safeRemoveLayer(map, leafletLayers.overlays[newName], newOverlayLayers[newName].layerOptions);
+                            }
+
+                            // check for the .layerOptions.opacity property has changed.
+                            var ly = leafletLayers.overlays[newName];
+                            if (map.hasLayer(leafletLayers.overlays[newName])) {
+                                if (newOverlayLayers[newName].layerOptions.opacity !== oldOverlayLayers[newName].layerOptions.opacity) {
+
+                                    if (isDefined(ly.setOpacity)) {
+                                        ly.setOpacity(newOverlayLayers[newName].layerOptions.opacity);
+                                    }
+                                    if (isDefined(ly.getLayers) && isDefined(ly.eachLayer)) {
+                                        ly.eachLayer(changeOpacityListener(newOverlayLayers[newName].layerOptions.opacity));
+                                    }
+                                }
+
+                                if (isDefined(newOverlayLayers[newName].index) && ly.setZIndex && newOverlayLayers[newName].index !== oldOverlayLayers[newName].index) {
+                                    ly.setZIndex(newOverlayLayers[newName].index);
+                                }
                             }
                         }
 
@@ -4357,11 +4150,13 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
         deleteMarker = leafletMarkersHelpers.deleteMarker,
         getModelFromModels = leafletMarkersHelpers.getModelFromModels,
         getLayerModels = leafletMarkersHelpers.getLayerModels,
+        resetUnusedMarkerGroups = leafletMarkersHelpers.resetUnusedMarkerGroups,
         $it = leafletIterators,
         _defaultWatchOptions = leafletHelpers.watchOptions,
         maybeWatch = leafletWatchHelpers.maybeWatch,
         extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
-        $log = leafletLogger;
+        $log = leafletLogger,
+        watchTrap = { changeFromDirective: false };
 
     var _getLMarker = function _getLMarker(leafletMarkers, name, maybeLayerName) {
         if (!Object.keys(leafletMarkers).length) return;
@@ -4414,52 +4209,49 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
     };
     //TODO: move to leafletMarkersHelpers??? or make a new class/function file (leafletMarkersHelpers is large already)
     var _addMarkers = function _addMarkers(mapId, markersToRender, oldModels, map, layers, leafletMarkers, leafletScope, watchOptions, maybeLayerName, skips) {
-        for (var newName in markersToRender) {
-            if (skips[newName]) continue;
+        $it.each(markersToRender, function (model, newName) {
+            if (skips[newName]) return;
 
             if (newName.search("-") !== -1) {
                 $log.error('The marker can\'t use a "-" on his key name: "' + newName + '".');
-                continue;
+                return;
             }
 
-            var model = Helpers.copy(markersToRender[newName]);
             var pathToMarker = Helpers.getObjectDotPath(maybeLayerName ? [maybeLayerName, newName] : [newName]);
             var maybeLMarker = _getLMarker(leafletMarkers, newName, maybeLayerName);
-            if (!isDefined(maybeLMarker)) {
-                //(nmccready) very important to not have model changes when lObject is changed
-                //this might be desirable in some cases but it causes two-way binding to lObject which is not ideal
-                //if it is left as the reference then all changes from oldModel vs newModel are ignored
-                //see _destroy (where modelDiff becomes meaningless if we do not copy here)
-                var marker = createMarker(model);
-                var layerName = (model ? model.layer : undefined) || maybeLayerName; //original way takes pref
-                if (!isDefined(marker)) {
-                    $log.error(errorHeader + ' Received invalid data on the marker ' + newName + '.');
-                    continue;
-                }
-                _setLMarker(marker, leafletMarkers, newName, maybeLayerName);
+            Helpers.modelChangeInDirective(watchTrap, "changeFromDirective", function () {
+                if (!isDefined(maybeLMarker)) {
 
-                // Bind message
-                if (isDefined(model.message)) {
-                    marker.bindPopup(model.message, model.popupOptions);
-                }
+                    var marker = createMarker(model);
+                    var layerName = (model ? model.layer : undefined) || maybeLayerName; //original way takes pref
+                    if (!isDefined(marker)) {
+                        $log.error(errorHeader + ' Received invalid data on the marker ' + newName + '.');
+                        return;
+                    }
+                    _setLMarker(marker, leafletMarkers, newName, maybeLayerName);
 
-                // Add the marker to a cluster group if needed
-                if (isDefined(model.group)) {
-                    var groupOptions = isDefined(model.groupOption) ? model.groupOption : null;
-                    addMarkerToGroup(marker, model.group, groupOptions, map);
-                }
+                    // Bind message
+                    if (isDefined(model.message)) {
+                        marker.bindPopup(model.message, model.popupOptions);
+                    }
 
-                // Show label if defined
-                if (Helpers.LabelPlugin.isLoaded() && isDefined(model.label) && isDefined(model.label.message)) {
-                    marker.bindLabel(model.label.message, model.label.options);
-                }
+                    // Add the marker to a cluster group if needed
+                    if (isDefined(model.group)) {
+                        var groupOptions = isDefined(model.groupOption) ? model.groupOption : null;
+                        addMarkerToGroup(marker, model.group, groupOptions, map);
+                    }
 
-                // Check if the marker should be added to a layer
-                if (isDefined(model) && (isDefined(model.layer) || isDefined(maybeLayerName))) {
+                    // Show label if defined
+                    if (Helpers.LabelPlugin.isLoaded() && isDefined(model.label) && isDefined(model.label.message)) {
+                        marker.bindLabel(model.label.message, model.label.options);
+                    }
 
-                    var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker, watchOptions.individual.type, map);
-                    if (!pass) continue; //something went wrong move on in the loop
-                } else if (!isDefined(model.group)) {
+                    // Check if the marker should be added to a layer
+                    if (isDefined(model) && (isDefined(model.layer) || isDefined(maybeLayerName))) {
+
+                        var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker, watchOptions.individual.type, map);
+                        if (!pass) return; //something went wrong move on in the loop
+                    } else if (!isDefined(model.group)) {
                         // We do not have a layer attr, so the marker goes to the map layer
                         map.addLayer(marker);
                         if (watchOptions.individual.type === null && model.focus === true) {
@@ -4467,17 +4259,18 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                         }
                     }
 
-                if (watchOptions.individual.type !== null) {
-                    addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map, watchOptions.individual);
-                }
+                    if (watchOptions.individual.type !== null) {
+                        addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map, watchOptions.individual);
+                    }
 
-                listenMarkerEvents(marker, model, leafletScope, watchOptions.individual.type, map);
-                leafletMarkerEvents.bindEvents(mapId, marker, pathToMarker, model, leafletScope, layerName);
-            } else {
-                var oldModel = getModelFromModels(oldModels, newName, maybeLayerName);
-                updateMarker(model, oldModel, maybeLMarker, pathToMarker, leafletScope, layers, map);
-            }
-        }
+                    listenMarkerEvents(marker, model, leafletScope, watchOptions.individual.type, map);
+                    leafletMarkerEvents.bindEvents(mapId, marker, pathToMarker, model, leafletScope, layerName);
+                } else {
+                    var oldModel = getModelFromModels(oldModels, newName, maybeLayerName);
+                    updateMarker(model, oldModel, maybeLMarker, pathToMarker, leafletScope, layers, map);
+                }
+            });
+        });
     };
     var _seeWhatWeAlreadyHave = function _seeWhatWeAlreadyHave(markerModels, oldMarkerModels, lMarkers, isEqual, cb) {
         var hasLogged = false,
@@ -4497,7 +4290,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                 //ie the options to only check !== (reference check) instead of angular.equals (slow)
                 newMarker = markerModels[name];
                 oldMarker = oldMarkerModels[name];
-                equals = angular.equals(newMarker, oldMarker) && isEqual;
+                equals = isEqual && angular.equals(newMarker, oldMarker);
             }
             if (!isDefined(markerModels) || !Object.keys(markerModels).length || !isDefined(markerModels[name]) || !Object.keys(markerModels[name]).length || equals) {
                 if (cb && Helpers.isFunction(cb)) cb(newMarker, oldMarker, name);
@@ -4539,7 +4332,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function () {
+                    getLayers = function getLayers() {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -4557,6 +4350,7 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
 
                 getLayers().then(function (layers) {
                     var _clean = function _clean(models, oldModels) {
+                        resetUnusedMarkerGroups();
                         if (isNested) {
                             $it.each(models, function (markerToMaybeDel, layerName) {
                                 var oldLayerModels = getLayerModels(oldModels, layerName);
@@ -4586,7 +4380,11 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                     leafletData.setMarkers(leafletMarkers, attrs.id);
 
                     maybeWatch(leafletScope, 'markers', watchOptions, function (newMarkers, oldMarkers) {
+                        if (watchTrap.changeFromDirective) return;
                         _create(newMarkers, oldMarkers);
+                    });
+                    scope.$on('$destroy', function () {
+                        _destroy(leafletScope.markers, {}, leafletMarkers, map, layers);
                     });
                 });
             });
@@ -4664,7 +4462,7 @@ angular.module('ui-leaflet').directive('paths', ["leafletLogger", "$q", "leaflet
                 if (isDefined(controller[1])) {
                     getLayers = controller[1].getLayers;
                 } else {
-                    getLayers = function () {
+                    getLayers = function getLayers() {
                         var deferred = $q.defer();
                         deferred.resolve();
                         return deferred.promise;
@@ -5166,7 +4964,9 @@ angular.module('ui-leaflet').factory('leafletMapEvents', ["$rootScope", "$q", "l
     };
 
     var _genDispatchMapEvent = function _genDispatchMapEvent(scope, eventName, logic, maybeMapId) {
-        if (maybeMapId) maybeMapId = maybeMapId + '.';
+        if (maybeMapId) {
+            maybeMapId = maybeMapId + '.';
+        }
         return function (e) {
             // Put together broadcast name
             var broadcastName = 'leafletDirectiveMap.' + maybeMapId + eventName;
@@ -5192,11 +4992,15 @@ angular.module('ui-leaflet').factory('leafletMapEvents', ["$rootScope", "$q", "l
         }
     };
 
-    var _addEvents = function _addEvents(map, mapEvents, contextName, scope, logic) {
+    var _addEvents = function _addEvents(map, mapId, mapEvents, contextName, scope, logic) {
         leafletIterators.each(mapEvents, function (eventName) {
             var context = {};
             context[contextName] = eventName;
-            map.on(eventName, _genDispatchMapEvent(scope, eventName, logic, map._container.id || ''), context);
+            if (!mapId) {
+                mapId = map._container.id || '';
+            }
+
+            map.on(eventName, _genDispatchMapEvent(scope, eventName, logic, mapId), context);
         });
     };
 
@@ -5263,7 +5067,7 @@ angular.module('ui-leaflet').factory('leafletMarkerEvents', ["$rootScope", "$q",
 
 'use strict';
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 angular.module('ui-leaflet').factory('leafletPathEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletLabelEvents", "leafletEventsHelpers", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
     var isDefined = leafletHelpers.isDefined,

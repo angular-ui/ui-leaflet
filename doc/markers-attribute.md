@@ -28,7 +28,7 @@ The _markers_ definition is composed by a group of named objects (markers) every
 
 Marker attributes
 -----------------
-Every marker can have these properties:
+Every marker can have these properties (many are standard Leaflet marker options, and are [documented here](http://leafletjs.com/reference.html#marker-options)):
 
 * **lat**. Number. Latitude.
 * **lng**. Number. Longitude.
@@ -40,6 +40,7 @@ Every marker can have these properties:
 * **popupOptions**. Options object passed to the leaflet popup. You can see [here](http://leafletjs.com/reference.html#popup-options) its properties.
 * **enable**. Array of Strings. Only events listed in this property will be watched and converted to angular events. Format for the angular event name: `leafletDirectiveMarker.event_name`.
 * **disable**. Array of Strings. All leaflet marker events, except the one listed in this property, will be watched and converted to angular events. This will overwrite **enable** property.
+* **zIndexOffset**.  Number.  By default, zIndex for the marker image is set automatically based on its latitude. Use this option if you want to put the marker on top of all others (or below), specifying a high value like 1000 (or high negative value, respectively).
 * **icon**. We can set the type of icon to be shown on our marker with this property. We can define the same properties of this property on leaflet ([documented here](http://leafletjs.com/reference.html#icon)), and furthermore we can define a special type of icon _awesomeMarker_, which makes use of the [Awesome Markers project](https://github.com/lvoogdt/Leaflet.awesome-markers) to customize the icon based on the _icon_ and _markerColor_ properties. Let's see some examples:
 
 ```

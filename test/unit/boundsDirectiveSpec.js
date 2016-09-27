@@ -19,11 +19,11 @@ describe('Directive: bounds', function() {
         bounds = {
             southWest: {
                 lat: 51.508742458803326,
-                lng: -0.087890625,
+                lng: -0.087890625328913,
             },
             northEast: {
                 lat: 51.508742458803326,
-                lng: -0.087890625,
+                lng: -0.087890625328913,
             }
         };
     });
@@ -143,10 +143,11 @@ describe('Directive: bounds', function() {
 
         scope.$digest();
         var mapBounds = map.getBounds();
-        /* Since there is no clean way to verify if the options have been used by leaflet,
-           we just verify that the bounds we provided to the directive are different from the map's bounds.
-           Other tests already ensure, that the bounds are correct without the options...
-         */
+        /*
+        Since there is no clean way to verify if the options have been used by leaflet,
+        we just verify that the bounds we provided to the directive are different from the map's bounds.
+        Other tests already ensure, that the bounds are correct without the options...
+        */
         expect(mapBounds.getSouthWest().lat).not.toEqual(bounds.southWest.lat);
         expect(mapBounds.getSouthWest().lng).not.toEqual(bounds.southWest.lng);
         expect(mapBounds.getNorthEast().lat).not.toEqual(bounds.northEast.lat);

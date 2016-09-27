@@ -98,33 +98,6 @@ angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafle
                 getGroupIcon: function(group) {
                     return group.visible? $scope.icons.check:$scope.icons.uncheck;
                 },
-                changeOpacity: function(layer) {
-                    var op = $scope.layerProperties[layer.name].opacity;
-                    leafletData.getMap().then(function(map) {
-                        leafletData.getLayers().then(function(leafletLayers) {
-                            var ly;
-                            for(var k in $scope.layers.overlays) {
-                                if($scope.layers.overlays[k] === layer) {
-                                    ly = leafletLayers.overlays[k];
-                                    break;
-                                }
-                            }
-
-                            if(map.hasLayer(ly)) {
-                                if(ly.setOpacity) {
-                                    ly.setOpacity(op/100);
-                                }
-                                if(ly.getLayers && ly.eachLayer) {
-                                    ly.eachLayer(function(lay) {
-                                        if(lay.setOpacity) {
-                                            lay.setOpacity(op/100);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    });
-                },
                 changeGroupVisibility: function(groupName) {
                     if(!isDefined($scope.groupProperties[groupName])) {
                         return;
@@ -186,8 +159,8 @@ angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafle
                         '<div class="lf-opacity clearfix" ng-if="layer.visible &amp;&amp; layerProperties[layer.name].opacityControl">' +
                             '<label ng-if="rangeIsSupported" class="pull-left" style="width: 50%">0</label>' +
                             '<label ng-if="rangeIsSupported" class="pull-left text-right" style="width: 50%">100</label>' +
-                            '<input ng-if="rangeIsSupported" class="clearfix" type="range" min="0" max="100" class="lf-opacity-control" ' +
-                                'ng-model="layerProperties[layer.name].opacity" ng-change="changeOpacity(layer)"/>' +
+                            '<input ng-if="rangeIsSupported" class="clearfix" type="range" min="0" max="1" step="0.05" ' +
+                                'class="lf-opacity-control" ng-model="layerProperties[layer.name].layerOptions.opacity"/>' +
                             '<h6 ng-if="!rangeIsSupported">Range is not supported in this browser</h6>' +
                         '</div>' +
                     '</div>' +
@@ -242,17 +215,21 @@ angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafle
                 leafletScope.$watch('layers.overlays', function(newOverlayLayers) {
                     var overlaysArray = [];
                     var groupVisibleCount = {};
-                    leafletData.getLayers().then(function(leafletLayers) {
+                    leafletData.getLayers().then(function() {
                         var key;
                         for(key in newOverlayLayers) {
                             var layer = newOverlayLayers[key];
                             layer.icon = scope.icons[(layer.visible? 'check':'uncheck')];
                             overlaysArray.push(layer);
+
                             if(!isDefined(scope.layerProperties[layer.name])) {
+                                if(isDefined(layer.layerOptions.opacity)) {
+                                    layer.layerOptions.opacity = 1;
+                                }
                                 scope.layerProperties[layer.name] = {
-                                    opacity: isDefined(layer.layerOptions.opacity)? layer.layerOptions.opacity*100:100,
                                     opacityControl: false,
-                                    showLegend: true
+                                    showLegend: true,
+                                    layerOptions: layer.layerOptions
                                 };
                             }
                             if(isDefined(layer.group)) {
@@ -270,9 +247,11 @@ angular.module('ui-leaflet').directive('layercontrol', function ($filter, leafle
                                     groupVisibleCount[layer.group].visibles++;
                                 }
                             }
+                            /*
                             if(isDefined(layer.index) && leafletLayers.overlays[key].setZIndex) {
                                 leafletLayers.overlays[key].setZIndex(newOverlayLayers[key].index);
                             }
+                            */
                         }
 
                         for(key in groupVisibleCount) {

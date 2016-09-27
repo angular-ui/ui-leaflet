@@ -49,8 +49,8 @@ describe('Directive: leaflet', function() {
         var decimalPlaces = 13; //PhantomJS appears to be diff then chrome
         //This test doesn't really prove anything; be better to create a map object from scratch and
         //set its maxbounds and compare it to this one through the directive
-        expect(leafletMap.getCenter().lat.toFixed(decimalPlaces)).toBe((52.0524904760010).toFixed(decimalPlaces));
-        expect(leafletMap.getCenter().lng.toFixed(decimalPlaces)).toBe((21.0937500000000).toFixed(decimalPlaces));
+        expect(leafletMap.getCenter().lat.toFixed(decimalPlaces)).toBe((52.2324256302307).toFixed(decimalPlaces));
+        expect(leafletMap.getCenter().lng.toFixed(decimalPlaces)).toBe((21.0134124755859).toFixed(decimalPlaces));
     });
 
 });

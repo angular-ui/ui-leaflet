@@ -25,20 +25,22 @@
                 },
                 mapbox_outdoors: {
                     name: 'Mapbox Outdoors',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                    url: '//api.mapbox.com/styles/v1/{user}/{mapId}/tiles/256/{z}/{x}/{y}?access_token={apiKey}',
                     type: 'xyz',
                     options: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lia3no0m'
+                        user: 'elesdoar',
+                        apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                        mapId: 'citng3g0g003s2it88y9lg769'
                     }
                 },
-                mapbox_wheat: {
+                mapbox_satellite: {
                     name: 'Mapbox Wheat Paste',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                    url: '//api.mapbox.com/styles/v1/{user}/{mapId}/tiles/256/{z}/{x}/{y}?access_token={apiKey}',
                     type: 'xyz',
                     options: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lia35jfp'
+                        user: 'elesdoar',
+                        apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                        mapId: 'citngqecv00362hphvm5m7myb'
                     }
                 }
             };
@@ -49,7 +51,7 @@
                     lng: -0.09,
                     zoom: 8
                 },
-                tiles: tilesDict.mapbox_wheat
+                tiles: tilesDict.mapbox_satellite
             });
 
             $scope.changeTiles = function(tiles) {
@@ -66,7 +68,7 @@
           <button ng-click="changeTiles('opencyclemap')" class="btn btn-default">OpenCycleMaps</button>
           <button ng-click="changeTiles('openstreetmap')" class="btn btn-default">OpenStreetMaps</button>
           <button ng-click="changeTiles('mapbox_outdoors')" class="btn btn-default">Mapbox Outdoors</button>
-          <button ng-click="changeTiles('mapbox_wheat')" class="btn btn-default">Mapbox Wheat Paste</button>
+          <button ng-click="changeTiles('mapbox_satellite')" class="btn btn-default">Mapbox Satellite</button>
       </p>
       <p>Current TileLayer Url: <strong ng-bind="tiles.url"></strong></p>
   </body>

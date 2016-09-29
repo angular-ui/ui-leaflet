@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-09-28
+*  ui-leaflet 1.0.0 2016-09-29
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -4253,12 +4253,12 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
                         var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker, watchOptions.individual.type, map);
                         if (!pass) return; //something went wrong move on in the loop
                     } else if (!isDefined(model.group)) {
-                            // We do not have a layer attr, so the marker goes to the map layer
-                            map.addLayer(marker);
-                            if (watchOptions.individual.type === null && model.focus === true) {
-                                marker.openPopup();
-                            }
+                        // We do not have a layer attr, so the marker goes to the map layer
+                        map.addLayer(marker);
+                        if (watchOptions.individual.type === null && model.focus === true) {
+                            marker.openPopup();
                         }
+                    }
 
                     if (watchOptions.individual.type !== null) {
                         addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map, watchOptions.individual);
@@ -5068,7 +5068,7 @@ angular.module('ui-leaflet').factory('leafletMarkerEvents', function ($rootScope
 
 'use strict';
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 angular.module('ui-leaflet').factory('leafletPathEvents', function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
     var isDefined = leafletHelpers.isDefined,

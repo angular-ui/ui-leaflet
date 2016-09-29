@@ -2679,12 +2679,10 @@ var app = angular.module('webapp');
                     baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            }
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                         },
                         osm: {
                             name: 'OpenStreetMap',
@@ -4067,7 +4065,7 @@ var app = angular.module('webapp');
                 });
                 layer.bringToFront();
                 $scope.selectedCountry = feature;
-                console.log(feature);
+                //console.log(feature);
             }
             // Get the countries data from a JSON
             $http.get("json/all.json").success(function(data, status) {

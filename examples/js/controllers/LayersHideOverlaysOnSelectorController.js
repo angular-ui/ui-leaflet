@@ -11,14 +11,11 @@
                 layers: {
                     baselayers: {
                         xyz: {
-                            name: 'Mapbox Streets',
-                            url: 'http://a.tiles.mapbox.com/v3/examples.map-i86nkdio/{z}/{x}/{y}.png',
-                            type: 'xyz',
-                            layerOptions: {
-                                showOnSelector: true,
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.ll5em372'
-                            }
+                            name: 'Mapbox Outdoors',
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                            key: 'citng3g0g003s2it88y9lg769'
                         }
                     },
                     overlays: {

@@ -110,7 +110,7 @@
                             [ markers.London, markers.Lincoln ],
                             [ markers.Manchester, markers.Worcester]
                         ],
-                        type: 'multiPolyline',
+                        type: 'polyline',
                         layer: 'lines'
                     },
                     c1: {
@@ -143,7 +143,7 @@
                             [ markers.London, markers.Worcester, markers.Northhampton ],
                             [ markers.Manchester, markers.Lincoln, markers.York ]
                         ],
-                        type: 'multiPolygon',
+                        type: 'polygon',
                         layer: 'shapes'
                     },
                     r1: {

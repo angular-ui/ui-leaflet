@@ -77,9 +77,11 @@
                 layers2: {
                     baselayers: {
                         mapbox: {
-                            name: 'Mapbox Terrain',
-                            url: 'http://a.tiles.mapbox.com/v3/examples.map-i86nkdio/{z}/{x}/{y}.png',
-                            type: 'xyz'
+                            name: 'Mapbox Light',
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                         }
                     }
                 },

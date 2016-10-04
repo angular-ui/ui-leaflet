@@ -35,7 +35,7 @@
                     latlngs: [ europeCapitals.London, europeCapitals.Madrid, europeCapitals.Rome ]
                 },
                 multiPolyline: {
-                    type: "multiPolyline",
+                    type: "polyline",
                     latlngs: [
                         [ europeCapitals.London, europeCapitals.Lisbon ],
                         [ europeCapitals.Paris, europeCapitals.Madrid ],
@@ -47,7 +47,7 @@
                    latlngs: [ europeCapitals.London, europeCapitals.Lisbon , europeCapitals.Madrid, europeCapitals.Paris ]
                 },
                 multiPolygon: {
-                    type: "multiPolygon",
+                    type: "polygon",
                     latlngs: [
                                 [ europeCapitals.London, europeCapitals.Lisbon , europeCapitals.Madrid, europeCapitals.Paris ],
                                 [ europeCapitals.Berlin, europeCapitals.Rome, europeCapitals.Brussels ]

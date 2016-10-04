@@ -76,7 +76,7 @@
 	                            [ $scope.markers.London, $scope.markers.Lincoln ],
                                 [ $scope.markers.Manchester, $scope.markers.Worcester]
                             ],
-	                        type: 'multiPolyline'
+	                        type: 'polyline'
                         },
 	                    c1: {
 		                    weight: 2,
@@ -105,7 +105,7 @@
 	                            [ $scope.markers.London, $scope.markers.Worcester, $scope.markers.Northhampton ],
                                 [ $scope.markers.Manchester, $scope.markers.Lincoln, $scope.markers.York ]
                             ],
-		                    type: 'multiPolygon'
+		                    type: 'polygon'
 	                    },
 	                    r1: {
 		                    latlngs: [ $scope.markers.Lincoln, $scope.markers.York ],

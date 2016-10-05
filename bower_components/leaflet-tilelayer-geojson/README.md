@@ -64,11 +64,9 @@ A string of the following form, that returns valid GeoJSON.
 ### GeoJSON options
 Options that will be passed to the resulting L.GeoJSON layer: [http://leafletjs.com/reference.html#geojson-options](http://leafletjs.com/reference.html#geojson-options)
 
+## Hosts
+1. npm: [https://www.npmjs.com/package/leaflet-tilelayer-geojson](https://www.npmjs.com/package/leaflet-tilelayer-geojson)
+1. cdnjs: [https://cdnjs.com/libraries/leaflet-tilelayer-geojson](https://cdnjs.com/libraries/leaflet-tilelayer-geojson)
 
 ## Contributors
-Thanks to the following people who contributed:
-
-* [Nelson Minar](https://github.com/NelsonMinar)
-* [Alex Barth](https://github.com/lxbarth)
-* [Pawel Paprota](https://github.com/ppawel)
-* [Mick Thompson](https://github.com/dthompson)
+Thanks to the following people who contributed: https://github.com/glenrobertson/leaflet-tilelayer-geojson/graphs/contributors

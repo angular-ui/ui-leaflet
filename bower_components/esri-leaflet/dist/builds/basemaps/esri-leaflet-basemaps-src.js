@@ -1,5 +1,5 @@
-/*! esri-leaflet - v1.0.0 - 2015-07-10
-*   Copyright (c) 2015 Environmental Systems Research Institute, Inc.
+/*! esri-leaflet - v1.0.3 - 2016-07-03
+*   Copyright (c) 2016 Environmental Systems Research Institute, Inc.
 *   Apache License*/
 (function (factory) {
   //define an AMD module that relies on 'leaflet'
@@ -17,7 +17,7 @@
   }
 }(function (L) {
 var EsriLeaflet = { //jshint ignore:line
-  VERSION: '1.0.0',
+  VERSION: '1.0.3',
   Layers: {},
   Services: {},
   Controls: {},
@@ -458,7 +458,7 @@ if(typeof window !== 'undefined' && window.L){
     },
     onRemove: function(map){
       // check to make sure the logo hasn't already been removed
-      if(this._logo && this._logo._container){
+      if(map._hasEsriLogo && this._logo && this._logo._container){
         map.removeControl(this._logo);
         map._hasEsriLogo = false;
       }
@@ -540,6 +540,7 @@ if(typeof window !== 'undefined' && window.L){
   };
 
 })(EsriLeaflet);
+
 
 EsriLeaflet.Controls.Logo = L.Control.extend({
   options: {

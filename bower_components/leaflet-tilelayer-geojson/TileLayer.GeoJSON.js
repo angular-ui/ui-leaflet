@@ -13,7 +13,7 @@ L.TileLayer.Ajax = L.TileLayer.extend({
                 return;
             }
             var s = req.status;
-            if ((s >= 200 && s < 300) || s === 304) {
+            if ((s >= 200 && s < 300 && s != 204) || s === 304) {
                 tile.datum = JSON.parse(req.responseText);
                 layer._tileLoaded(tile, tilePoint);
             } else {
@@ -33,7 +33,7 @@ L.TileLayer.Ajax = L.TileLayer.extend({
     },
     _reset: function () {
         L.TileLayer.prototype._reset.apply(this, arguments);
-        for (var i in this._requests) {
+        for (var i = 0; i < this._requests.length; i++) {
             this._requests[i].abort();
         }
         this._requests = [];
@@ -73,19 +73,26 @@ L.TileLayer.GeoJSON = L.TileLayer.Ajax.extend({
         L.TileLayer.Ajax.prototype._reset.apply(this, arguments);
     },
 
+    _getUniqueId: function() {
+        return String(this._leaflet_id || ''); // jshint ignore:line
+    },
+
     // Remove clip path elements from other earlier zoom levels
     _removeOldClipPaths: function  () {
         for (var clipPathId in this._clipPathRectangles) {
-            var clipPathZXY = clipPathId.split('_').slice(1);
-            var zoom = parseInt(clipPathZXY[0], 10);
-            if (zoom !== this._map.getZoom()) {
-                var rectangle = this._clipPathRectangles[clipPathId];
-                this._map.removeLayer(rectangle);
-                var clipPath = document.getElementById(clipPathId);
-                if (clipPath !== null) {
-                    clipPath.parentNode.removeChild(clipPath);
+            var prefix = clipPathId.split('tileClipPath')[0];
+            if (this._getUniqueId() === prefix) {
+                var clipPathZXY = clipPathId.split('_').slice(1);
+                var zoom = parseInt(clipPathZXY[0], 10);
+                if (zoom !== this._map.getZoom()) {
+                    var rectangle = this._clipPathRectangles[clipPathId];
+                    this._map.removeLayer(rectangle);
+                    var clipPath = document.getElementById(clipPathId);
+                    if (clipPath !== null) {
+                        clipPath.parentNode.removeChild(clipPath);
+                    }
+                    delete this._clipPathRectangles[clipPathId];
                 }
-                delete this._clipPathRectangles[clipPathId];
             }
         }
     },
@@ -123,7 +130,7 @@ L.TileLayer.GeoJSON = L.TileLayer.Ajax.extend({
         }
 
         // Create the clipPath for the tile if it doesn't exist
-        var clipPathId = 'tileClipPath_' + tilePoint.z + '_' + tilePoint.x + '_' + tilePoint.y;
+        var clipPathId = this._getUniqueId() + 'tileClipPath_' + tilePoint.z + '_' + tilePoint.x + '_' + tilePoint.y;
         var clipPath = document.getElementById(clipPathId);
         if (clipPath === null) {
             clipPath = document.createElementNS(L.Path.SVG_NS, 'clipPath');

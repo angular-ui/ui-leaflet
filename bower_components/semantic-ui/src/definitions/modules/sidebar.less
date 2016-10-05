@@ -3,7 +3,6 @@
  * http://github.com/semantic-org/semantic-ui/
  *
  *
- * Copyright 2015 Contributors
  * Released under the MIT license
  * http://opensource.org/licenses/MIT
  *
@@ -48,7 +47,6 @@
 /* GPU Layers for Child Elements */
 .ui.sidebar > * {
   backface-visibility: hidden;
-  transform: rotateZ(0deg);
 }
 
 
@@ -265,13 +263,13 @@ html.ios body {
 ---------------*/
 
 /* Left / Right */
-.ui[class*="very thin"].left.sidebar,
-.ui[class*="very thin"].right.sidebar {
-  width: @veryThinWidth;
-}
 .ui.thin.left.sidebar,
 .ui.thin.right.sidebar {
   width: @thinWidth;
+}
+.ui[class*="very thin"].left.sidebar,
+.ui[class*="very thin"].right.sidebar {
+  width: @veryThinWidth;
 }
 .ui.left.sidebar,
 .ui.right.sidebar {
@@ -287,13 +285,13 @@ html.ios body {
 }
 
 /* Left Visible */
-.ui.visible[class*="very thin"].left.sidebar ~ .fixed,
-.ui.visible[class*="very thin"].left.sidebar ~ .pusher {
-  transform: translate3d(@veryThinWidth, 0, 0);
-}
 .ui.visible.thin.left.sidebar ~ .fixed,
 .ui.visible.thin.left.sidebar ~ .pusher {
   transform: translate3d(@thinWidth, 0, 0);
+}
+.ui.visible[class*="very thin"].left.sidebar ~ .fixed,
+.ui.visible[class*="very thin"].left.sidebar ~ .pusher {
+  transform: translate3d(@veryThinWidth, 0, 0);
 }
 .ui.visible.wide.left.sidebar ~ .fixed,
 .ui.visible.wide.left.sidebar ~ .pusher {
@@ -305,13 +303,13 @@ html.ios body {
 }
 
 /* Right Visible */
-.ui.visible[class*="very thin"].right.sidebar ~ .fixed,
-.ui.visible[class*="very thin"].right.sidebar ~ .pusher {
-  transform: translate3d(-@veryThinWidth, 0, 0);
-}
 .ui.visible.thin.right.sidebar ~ .fixed,
 .ui.visible.thin.right.sidebar ~ .pusher {
   transform: translate3d(-@thinWidth, 0, 0);
+}
+.ui.visible[class*="very thin"].right.sidebar ~ .fixed,
+.ui.visible[class*="very thin"].right.sidebar ~ .pusher {
+  transform: translate3d(-@veryThinWidth, 0, 0);
 }
 .ui.visible.wide.right.sidebar ~ .fixed,
 .ui.visible.wide.right.sidebar ~ .pusher {

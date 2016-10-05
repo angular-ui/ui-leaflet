@@ -1,6 +1,6 @@
 Leaflet-providers
 =================
-An extension to [Leaflet](http://leafletjs.com/) that contains configurations for various free tile providers.
+An extension to [Leaflet](http://leafletjs.com/) that contains configurations for various free<sup>[1](#what-is-free)</sup> tile providers.
 
 # Usage
 Leaflet-providers [providers](#providers) are refered to with a `provider[.<variant>]`-string. Let's say you want to add the nice [Watercolor](http://maps.stamen.com/#watercolor/) style from Stamen to your map, you pass `Stamen.Watercolor` to the `L.tileLayer.provider`-constructor, which will return a [L.TileLayer](http://leafletjs.com/reference.html#tilelayer) instance for Stamens Watercolor tile layer.
@@ -21,11 +21,11 @@ Some providers have retina tiles for which the URL only needs to be slightly adj
 
 # Providers
 
-Leaflet-providers provides tile layers from different providers, including *OpenStreetMap*, *MapQuestOpen*, *Stamen*, *Esri* and *OpenWeatherMap*. The full listing of free to use layers can be [previewed](http://leaflet-extras.github.io/leaflet-providers/preview/index.html). The page will show you the name to use with `leaflet-providers.js` and the code to use it without dependencies.
+Leaflet-providers provides tile layers from different providers, including *OpenStreetMap*, *Stamen*, *Esri* and *OpenWeatherMap*. The full listing of free to use layers can be [previewed](http://leaflet-extras.github.io/leaflet-providers/preview/index.html). The page will show you the name to use with `leaflet-providers.js` and the code to use it without dependencies.
 
 ## Providers requiring registration
 
-In addition to the providers you are free to use, we support some layers which require registration.
+In addition to the providers you are free<b id="what-is-free">1</b> to use, we support some layers which require registration.
 
 ### HERE (formerly Nokia).
 
@@ -56,3 +56,8 @@ In order to use ArcGIS maps, you must [register](https://developers.arcgis.com/e
 # Attribution
 
 This work was inspired from <https://gist.github.com/1804938>, and originally created by [Stefan Seelmann](https://github.com/seelmann).
+
+### What do we mean by *free*?
+<b id="what-is-free">1</b>
+We try to maintain leaflet-providers in such a way that you'll be able to use the layers we include without paying money.
+This doesn't mean no limits apply, you should always check before using these layers for anything serious.

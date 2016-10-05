@@ -1,142 +1,196 @@
 /*
- * Creative Commons Copyright 2013 Ursudio <info@ursudio.com>
+ * MIT Copyright 2016 Ursudio <info@ursudio.com>
  * http://www.ursudio.com/
- * Please attribute Ursudio in any production associated with this javascript plugin.
+ * Please attribute Ursudio in any production associated with this JavaScript plugin.
  */
 
-L.TileLayer.WebGLHeatMap = L.Class.extend({
+L.WebGLHeatMap = L.Class.extend({
+
+	version : '0.7.7', // tested with leaflet v 0.7.7
 
     options: {
-        size: 30000, // in meters
+        size: 30000,
+        units : 'm', // m|px
         opacity: 1,
-	gradientTexture: false,
-	alphaRange: 1
+		gradientTexture: false,
+		alphaRange: 1
     },
-    
+
     initialize: function (options) {
-        this.data = [];
+    	var c = document.createElement("canvas");
+
         L.Util.setOptions(this, options);
+
+		c.id = 'webgl-leaflet-' + L.Util.stamp(this);
+        c.style.opacity = this.options.opacity;
+        c.style.position = 'absolute';
+        	
+        this.gl = createWebGLHeatmap({ 
+			canvas: c, 
+			gradientTexture: this.options.gradientTexture, 
+			alphaRange: [0, this.options.alphaRange]
+		});
+
+		this.canvas = c;
+    },
+
+    addTo : function (map) {
+    	map.addLayer( this );
+    	return this;
     },
 
     onAdd: function (map) {
         this.map = map;
-	var mapsize = map.getSize();
-	var options = this.options;
-	
-	var c = document.createElement("canvas");
-	c.id = 'webgl-leaflet-' + L.Util.stamp(this);
-        c.width = mapsize.x;
-        c.height = mapsize.y;
-        c.style.opacity = options.opacity;
-        c.style.position = 'absolute';
-		
-	map.getPanes().overlayPane.appendChild(c);
-        
-        this.WebGLHeatMap = createWebGLHeatmap({ 
-		canvas: c, 
-		gradientTexture: options.gradientTexture, 
-		alphaRange: [0, options.alphaRange]
-	});
 
-        this.canvas = c;
-        
-	map.on("move", this._plot, this);
+        if ( map.options.zoomAnimation ) {
+        	this.canvas.className = 'leaflet-zoom-animated';
+        }
 
-	/* hide layer on zoom, because it doesn't animate zoom */
-	map.on("zoomstart", this._hide, this);
-	map.on("zoomend", this._show, this);
-		
-        this._plot();
+		map.getPanes().overlayPane.appendChild( this.canvas );
+		this._events('on');
+		this.resize();
     },
     
     onRemove: function (map) {
-       	map.getPanes().overlayPane.removeChild(this.canvas);
-       	map.off("move", this._plot, this);
-	map.off("zoomstart", this._hide, this);
-	map.off("zoomend", this._show, this);
-    },
-	
-    _hide : function () {
-	this.canvas.style.display = 'none';
+       	map.getPanes().overlayPane.removeChild( this.canvas );
+       	this._events('off');
     },
 
-    _show : function () {
-	this.canvas.style.display = 'block';
-    },
-	
-    _clear: function () {
-	var heatmap = this.WebGLHeatMap;
-	heatmap.clear();
-	heatmap.display();
-    },
-	
-    _resizeRequest : undefined,
-	
-    _plot: function () {
-	this.active = true;
-	var map = this.map;
-	if (this._resizeRequest !== map._resizeRequest) {
-    	    this.resize();
-            this._resizeRequest = map._resizeRequest;
-	}
-	var heatmap = this.WebGLHeatMap;
-	heatmap.clear();
-	L.DomUtil.setPosition(this.canvas, map.latLngToLayerPoint(map.getBounds().getNorthWest()));
-        var dataLen = this.data.length;
-	if (dataLen) {
-            for (var i = 0; i < dataLen; i++) {
-		var dataVal = this.data[i],
-		latlng = new L.LatLng(dataVal[0], dataVal[1]),
-		point = map.latLngToContainerPoint(latlng);
-                heatmap.addPoint(
-                        Math.floor(point.x),
-                        Math.floor(point.y),
-                        this._scale(latlng),
-			dataVal[2]);
-            }
-            heatmap.update();
-            heatmap.display();
+    _events : function ( onoff ) {
+        var onoff = onoff || 'on',
+        	map = this.map,
+            events = [
+                'resize',
+                'move',
+                'moveend'
+            ];
+
+        if ( map.options.zoomAnimation ) {
+        	events.push( 'zoomanim' );
+        }
+
+        for (var i = 0, len = events.length; i < len; i++) {
+            var e = events[ i ];
+            map[ onoff ](e, this[ e ], this);
         }
     },
+
+    resize: function () {
+		var canvas = this.canvas,
+			size = this.map.getSize();
+		
+		canvas.width = size.x;
+		canvas.height = size.y;
+
+		this.gl.adjustSize();
+		this.reposition();
+		this.draw();
+    },
+    
+    reposition: function () {
+    	var pos = this.map._getMapPanePos().multiplyBy(-1);
+
+		L.DomUtil.setPosition(this.canvas, pos);
+    },
+
+    zoomanim : function ( e ) {
+        var map = this.map,
+            scale = e.scale,
+            offset = map._getCenterOffset( e.center )
+                ._multiplyBy( -scale )
+                .subtract( map._getMapPanePos() );
+
+        this.canvas.style[L.DomUtil.TRANSFORM] = L.DomUtil
+        	.getTranslateString( offset ) + 
+        	' scale(' + scale + ') ';
+    },
+
+    move : function () {
+		this.draw();
+    },
+
+    moveend : function () {
+    	this.resize();
+    },
 	
-    _scale: function (latlng) {
+    draw : function () {
+		var map = this.map,
+			heatmap = this.gl,
+			dataLen = this.data.length,
+			options = this.options;
+
+		if (!map) return;
+
+		this.reposition();
+
+		heatmap.clear();
+
+		if (dataLen) {
+
+            for (var i = 0; i < dataLen; i++) {
+				var dataVal = this.data[i],
+					latlng = L.latLng.apply(this, dataVal),
+					point = map.latLngToContainerPoint( latlng );
+                
+                heatmap.addPoint(
+                    Math.floor(point.x),
+                    Math.floor(point.y),
+                    this._scale(latlng),
+					dataVal[2]
+				);
+            }
+
+            heatmap.update();
+
+            if (this._multiply) {
+            	heatmap.multiply( this._multiply );
+            	heatmap.update();
+            }
+
+        }
+        heatmap.display();
+    },
+	
 	// necessary to maintain accurately sized circles
 	// to change scale to miles (for example), you will need to convert 40075017 (equatorial circumference of the Earth in metres) to miles
-        var lngRadius = (this.options.size / 40075017) * 360 / Math.cos(L.LatLng.DEG_TO_RAD * latlng.lat);
-	var latlng2 = new L.LatLng(latlng.lat, latlng.lng - lngRadius);
-	var point = this.map.latLngToLayerPoint(latlng);
-	var point2 = this.map.latLngToLayerPoint(latlng2);
-        
-	return Math.max(Math.round(point.x - point2.x), 1);
+    _scale: function (latlng) {
+    	if (this.options.units == 'px') return this.options.size;
+
+        var map = this.map,
+        	lngRadius = (this.options.size / 40075017) * 
+        	360 / Math.cos(L.LatLng.DEG_TO_RAD * latlng.lat),
+			latlng2 = new L.LatLng(latlng.lat, latlng.lng - lngRadius),
+			point = map.latLngToLayerPoint(latlng),
+			point2 = map.latLngToLayerPoint(latlng2);
+	        
+		return Math.max(Math.round(point.x - point2.x), 1);
     },
+
+    data : [],
 	
-    resize: function () {
-	//helpful for maps that change sizes
-	var mapsize = this.map.getSize();
-	this.canvas.width = mapsize.x;
-	this.canvas.height = mapsize.y;
-
-	this.WebGLHeatMap.adjustSize();
-    },
-
     addDataPoint: function (lat, lon, value) {
         this.data.push( [ lat, lon, value / 100 ] );
     },
 	
     setData: function (dataset) {
-	// format: [[lat, lon, intensity],...]
-	this.data = dataset;
+		// format: [[lat, lon, intensity],...]
+		this.data = dataset;
+		this._multiply = null;
+		this.draw();
     },
 	
-    clearData: function () {
-	this.data = [];
+    clear: function () {
+		this.setData([]);
     },
-	
-    update: function () {
-	this._plot();
+
+    // affects original points
+    multiply: function (n) {
+    	this._multiply = n;
+    	this.draw();
     }
+
 });
 
-L.TileLayer.webglheatmap = function (options) {
-    return new L.TileLayer.WebGLHeatMap(options);
+L.webGLHeatmap = function ( options ) {
+    return new L.WebGLHeatMap( options );
 };

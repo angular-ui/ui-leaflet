@@ -1,12 +1,20 @@
 {
   "name": "Leaflet.vector-markers",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Vector SVG markers for Leaflet, with an option for Font Awesome/Twitter Bootstrap icons.",
+  "main": "dist/Leaflet.vector-markers.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/hiasinho/Leaflet.vector-markers.git"
   },
+  "scripts": {
+    "build:dist": "grunt",
+    "build": "npm run build:dist"
+  },
   "dependencies": {},
+  "peerDependencies": {
+    "leaflet": "^0.7.0"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-coffee-jshint": "^0.2.1",
@@ -28,7 +36,7 @@
     "Vector",
     "Icon"
   ],
-  "author": "Mathias Schneider",
+  "author": "Mathias Maisberger",
   "licenses": {
     "type": "MIT",
     "url": "http://www.opensource.org/licenses/mit-license.php"

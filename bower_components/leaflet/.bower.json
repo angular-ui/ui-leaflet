@@ -27,7 +27,7 @@
     "tag": "v0.7.7",
     "commit": "197f9d43b7bbc73c0492bf62cd666a5a98038098"
   },
-  "_source": "git://github.com/Leaflet/Leaflet.git",
-  "_target": "0.7.x",
+  "_source": "https://github.com/Leaflet/Leaflet.git",
+  "_target": "~0.7.x",
   "_originalSource": "leaflet"
 }

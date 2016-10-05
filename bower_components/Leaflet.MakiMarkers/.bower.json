@@ -1,7 +1,7 @@
 {
   "name": "Leaflet.MakiMarkers",
   "main": "Leaflet.MakiMarkers.js",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "homepage": "https://github.com/jseppi/Leaflet.MakiMarkers",
   "authors": [
     "James Seppi <james.seppi@gmail.com>"
@@ -21,13 +21,13 @@
     "test",
     "tests"
   ],
-  "_release": "1.0.1",
+  "_release": "2.0.0",
   "_resolution": {
     "type": "version",
-    "tag": "1.0.1",
-    "commit": "48d958176a706cd9be0d7ac8611c24e4d7b3bd25"
+    "tag": "v2.0.0",
+    "commit": "36fdc4356fc50458938aec5fdd31736d1c25a6e4"
   },
-  "_source": "git://github.com/jseppi/Leaflet.MakiMarkers.git",
+  "_source": "https://github.com/jseppi/Leaflet.MakiMarkers.git",
   "_target": "*",
   "_originalSource": "Leaflet.MakiMarkers"
 }

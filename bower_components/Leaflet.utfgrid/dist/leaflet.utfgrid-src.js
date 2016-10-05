@@ -95,7 +95,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 
 		this._update();
 
-		var zoom = this._map.getZoom();
+		var zoom = Math.round(this._map.getZoom());
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
 			return;
@@ -197,7 +197,7 @@ L.UtfGrid = (L.Layer || L.Class).extend({
 	_update: function () {
 
 		var bounds = this._map.getPixelBounds(),
-		    zoom = this._map.getZoom(),
+		    zoom = Math.round(this._map.getZoom()),
 		    tileSize = this.options.tileSize;
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {

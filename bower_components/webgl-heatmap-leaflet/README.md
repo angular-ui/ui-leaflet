@@ -22,25 +22,32 @@ Set up your map
 ---
 
 ```
-var baseURL = 'http://{s}.tile.cloudmade.com/{API}/{map_style}/256/{z}/{x}/{y}.png';
-var base = L.tileLayer(baseURL, { 
-	API: your-api, 
-	map_style: '44094' 
+var base = L.tileLayer( tileURL );
+var map = L.map('map', {
+	layers : [base],
+	center : [44.65, -63.57],
+	zoom: 12 
 });
-var map = L.map('map', {layers: [base]}).setView(your-lng-lat, your-zoom-level);
 ```
 
 Initialize Heatmap
 ---    
 ```
-var heatmap = new L.TileLayer.WebGLHeatMap({
-         size: diameter-in-meters
+var heatmap = new L.webGLHeatmap({
+    size: diameter-in-meters
+});
+```
+OR in pixels (doesn't scale with zoom levels):
+```
+var heatmap = new L.webGLHeatmap({
+    size: diameter-in-pixels,
+    units: 'px'
 });
 ```
 
 Add Data
 ---
-You should have an array of arrays in format: `[[lat, lng, intensity]...]`
+You should have an array of arrays in format: `[[lat, lng]...]` or be explicit with the point intensities: `[[lat, lng, intensity]...]`
 
 ```
 var dataPoints = [[44.6674, -63.5703, 37], [44.6826, -63.7552, 34], [44.6325, -63.5852, 41], [44.6467, -63.4696, 67], [44.6804, -63.487, 64], [44.6622, -63.5364, 40], [44.603, - 63.743, 52]];
@@ -48,31 +55,24 @@ var dataPoints = [[44.6674, -63.5703, 37], [44.6826, -63.7552, 34], [44.6325, -6
 
 With this you can add the whole dataset with `heatmap.setData(dataPoints)`.
 
-Alternatively, you could add an array of arrays in format: `[[lat, lng]...]` with a for loop that sets the intensity of each point to a single value (recommended):
-
-```
-var intensity = 50;
-for (var i = 0, len = dataPoints.length; i < len; i++) {
-	var point = dataPoints[i];
-	heatmap.addDataPoint(point[0],
-		 point[1],
-      		 intensity);
-}
-```
-
 Add heatmap to map
 ---
 
 ```
-map.addLayer(heatmap);
+map.addLayer( heatmap );
 ```
 
 Options
 ===
-* size (in meters)
+* size (in meters or pixels)
+* units (m or px)
 * opacity (for the canvas element)
-* gradientTexture (url to gradient PNG)
+* gradientTexture (image url or image)
 * alphaRange (adjust transparency by changing to value between 0 and 1)
+
+Methods
+===
+* multiply (alter the intensity values of all points by a given number)
 
 License
 ===

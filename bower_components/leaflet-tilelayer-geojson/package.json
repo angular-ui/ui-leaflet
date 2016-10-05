@@ -1,0 +1,21 @@
+{
+  "name": "leaflet-tilelayer-geojson",
+  "version": "1.0",
+  "description": "Leaflet plugin to render GeoJSON data over tile layer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glenrobertson/leaflet-tilelayer-geojson.git"
+  },
+  "keywords": [
+    "Leaflet",
+    "leaflet.js",
+    "tile",
+    "tilelayer",
+    "geojson"
+  ],
+  "author": "Glen Robertson",
+  "license": "BSD-2-Clause-FreeBSD",
+  "dependencies": {
+    "leaflet": "~0.7.1"
+  }
+}

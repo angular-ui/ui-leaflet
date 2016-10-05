@@ -15,6 +15,13 @@
     <div id="map" style="width: 600px; height: 400px"></div>
 
     <script>
+        //Request access token (see https://www.mapbox.com/api-documentation/?language=CLI#access-tokens)
+        var accessToken = prompt("Please enter your Mapbox API access token");
+        if (!accessToken) {
+            alert("Valid Mapbox API access token is required");
+        }
+        L.MakiMarkers.accessToken = accessToken;
+
         var map = L.map('map').setView([30.289, -97.74], 12);
 
         L.tileLayer('http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {

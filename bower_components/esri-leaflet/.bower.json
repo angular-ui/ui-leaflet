@@ -1,6 +1,6 @@
 {
   "name": "esri-leaflet",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "main": "dist/esri-leaflet.js",
   "ignore": [
     "**/.*",
@@ -11,13 +11,13 @@
     "site"
   ],
   "homepage": "https://github.com/Esri/esri-leaflet",
-  "_release": "1.0.0",
+  "_release": "1.0.4",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.0",
-    "commit": "dac3843526db16ddeb757b76676a008b44ac2b1b"
+    "tag": "v1.0.4",
+    "commit": "1a3224c80e6102a132f2804e9a80abf947f94225"
   },
-  "_source": "git://github.com/Esri/esri-leaflet.git",
-  "_target": "*",
+  "_source": "https://github.com/Esri/esri-leaflet.git",
+  "_target": "~1.0.4",
   "_originalSource": "esri-leaflet"
 }

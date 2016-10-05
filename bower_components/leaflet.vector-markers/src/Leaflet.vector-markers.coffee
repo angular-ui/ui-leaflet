@@ -2,7 +2,7 @@
 #  Leaflet.VectorMarkers, a plugin that adds colorful iconic svg markers for Leaflet, based on the Font Awesome icons
 #  (c) 2014, Mathias Schneider
 #
-#  Version: 0.0.3
+#  Version: 0.0.4
 #
 #  http://leafletjs.com
 #  https://github.com/hiasinho
@@ -29,10 +29,12 @@
       className: "vector-marker"
       prefix: "fa"
       spinClass: "fa-spin"
-      extraClasses: ""
+      extraIconClasses: ""
+      extraDivClasses: ""
       icon: "home"
       markerColor: "blue"
       iconColor: "white"
+      viewBox: '0 0 32 52'
 
     initialize: (options) ->
       options = L.Util.setOptions(this, options)
@@ -41,36 +43,45 @@
       div = (if (oldIcon and oldIcon.tagName is "DIV") then oldIcon else document.createElement("div"))
       options = @options
 
-      icon = @_createInner()  if options.icon
 
-      pin_path = L.VectorMarkers.MAP_PIN
+      pin_path = options.map_pin || L.VectorMarkers.MAP_PIN;
 
-      div.innerHTML = '<svg width="32px" height="52px" viewBox="0 0 32 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+      div.innerHTML = '<svg width="' + options.iconSize[0] + 'px" height="' + options.iconSize[1] + 'px" viewBox="' + options.viewBox + '" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
                         '<path d="' + pin_path + '" fill="' + options.markerColor + '"></path>' +
-                        icon +
                       '</svg>'
+      if options.icon
+        div.appendChild @_createInner()
+      options.className += if options.className.length > 0 then ' ' + options.extraDivClasses else options.extraDivClasses;
       @_setIconStyles div, "icon"
       @_setIconStyles div, "icon-" + options.markerColor
       div
-
     _createInner: ->
+      i = document.createElement('i')
       iconClass = undefined
       iconSpinClass = ""
       iconColorClass = ""
-      iconColorStyle = ""
+      iconColorStyle = undefined
+      iconWidthStyle = undefined
+      iconStyle = "style='"
       options = @options
-      if options.prefix is '' or options.icon.slice(0, options.prefix.length + 1) is options.prefix + "-"
-        iconClass = options.icon
+      ##
+      i.classList.add options.prefix
+      if options.extraClasses
+        i.classList.add options.extraClasses
+      if options.icon.slice(0, options.prefix.length + 1) == options.prefix + '-'
+        i.classList.add options.icon
       else
-        iconClass = options.prefix + "-" + options.icon
-      iconSpinClass = options.spinClass  if options.spin and typeof options.spinClass is "string"
+        i.classList.add options.prefix + '-' + options.icon
+      if options.spin and typeof options.spinClass == 'string'
+        i.classList.add options.spinClass
       if options.iconColor
-        if options.iconColor is "white" or options.iconColor is "black"
-          iconColorClass = "icon-" + options.iconColor
+        if options.iconColor == 'white' or options.iconColor == 'black'
+          i.classList.add 'icon-' + options.iconColor
         else
-          iconColorStyle = "style='color: " + options.iconColor + "' "
-      "<i " + iconColorStyle + "class='" + options.extraClasses + " " + options.prefix + " " + iconClass + " " + iconSpinClass + " " + iconColorClass + "'></i>"
-
+          i.style.color = options.iconColor
+      if options.iconSize
+        i.style.width = options.iconSize[0] + "px";
+      i
     _setIconStyles: (img, name) ->
       options = @options
       size = L.point(options[(if name is "shadow" then "shadowSize" else "iconSize")])

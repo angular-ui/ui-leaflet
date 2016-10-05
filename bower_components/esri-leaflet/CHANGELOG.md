@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.0.4
+
+### Fixed
+
+* ensure we remove all Esri logos from the map #795
+* ensure addfeature and removefeature events are emitted when L.esri.featureLayers are added to and removed from the map. #788
+
+## 1.0.3
+
+### Fixed
+
+* Ensure all visual relics of `L.esri.dynamicMapLayer` are removed outside `minZoom` and `maxZoom` defined for the layer #744
+
+## 1.0.2
+
+### Fixed
+
+* Make sure appropriate behavior is encountered when removing feature layers from the map while web requests are pending. #691
+
+## 1.0.1
+
+### Fixed
+
+* Ensure that we never try to remove the Esri logo from a map twice https://github.com/Esri/esri-leaflet/issues/667
+
 ## 1.0.0
 
 This represents the stable release of Esri Leaflet compatible with Leaflet 0.7.3. All future 1.0.X releases will be compatible with Leaflet 0.7.3 and contain only bug fixes. New features will only be added in Esri Leaflet 2.0.0 which will require Leaflet 1.0.0.

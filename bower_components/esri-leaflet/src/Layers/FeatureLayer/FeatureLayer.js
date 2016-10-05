@@ -30,12 +30,18 @@ EsriLeaflet.Layers.FeatureLayer = EsriLeaflet.Layers.FeatureManager.extend({
     map.on('zoomstart zoomend', function(e){
       this._zooming = (e.type === 'zoomstart');
     }, this);
+    this._removed = false;
+
     return EsriLeaflet.Layers.FeatureManager.prototype.onAdd.call(this, map);
   },
 
   onRemove: function(map){
+    this._removed = true;
     for (var i in this._layers) {
       map.removeLayer(this._layers[i]);
+      this.fire('removefeature', {
+        feature: this._layers[i].feature
+      });
     }
 
     return EsriLeaflet.Layers.FeatureManager.prototype.onRemove.call(this, map);
@@ -96,6 +102,9 @@ EsriLeaflet.Layers.FeatureLayer = EsriLeaflet.Layers.FeatureManager.extend({
 
       if(layer && !this._map.hasLayer(layer)){
         this._map.addLayer(layer);
+        this.fire('addfeature', {
+          feature: layer.feature
+        });
       }
 
       // update geomerty if neccessary
@@ -149,6 +158,9 @@ EsriLeaflet.Layers.FeatureLayer = EsriLeaflet.Layers.FeatureManager.extend({
         // add the layer if it is within the time bounds or our layer is not time enabled
         if(!this.options.timeField || (this.options.timeField && this._featureWithinTimeRange(geojson)) ){
           this._map.addLayer(newLayer);
+          this.fire('addfeature', {
+            feature: newLayer.feature
+          });
         }
       }
     }

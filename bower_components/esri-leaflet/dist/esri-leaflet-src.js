@@ -1,5 +1,5 @@
-/*! esri-leaflet - v1.0.0 - 2015-07-10
-*   Copyright (c) 2015 Environmental Systems Research Institute, Inc.
+/*! esri-leaflet - v1.0.3 - 2016-07-03
+*   Copyright (c) 2016 Environmental Systems Research Institute, Inc.
 *   Apache License*/
 (function (factory) {
   //define an AMD module that relies on 'leaflet'
@@ -17,7 +17,7 @@
   }
 }(function (L) {
 var EsriLeaflet = { //jshint ignore:line
-  VERSION: '1.0.0',
+  VERSION: '1.0.3',
   Layers: {},
   Services: {},
   Controls: {},
@@ -1642,7 +1642,7 @@ EsriLeaflet.Tasks.identifyFeatures = function(params){
     },
     onRemove: function(map){
       // check to make sure the logo hasn't already been removed
-      if(this._logo && this._logo._container){
+      if(map._hasEsriLogo && this._logo && this._logo._container){
         map.removeControl(this._logo);
         map._hasEsriLogo = false;
       }
@@ -1724,6 +1724,7 @@ EsriLeaflet.Tasks.identifyFeatures = function(params){
   };
 
 })(EsriLeaflet);
+
 
 EsriLeaflet.Layers.RasterLayer =  L.Class.extend({
   includes: L.Mixin.Events,
@@ -1934,6 +1935,9 @@ EsriLeaflet.Layers.RasterLayer =  L.Class.extend({
     }
 
     if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
+      if (this._currentImage) {
+        this._currentImage._map.removeLayer(this._currentImage);
+      }
       return;
     }
     var params = this._buildExportParams();
@@ -2920,7 +2924,7 @@ EsriLeaflet.Layers.FeatureGrid = L.Class.extend({
         }
 
         // no error, features
-        if(!error && featureCollection && featureCollection.features.length){
+        if(!error && featureCollection && featureCollection.features.length && !this._removed){
           // schedule adding features until the next animation frame
           EsriLeaflet.Util.requestAnimationFrame(L.Util.bind(function(){
             this._addFeatures(featureCollection.features, coords);
@@ -3391,12 +3395,18 @@ EsriLeaflet.Layers.FeatureLayer = EsriLeaflet.Layers.FeatureManager.extend({
     map.on('zoomstart zoomend', function(e){
       this._zooming = (e.type === 'zoomstart');
     }, this);
+    this._removed = false;
+
     return EsriLeaflet.Layers.FeatureManager.prototype.onAdd.call(this, map);
   },
 
   onRemove: function(map){
+    this._removed = true;
     for (var i in this._layers) {
       map.removeLayer(this._layers[i]);
+      this.fire('removefeature', {
+        feature: this._layers[i].feature
+      });
     }
 
     return EsriLeaflet.Layers.FeatureManager.prototype.onRemove.call(this, map);
@@ -3457,6 +3467,9 @@ EsriLeaflet.Layers.FeatureLayer = EsriLeaflet.Layers.FeatureManager.extend({
 
       if(layer && !this._map.hasLayer(layer)){
         this._map.addLayer(layer);
+        this.fire('addfeature', {
+          feature: layer.feature
+        });
       }
 
       // update geomerty if neccessary
@@ -3510,6 +3523,9 @@ EsriLeaflet.Layers.FeatureLayer = EsriLeaflet.Layers.FeatureManager.extend({
         // add the layer if it is within the time bounds or our layer is not time enabled
         if(!this.options.timeField || (this.options.timeField && this._featureWithinTimeRange(geojson)) ){
           this._map.addLayer(newLayer);
+          this.fire('addfeature', {
+            feature: newLayer.feature
+          });
         }
       }
     }

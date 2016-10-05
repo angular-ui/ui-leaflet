@@ -1,12 +1,13 @@
 {
   "name": "leaflet-draw",
   "description": "Vector drawing plugin for Leaflet",
-  "version": "0.2.4",
+  "version": "0.3.2",
   "main": [
     "dist/leaflet.draw-src.js",
     "dist/leaflet.draw.css",
     "dist/images/spritesheet-2x.png",
-    "dist/images/spritesheet.png"
+    "dist/images/spritesheet.png",
+    "dist/images/spritesheet.svg"
   ],
   "license": "MIT",
   "ignore": [
@@ -34,6 +35,10 @@
   ],
   "authors": [
     {
+      "name": "Jon West",
+      "email": "ddproxy@gmail.com"
+    },
+    {
       "name": "Jacob Toye"
     }
   ],
@@ -43,10 +48,9 @@
     "url": "https://github.com/Leaflet/Leaflet.draw.git"
   },
   "dependencies": {
-    "leaflet-dist": "0.7.x"
+    "leaflet": "^0.7.0"
   },
   "devDependencies": {
-    "leaflet": "~0.7.0",
     "jshint": "~2.3.0",
     "uglify-js": "~2.4.3",
     "jake": "~0.7.4",
@@ -56,13 +60,13 @@
     "karma-mocha": "~0.1.0",
     "karma-coverage": "~0.1.3"
   },
-  "_release": "0.2.4",
+  "_release": "0.3.2",
   "_resolution": {
     "type": "version",
-    "tag": "v0.2.4",
-    "commit": "07b1448f4eba33982f662398988f0337ee55cc02"
+    "tag": "v0.3.2",
+    "commit": "cfb4e6ea49dc540c599f6c96398bf1a2661fc1e7"
   },
-  "_source": "git://github.com/Leaflet/Leaflet.draw.git",
+  "_source": "https://github.com/Leaflet/Leaflet.draw.git",
   "_target": "*",
   "_originalSource": "leaflet.draw"
 }

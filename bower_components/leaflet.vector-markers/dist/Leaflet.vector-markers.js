@@ -14,50 +14,63 @@
         className: "vector-marker",
         prefix: "fa",
         spinClass: "fa-spin",
-        extraClasses: "",
+        extraIconClasses: "",
+        extraDivClasses: "",
         icon: "home",
         markerColor: "blue",
-        iconColor: "white"
+        iconColor: "white",
+        viewBox: '0 0 32 52'
       },
       initialize: function(options) {
         return options = L.Util.setOptions(this, options);
       },
       createIcon: function(oldIcon) {
-        var div, icon, options, pin_path;
+        var div, options, pin_path;
         div = (oldIcon && oldIcon.tagName === "DIV" ? oldIcon : document.createElement("div"));
         options = this.options;
+        pin_path = options.map_pin || L.VectorMarkers.MAP_PIN;
+        div.innerHTML = '<svg width="' + options.iconSize[0] + 'px" height="' + options.iconSize[1] + 'px" viewBox="' + options.viewBox + '" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' + '<path d="' + pin_path + '" fill="' + options.markerColor + '"></path>' + '</svg>';
         if (options.icon) {
-          icon = this._createInner();
+          div.appendChild(this._createInner());
         }
-        pin_path = L.VectorMarkers.MAP_PIN;
-        div.innerHTML = '<svg width="32px" height="52px" viewBox="0 0 32 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' + '<path d="' + pin_path + '" fill="' + options.markerColor + '"></path>' + icon + '</svg>';
+        options.className += options.className.length > 0 ? ' ' + options.extraDivClasses : options.extraDivClasses;
         this._setIconStyles(div, "icon");
         this._setIconStyles(div, "icon-" + options.markerColor);
         return div;
       },
       _createInner: function() {
-        var iconClass, iconColorClass, iconColorStyle, iconSpinClass, options;
+        var i, iconClass, iconColorClass, iconColorStyle, iconSpinClass, iconStyle, iconWidthStyle, options;
+        i = document.createElement('i');
         iconClass = void 0;
         iconSpinClass = "";
         iconColorClass = "";
-        iconColorStyle = "";
+        iconColorStyle = void 0;
+        iconWidthStyle = void 0;
+        iconStyle = "style='";
         options = this.options;
-        if (options.prefix === '' || options.icon.slice(0, options.prefix.length + 1) === options.prefix + "-") {
-          iconClass = options.icon;
-        } else {
-          iconClass = options.prefix + "-" + options.icon;
+        i.classList.add(options.prefix);
+        if (options.extraClasses) {
+          i.classList.add(options.extraClasses);
         }
-        if (options.spin && typeof options.spinClass === "string") {
-          iconSpinClass = options.spinClass;
+        if (options.icon.slice(0, options.prefix.length + 1) === options.prefix + '-') {
+          i.classList.add(options.icon);
+        } else {
+          i.classList.add(options.prefix + '-' + options.icon);
+        }
+        if (options.spin && typeof options.spinClass === 'string') {
+          i.classList.add(options.spinClass);
         }
         if (options.iconColor) {
-          if (options.iconColor === "white" || options.iconColor === "black") {
-            iconColorClass = "icon-" + options.iconColor;
+          if (options.iconColor === 'white' || options.iconColor === 'black') {
+            i.classList.add('icon-' + options.iconColor);
           } else {
-            iconColorStyle = "style='color: " + options.iconColor + "' ";
+            i.style.color = options.iconColor;
           }
         }
-        return "<i " + iconColorStyle + "class='" + options.extraClasses + " " + options.prefix + " " + iconClass + " " + iconSpinClass + " " + iconColorClass + "'></i>";
+        if (options.iconSize) {
+          i.style.width = options.iconSize[0] + "px";
+        }
+        return i;
       },
       _setIconStyles: function(img, name) {
         var anchor, options, size;

@@ -11,6 +11,7 @@ Currently it consists of:
  - Vector layers (`layer/vector/`):
    * GPX
    * KML
+   * TOPOJSON
 
  - Providers (`layer/tile`):
    * Google - using Google Maps API v3;
@@ -25,6 +26,13 @@ Also there are some useful control plugins (`control/`):
    location data in hash part (#lat=...);
  * Distance - simple tool to measure distances on maps
 
+
+Compatibility
+------
+ - Tested with: Leaflet 0.7.x
+ - For use with Leaflet 1.0.x see branch `leaflet_one`
+
+
 Where ?
 ------
 
@@ -33,3 +41,5 @@ Homepage : https://github.com/shramov/leaflet-plugins
 Downloads : https://github.com/shramov/leaflet-plugins/releases
 
 npm : https://www.npmjs.org/package/leaflet-plugins
+
+cdnjs : https://cdnjs.com/libraries/leaflet-plugins

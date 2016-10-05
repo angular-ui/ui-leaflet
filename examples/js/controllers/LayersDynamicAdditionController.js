@@ -1,13 +1,11 @@
         app.controller("LayersDynamicAdditionController", [ "$scope", function($scope) {
             $scope.definedLayers = {
-                mapbox_wheat: {
-                    name: 'Mapbox Wheat Paste',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                    type: 'xyz',
-                    layerOptions: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lia35jfp'
-                    }
+                mapbox_light: {
+                    name: 'Mapbox Light',
+                    type: 'mapbox',
+                    user: 'elesdoar',
+                    key: 'citojtj9e00022iqjmdzhrdwd',
+                    apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                 },
                 osm: {
                     name: 'OpenStreetMap',
@@ -39,7 +37,7 @@
                 layers: {
                     baselayers: {
                         osm: $scope.definedLayers.osm,
-                        mapbox_wheat: $scope.definedLayers.mapbox_wheat
+                        mapbox_light: $scope.definedLayers.mapbox_light
                     },
                     overlays: {
                         hillshade: $scope.definedOverlays.hillshade

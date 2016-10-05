@@ -14,21 +14,15 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
     };
     _getObjectValue(obj,"bike.1") returns 'hi'
     this is getPath in ui-gmap
+
+    like _.get
+    http://stackoverflow.com/questions/2631001/javascript-test-for-existence-of-nested-object-key?page=1&tab=active#tab-top
      */
-    var _getObjectValue = function(object, pathStr) {
-        var obj;
-        if(!object || !angular.isObject(object))
-            return;
-        //if the key is not a sting then we already have the value
-        if ((pathStr === null) || !angular.isString(pathStr)) {
-            return pathStr;
-        }
-        obj = object;
-        pathStr.split('.').forEach(function(value) {
-            if (obj) {
-                obj = obj[value];
-            }
-        });
+    var _getObjectValue = function (object, path){
+        if(!object) return;
+        path = path.split('.');
+        var obj = object[path.shift()];
+        while(obj && path.length) obj = obj[path.shift()];
         return obj;
     };
 
@@ -38,9 +32,9 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
      returns:
      'bike["one"]["two"]'
      */
-    var _getObjectArrayPath = function(pathStr){
+    var _getObjectArrayPath = function(pathStr) {
         return pathStr.split('.').reduce(function(previous, current) {
-            return previous + '["'+ current + '"]';
+            return previous + '["' + current + '"]';
         });
     };
 
@@ -49,25 +43,28 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
      returns:
      "bike.one.two"
      */
-    var _getObjectDotPath = function(arrayOfStrings){
+    var _getObjectDotPath = function(arrayOfStrings) {
         return arrayOfStrings.reduce(function(previous, current) {
             return previous + '.' + current;
         });
     };
 
     function _obtainEffectiveMapId(d, mapId) {
-        var id, i;
+        var id,
+            keys = Object.keys(d);
+
         if (!angular.isDefined(mapId)) {
-            if (Object.keys(d).length === 0) {
+            if (keys.length === 0 || (keys.length === 1 && keys[0] === 'main')) {
+                //default non id attribute map
+                // OR one key 'main'
+                /*
+                    Main Reason:
+                    Initally if we have only one map and no "id" then d will be undefined initially.
+                    On subsequent runs it will be just d.main so we need to return the last map.
+                */
                 id = "main";
-            } else if (Object.keys(d).length >= 1) {
-                for (i in d) {
-                    if (d.hasOwnProperty(i)) {
-                        id = i;
-                    }
-                }
             } else {
-                $log.error(_errorHeader + "- You have more than 1 map on the DOM, you must provide the map ID to the leafletData.getXXX call");
+                throw new Error(_errorHeader + "- You have more than 1 map on the DOM, you must provide the map ID to the leafletData.getXXX call. Where one of the following mapIds " + Object.keys(d).join(',') + ' are available.');
             }
         } else {
             id = mapId;
@@ -96,7 +93,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
     var _isDefined = function(value) {
         return angular.isDefined(value) && value !== null;
     };
-    var _isUndefined = function(value){
+    var _isUndefined = function(value) {
         return !_isDefined(value);
     };
 
@@ -115,13 +112,13 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
      */
 
     var camelCase = function(name) {
-      return name.replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
-        if (offset) {
-          return letter.toUpperCase();
-        } else {
-          return letter;
-        }
-      }).replace(MOZ_HACK_REGEXP, "Moz$1");
+        return name.replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+            if (offset) {
+                return letter.toUpperCase();
+            } else {
+                return letter;
+            }
+        }).replace(MOZ_HACK_REGEXP, "Moz$1");
     };
 
 
@@ -131,8 +128,9 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
     */
 
     var directiveNormalize = function(name) {
-      return camelCase(name.replace(PREFIX_REGEXP, ""));
+        return camelCase(name.replace(PREFIX_REGEXP, ""));
     };
+
     // END AngularJS port
 
     var _watchTrapDelayMilliSec = 10;
@@ -156,17 +154,18 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
         modelChangeInDirective: _modelChangeInDirective,
         camelCase: camelCase,
         directiveNormalize: directiveNormalize,
-        copy:_copy,
-        clone:_clone,
+        copy: _copy,
+        clone: _clone,
         errorHeader: _errorHeader,
         getObjectValue: _getObjectValue,
-        getObjectArrayPath:_getObjectArrayPath,
+        get: _getObjectValue,
+        getObjectArrayPath: _getObjectArrayPath,
         getObjectDotPath: _getObjectDotPath,
-        defaultTo: function(val, _default){
+        defaultTo: function(val, _default) {
             return _isDefined(val) ? val : _default;
         },
         //mainly for checking attributes of directives lets keep this minimal (on what we accept)
-        isTruthy: function(val){
+        isTruthy: function(val) {
             return val === 'true' || val === true;
         },
         //Determine if a reference is {}
@@ -175,13 +174,13 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
         },
 
         //Determine if a reference is undefined or {}
-        isUndefinedOrEmpty: function (value) {
+        isUndefinedOrEmpty: function(value) {
             return (angular.isUndefined(value) || value === null) || Object.keys(value).length === 0;
         },
 
         // Determine if a reference is defined
         isDefined: _isDefined,
-        isUndefined:_isUndefined,
+        isUndefined: _isUndefined,
         isNumber: angular.isNumber,
         isString: angular.isString,
         isArray: angular.isArray,
@@ -191,7 +190,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
 
         isValidCenter: function(center) {
             return angular.isDefined(center) && angular.isNumber(center.lat) &&
-                   angular.isNumber(center.lng) && angular.isNumber(center.zoom);
+                angular.isNumber(center.lng) && angular.isNumber(center.zoom);
         },
 
         isValidPoint: function(point) {
@@ -211,7 +210,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
                 mapCenter.lat.toFixed(4) === centerModel.lat.toFixed(4) &&
                 mapCenter.lng.toFixed(4) === centerModel.lng.toFixed(4) &&
                 zoom === centerModel.zoom) {
-                    return true;
+                return true;
             }
             return false;
         },
@@ -274,7 +273,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -297,7 +296,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -310,21 +309,21 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
         },
 
         DomMarkersPlugin: {
-            isLoaded: function () {
+            isLoaded: function() {
                 if (angular.isDefined(L.DomMarkers) && angular.isDefined(L.DomMarkers.Icon)) {
                     return true;
                 } else {
                     return false;
                 }
             },
-            is: function (icon) {
+            is: function(icon) {
                 if (this.isLoaded()) {
                     return icon instanceof L.DomMarkers.Icon;
                 } else {
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -378,7 +377,7 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }
@@ -390,21 +389,21 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
             }
         },
         ExtraMarkersPlugin: {
-            isLoaded: function () {
+            isLoaded: function() {
                 if (angular.isDefined(L.ExtraMarkers) && angular.isDefined(L.ExtraMarkers.Icon)) {
                     return true;
                 } else {
                     return false;
                 }
             },
-            is: function (icon) {
+            is: function(icon) {
                 if (this.isLoaded()) {
                     return icon instanceof L.ExtraMarkers.Icon;
                 } else {
                     return false;
                 }
             },
-            equal: function (iconA, iconB) {
+            equal: function(iconA, iconB) {
                 if (!this.isLoaded()) {
                     return false;
                 }

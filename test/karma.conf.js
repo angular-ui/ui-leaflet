@@ -1,27 +1,14 @@
+const pkg = require('../package.json');
+const mainLib = 'dist/' + pkg.name +'.js';
+
 module.exports = (karma) => {
     karma.set({
+        // base path, that will be used to resolve files and exclude
         basePath: '../',
 
-        frameworks: ['jasmine'],
-
         preprocessors: {
-            'test/**/**/*.coffee': ['coffee'],
-            'dist/src/**/*.js': ['coverage']
+            'test/unit/**/*.coffee': ['coffee'],
         },
-        coverageReporter: {
-            reporters: [{
-                type: 'html',
-                dir: 'dist/coverage/',
-                subdir: "lib"
-            }, {
-                type: 'text-summary',
-                dir: 'dist/coverage/',
-                subdir: 'lib'
-            }]
-        },
-
-        reporters: ['dots', 'coverage'],
-
         coffeePreprocessor: {
             options: {
                 bare: true,
@@ -33,35 +20,47 @@ module.exports = (karma) => {
         },
         // list of files / patterns to load in the browser
         files: [
-            'node_modules/phantomjs-polyfill/bind-polyfill.js',
             'bower_components/leaflet/dist/leaflet-src.js',
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
             'bower_components/angular-simple-logger/dist/angular-simple-logger.js', //THIS IS BROWSER version
             'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
-            'bower_components/leaflet.vector-markers/dist/Leaflet.vector-markers.js',
-            //source
-            'dist/src/directives/leaflet.js',
-            'dist/src/services/*.js',
-            'dist/src/**/*.js',
-            //tests
+            'bower_components/leaflet.vector-markers/dist/leaflet-vector-markers.js',
+            mainLib,
             'test/unit/bootstrap.coffee',
-            'test/unit/*.js',
             'test/unit/**/*.js',
             'test/unit/**/*.coffee',
-            'bower_components/Leaflet.PolylineDecorator/leaflet.polylineDecorator.js', {
-                pattern: 'test/**/*.coffee',
-                included: false
-            }, {
-                pattern: 'dist/*.js.map',
-                included: false
-            }
+            'bower_components/Leaflet.PolylineDecorator/leaflet.polylineDecorator.js',
+            //do not include those specs for jasmine html runner by karma kama_jasmine_runner.html
+            {pattern:'test/**/**/*.coffee', included: false},
+            {pattern: 'dist/**/*.js.map', included: false}
         ],
+        // Frameworks
+        frameworks: ["jasmine"],
 
         // list of files to exclude
         exclude: [],
 
-        browsers: ['PhantomJS'],
+        // Start these browsers, currently available:
+        // - Chrome
+        // - ChromeCanary
+        // - Firefox
+        // - Opera
+        // - Safari
+        // - PhantomJS
+        browsers: [
+            'PhantomJS'
+        ],
+
+        // test results reporter to use
+        // possible values: dots || progress
+        reporters: ['dots'],
+
+        // web server port
+        port: 9018,
+
+        // cli runner port
+        runnerPort: 9100,
 
         // enable / disable colors in the output (reporters and logs)
         colors: true,
@@ -73,6 +72,8 @@ module.exports = (karma) => {
         // enable / disable watching file and executing tests whenever any file changes
         autoWatch: false,
 
+        // Continuous Integration mode
+        // if true, it capture browsers, run tests and exit
         singleRun: true
     });
 };

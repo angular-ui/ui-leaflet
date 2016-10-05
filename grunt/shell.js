@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(grunt, options) {
+module.exports = function (grunt, options) {
     return {
         options: {
             stdout: true

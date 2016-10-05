@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html ng-app="demoapp">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="../bower_components/leaflet/dist/leaflet.js"></script>
+    <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
+    <script src="../dist/ui-leaflet.min.js"></script>
+    <script src="https://rawgit.com/elesdoar/ui-leaflet-layers/master/dist/ui-leaflet-layers.min.js"></script>
+    <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
+    <script>
+        var app = angular.module("demoapp", ['ui-leaflet']);
+        app.controller("LayersRefreshOverlayEveryMinuteController", [ "$scope", "$interval", function($scope, $interval) {
+            angular.extend($scope, {
+                amberes: {
+                    lat: 51.2,
+                    lng: 4.4,
+                    zoom: 8
+                },
+                layers: {
+                    baselayers: {
+                        mapbox_light: {
+                            name: 'Mapbox Light',
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
+                        }
+                    },
+                    overlays: {
+                        traffic: {
+                            name: "Traffic Jams",
+                            type: "xyz",
+                            url: "http://map.be-mobile.be/customer/mobileninja/nl/los/{z}/{x}/{y}.png",
+                            visible: 1,
+                            doRefresh: false
+                        }
+                    }
+                }
+            });
+
+            var refreshIntervalInSeconds = 60;
+            var actualSeconds = 0;
+            $interval(function() {
+                if (actualSeconds === refreshIntervalInSeconds) {
+                    $scope.layers.overlays.traffic.doRefresh = true;
+                    console.log("Overlay refreshed.")
+                    actualSeconds = 0;
+                } else {
+                    console.log("Next update of overlay in " + (refreshIntervalInSeconds - actualSeconds) + " seconds.");
+                    actualSeconds += 1;
+                }
+            }, 1000);
+        }]);
+    </script>
+</head>
+<body ng-controller="LayersRefreshOverlayEveryMinuteController">
+    <leaflet lf-center="amberes" layers="layers" width="100%" height="480px"></leaflet>
+    <h1>Refreshable overlays example</h1>
+    <p>You can refresh the overlay/baselayer state adding a boolean property to the layer:</p>
+    <pre>
+        doRefresh: true
+</pre>
+    <p>Open the console to see what's happening.</p>
+</body>
+</html>

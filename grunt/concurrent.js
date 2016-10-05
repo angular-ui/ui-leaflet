@@ -8,20 +8,14 @@ module.exports = function (grunt, options) {
                 logConcurrentOutput: true
             }
         },
-        chrome: {
-            tasks: ['karma:unit-chrome', 'watch:chrome'],
-            options: {
-                logConcurrentOutput: true
-            }
-        },
         unit: {
-            tasks: ['karma:unit', 'watch:unit'],
+            tasks: ['karma', 'watch:unit'],
             options: {
                 logConcurrentOutput: true
             }
         },
-        'unit-mocha': {
-            tasks: ['karma:unit-mocha', 'watch:unit-mocha'],
+        dev: {
+            tasks: ['karma', 'watch:unit', 'watch:source'],
             options: {
                 logConcurrentOutput: true
             }

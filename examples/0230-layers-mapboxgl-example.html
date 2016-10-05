@@ -1,0 +1,104 @@
+<html ng-app="demoapp">
+<head>
+    <title>Mapbox WebGL Example</title>
+    <meta charset="utf-8">
+
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
+    <script src="../dist/ui-leaflet.js"></script>
+    <script src="https://rawgit.com/elesdoar/ui-leaflet-layers/master/dist/ui-leaflet-layers.min.js"></script>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+    <!-- Mapbox GL -->
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.11.2/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.11.2/mapbox-gl.js'></script>
+    <!-- Mapbox GL Leaflet Plugin -->
+    <script src='https://rawgit.com/mapbox/mapbox-gl-leaflet/master/leaflet-mapbox-gl.js'></script>
+    <script>
+        var app = angular.module("demoapp", ['ui-leaflet']);
+        app.controller('MapboxGLController', function($scope, $timeout) {
+            var defaults = {
+                center: {
+                    lat: 38.91275,
+                    lng: -77.032194,
+                    zoom: 15
+                },
+                layers: {
+                    overlays: {},
+                    baselayers: {}
+                }
+            };
+            angular.extend($scope, defaults);
+            $scope.style = 'mapbox://styles/mapbox/streets-v8';
+            $scope.pitch = 0;
+            var mapboxGlLayer = {
+                name: 'Sample',
+                type: 'mapboxGL',
+                layerOptions: {
+                    accessToken: $scope.accessToken,
+                    style: $scope.style,
+                    pitch: $scope.pitch
+                }
+            };
+
+            $scope.$watch('accessToken', function (newToken) {
+                if (!newToken) {
+                    $scope.error = 'Mapbox GL Token needed!';
+                    return;
+                }
+                $scope.error = null;
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {accessToken: newToken});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            });
+
+            $scope.$watch('style', function (newStyle) {
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {style: newStyle});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            })
+
+            $scope.$watch('pitch', function (pitch) {
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {pitch: pitch});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            });
+        });
+    </script>
+</head>
+
+<body ng-controller="MapboxGLController">
+
+  <leaflet lf-center="center" layers="layers" height="480px" width="100%"></leaflet>
+
+  <h1>Mapbox GL Example</h1>
+
+  <ul>
+    <li>
+      <label>Mapbox Access Token:</label>
+      <input ng-model="accessToken"/>
+    </li>
+    <li ng-if="error">
+      <p style='color: red;' >{{error}}</p>
+    </li>
+    <li>
+      <label>Style:</label>
+      <input ng-model="style"/>
+    </li>
+    <li>
+      <label>Pitch:</label>
+      <input type="number" ng-model="pitch"/>
+    </li>
+  </ul>
+
+</body>
+</html>

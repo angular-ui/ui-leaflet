@@ -13,11 +13,15 @@ angular.module('ui-leaflet').directive('markers',
         addMarkerToGroup = leafletMarkersHelpers.addMarkerToGroup,
         createMarker = leafletMarkersHelpers.createMarker,
         deleteMarker = leafletMarkersHelpers.deleteMarker,
+        getModelFromModels = leafletMarkersHelpers.getModelFromModels,
+        getLayerModels = leafletMarkersHelpers.getLayerModels,
+        resetUnusedMarkerGroups = leafletMarkersHelpers.resetUnusedMarkerGroups,
         $it = leafletIterators,
-        _markersWatchOptions = leafletHelpers.watchOptions,
+        _defaultWatchOptions = leafletHelpers.watchOptions,
         maybeWatch = leafletWatchHelpers.maybeWatch,
         extendDirectiveControls = leafletDirectiveControlsHelpers.extend,
-        $log = leafletLogger;
+        $log = leafletLogger,
+        watchTrap = {changeFromDirective: false};
 
     var _getLMarker = function(leafletMarkers, name, maybeLayerName){
         if(!Object.keys(leafletMarkers).length) return;
@@ -40,7 +44,7 @@ angular.module('ui-leaflet').directive('markers',
         return lObject;
     };
 
-    var _maybeAddMarkerToLayer = function(layerName, layers, model, marker, doIndividualWatch, map){
+    var _maybeAddMarkerToLayer = function(layerName, layers, model, marker, watchType, map){
 
         if (!isString(layerName)) {
             $log.error(errorHeader + ' A layername must be a string');
@@ -67,7 +71,7 @@ angular.module('ui-leaflet').directive('markers',
 
         // The marker is automatically added to the map depending on the visibility
         // of the layer, so we only have to open the popup if the marker is in the map
-        if (!doIndividualWatch && map.hasLayer(marker) && model.focus === true) {
+        if (watchType === null && map.hasLayer(marker) && model.focus === true) {
             marker.openPopup();
         }
         return true;
@@ -75,75 +79,74 @@ angular.module('ui-leaflet').directive('markers',
     //TODO: move to leafletMarkersHelpers??? or make a new class/function file (leafletMarkersHelpers is large already)
     var _addMarkers = function(mapId, markersToRender, oldModels, map, layers, leafletMarkers, leafletScope,
                                watchOptions, maybeLayerName, skips){
-        for (var newName in markersToRender) {
+        $it.each(markersToRender, (model, newName) => {
             if(skips[newName])
-                continue;
+                return;
 
             if (newName.search("-") !== -1) {
                 $log.error('The marker can\'t use a "-" on his key name: "' + newName + '".');
-                continue;
+                return;
             }
 
-            var model = Helpers.copy(markersToRender[newName]);
             var pathToMarker = Helpers.getObjectDotPath(maybeLayerName? [maybeLayerName, newName]: [newName]);
             var maybeLMarker = _getLMarker(leafletMarkers,newName, maybeLayerName);
-            if (!isDefined(maybeLMarker)) {
-                //(nmccready) very important to not have model changes when lObject is changed
-                //this might be desirable in some cases but it causes two-way binding to lObject which is not ideal
-                //if it is left as the reference then all changes from oldModel vs newModel are ignored
-                //see _destroy (where modelDiff becomes meaningless if we do not copy here)
-                var marker = createMarker(model);
-                var layerName = (model? model.layer : undefined) || maybeLayerName; //original way takes pref
-                if (!isDefined(marker)) {
-                    $log.error(errorHeader + ' Received invalid data on the marker ' + newName + '.');
-                    continue;
-                }
-                _setLMarker(marker, leafletMarkers, newName, maybeLayerName);
+            Helpers.modelChangeInDirective(watchTrap, "changeFromDirective", () => {
+                if (!isDefined(maybeLMarker)) {
 
-                // Bind message
-                if (isDefined(model.message)) {
-                    marker.bindPopup(model.message, model.popupOptions);
-                }
-
-                // Add the marker to a cluster group if needed
-                if (isDefined(model.group)) {
-                    var groupOptions = isDefined(model.groupOption) ? model.groupOption : null;
-                    addMarkerToGroup(marker, model.group, groupOptions, map);
-                }
-
-                // Show label if defined
-                if (Helpers.LabelPlugin.isLoaded() && isDefined(model.label) && isDefined(model.label.message)) {
-                    marker.bindLabel(model.label.message, model.label.options);
-                }
-
-                // Check if the marker should be added to a layer
-                if (isDefined(model) && (isDefined(model.layer) || isDefined(maybeLayerName))){
-
-                    var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker,
-                        watchOptions.individual.doWatch, map);
-                    if(!pass)
-                        continue; //something went wrong move on in the loop
-                } else if (!isDefined(model.group)) {
-                    // We do not have a layer attr, so the marker goes to the map layer
-                    map.addLayer(marker);
-                    if (!watchOptions.individual.doWatch && model.focus === true) {
-                        marker.openPopup();
+                    var marker = createMarker(model);
+                    var layerName = (model? model.layer : undefined) || maybeLayerName; //original way takes pref
+                    if (!isDefined(marker)) {
+                        $log.error(errorHeader + ' Received invalid data on the marker ' + newName + '.');
+                        return;
                     }
-                }
+                    _setLMarker(marker, leafletMarkers, newName, maybeLayerName);
 
-                if (watchOptions.individual.doWatch) {
-                    addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map,
-                        watchOptions.individual.isDeep);
-                }
+                    // Bind message
+                    if (isDefined(model.message)) {
+                        marker.bindPopup(model.message, model.popupOptions);
+                    }
 
-                listenMarkerEvents(marker, model, leafletScope, watchOptions.individual.doWatch, map);
-                leafletMarkerEvents.bindEvents(mapId, marker, pathToMarker, model, leafletScope, layerName);
-            }
-            else {
-                var oldModel = isDefined(oldModel)? oldModels[newName] : undefined;
-                updateMarker(model, oldModel, maybeLMarker, pathToMarker, leafletScope, layers, map);
-            }
-        }
+                    // Add the marker to a cluster group if needed
+                    if (isDefined(model.group)) {
+                        var groupOptions = isDefined(model.groupOption) ? model.groupOption : null;
+                        addMarkerToGroup(marker, model.group, groupOptions, map);
+                    }
+
+                    // Show label if defined
+                    if (Helpers.LabelPlugin.isLoaded() && isDefined(model.label) && isDefined(model.label.message)) {
+                        marker.bindLabel(model.label.message, model.label.options);
+                    }
+
+                    // Check if the marker should be added to a layer
+                    if (isDefined(model) && (isDefined(model.layer) || isDefined(maybeLayerName))){
+
+                        var pass = _maybeAddMarkerToLayer(layerName, layers, model, marker,
+                            watchOptions.individual.type, map);
+                        if(!pass)
+                            return; //something went wrong move on in the loop
+                    } else if (!isDefined(model.group)) {
+                        // We do not have a layer attr, so the marker goes to the map layer
+                        map.addLayer(marker);
+                        if (watchOptions.individual.type === null && model.focus === true) {
+                            marker.openPopup();
+                        }
+                    }
+
+                    if (watchOptions.individual.type !== null) {
+                        addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map,
+                            watchOptions.individual);
+                    }
+
+                    listenMarkerEvents(marker, model, leafletScope, watchOptions.individual.type, map);
+                    leafletMarkerEvents.bindEvents(mapId, marker, pathToMarker, model, leafletScope, layerName);
+                }
+                else {
+                    var oldModel = getModelFromModels(oldModels, newName, maybeLayerName);
+                    updateMarker(model, oldModel, maybeLMarker, pathToMarker, leafletScope, layers, map);
+                }
+            });
+
+        });
     };
     var _seeWhatWeAlreadyHave = function(markerModels, oldMarkerModels, lMarkers, isEqual, cb){
         var hasLogged = false,
@@ -163,7 +166,7 @@ angular.module('ui-leaflet').directive('markers',
                 //ie the options to only check !== (reference check) instead of angular.equals (slow)
                 newMarker = markerModels[name];
                 oldMarker = oldMarkerModels[name];
-                equals = angular.equals(newMarker,oldMarker) && isEqual;
+                equals = isEqual && angular.equals(newMarker, oldMarker);
             }
             if (!isDefined(markerModels) ||
                 !Object.keys(markerModels).length ||
@@ -218,21 +221,23 @@ angular.module('ui-leaflet').directive('markers',
                     };
                 }
 
-                var watchOptions = leafletScope.markersWatchOptions || _markersWatchOptions;
-
-                // backwards compat
-                if(isDefined(attrs.watchMarkers))
-                    watchOptions.doWatch = watchOptions.individual.doWatch =
-                        (!isDefined(attrs.watchMarkers) || Helpers.isTruthy(attrs.watchMarkers));
+                var watchOptions;
+                 if(leafletScope.watchOptions && leafletScope.watchOptions.markers) {
+                    watchOptions = leafletScope.watchOptions.markers;
+                 }
+                 else {
+                    watchOptions = _defaultWatchOptions;
+                 }
 
                 var isNested = (isDefined(attrs.markersNested) && Helpers.isTruthy(attrs.markersNested));
 
                 getLayers().then(function(layers) {
                     var _clean = function(models, oldModels){
+                        resetUnusedMarkerGroups();
                         if(isNested) {
                             $it.each(models, function(markerToMaybeDel, layerName) {
-                                var oldModel = isDefined(oldModel)? oldModels[layerName] : undefined;
-                                _destroy(markerToMaybeDel, oldModel, leafletMarkers[layerName], map, layers);
+                              var oldLayerModels = getLayerModels(oldModels, layerName);
+                                _destroy(markerToMaybeDel, oldLayerModels, leafletMarkers[layerName], map, layers);
                             });
                             return;
                         }
@@ -244,8 +249,9 @@ angular.module('ui-leaflet').directive('markers',
                         var skips = null;
                         if(isNested) {
                             $it.each(models, function(markersToAdd, layerName) {
-                                var oldModel = isDefined(oldModel)? oldModels[layerName] : undefined;
-                                skips = _getNewModelsToSkipp(models[layerName], oldModel, leafletMarkers[layerName]);
+                                var oldLayerModels = getLayerModels(oldModels, layerName);
+                                var newlayerModels = getLayerModels(models, layerName);
+                                skips = _getNewModelsToSkipp(newlayerModels, oldLayerModels, leafletMarkers[layerName]);
                                 _addMarkers(attrs.id, markersToAdd, oldModels, map, layers, leafletMarkers, leafletScope,
                                     watchOptions, layerName, skips);
                             });
@@ -259,7 +265,12 @@ angular.module('ui-leaflet').directive('markers',
                     leafletData.setMarkers(leafletMarkers, attrs.id);
 
                     maybeWatch(leafletScope,'markers', watchOptions, function(newMarkers, oldMarkers){
+                        if(watchTrap.changeFromDirective)
+                            return;
                         _create(newMarkers, oldMarkers);
+                    });
+                    scope.$on('$destroy', function () {
+                        _destroy(leafletScope.markers, {}, leafletMarkers, map, layers);
                     });
                 });
             });

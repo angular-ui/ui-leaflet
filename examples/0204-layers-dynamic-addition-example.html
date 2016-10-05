@@ -7,18 +7,17 @@
     <script src="../bower_components/leaflet/dist/leaflet.js"></script>
     <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
     <script src="../dist/ui-leaflet.min.js"></script>
+    <script src="https://rawgit.com/elesdoar/ui-leaflet-layers/master/dist/ui-leaflet-layers.min.js"></script>
     <script>
         var app = angular.module("demoapp", ['ui-leaflet']);
         app.controller("LayersDynamicAdditionController", [ "$scope", function($scope) {
             $scope.definedLayers = {
-                mapbox_wheat: {
-                    name: 'Mapbox Wheat Paste',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                    type: 'xyz',
-                    layerOptions: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lia35jfp'
-                    }
+                mapbox_light: {
+                    name: 'Mapbox Light',
+                    type: 'mapbox',
+                    user: 'elesdoar',
+                    key: 'citojtj9e00022iqjmdzhrdwd',
+                    apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                 },
                 osm: {
                     name: 'OpenStreetMap',
@@ -52,7 +51,7 @@
                 layers: {
                     baselayers: {
                         osm: $scope.definedLayers.osm,
-                        mapbox_wheat: $scope.definedLayers.mapbox_wheat
+                        mapbox_light: $scope.definedLayers.mapbox_light
                     },
                     overlays: {
                         hillshade: $scope.definedOverlays.hillshade
@@ -84,8 +83,8 @@
 <body ng-controller="LayersDynamicAdditionController">
     <leaflet lf-center="bern" layers="layers" width="100%" height="480px"></leaflet>
     <h1>Dynamic addition/removal of layers</h1>
-    <button type="button" ng-if="layers.baselayers['mapbox_wheat']" ng-click="toggleLayer('mapbox_wheat')">Remove Mapbox Wheat Layer</button>
-    <button type="button" ng-if="!layers.baselayers['mapbox_wheat']" ng-click="toggleLayer('mapbox_wheat')">Add Mapbox Wheat Layer</button>
+    <button type="button" ng-if="layers.baselayers['mapbox_light']" ng-click="toggleLayer('mapbox_light')">Remove Mapbox Light Layer</button>
+    <button type="button" ng-if="!layers.baselayers['mapbox_light']" ng-click="toggleLayer('mapbox_light')">Add Light Wheat Layer</button>
     <button type="button" ng-if="layers.baselayers['osm']" ng-click="toggleLayer('osm')">Remove OpenStreetMap Layer</button>
     <button type="button" ng-if="!layers.baselayers['osm']" ng-click="toggleLayer('osm')">Add OpenStreetMap Layer</button>
     <button type="button" ng-if="layers.overlays['hillshade']" ng-click="toggleOverlay('hillshade')">Remove Hillshade Europe Overlay</button>

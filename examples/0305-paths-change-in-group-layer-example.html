@@ -39,12 +39,8 @@
                     baselayers: {
                         osm: {
                             name: 'OpenStreetMap',
-                            type: 'xyz',
-                            url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg',
-                            layerOptions: {
-                                subdomains: '1234',
-                                attribution: 'test'
-                            }
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            type: 'xyz'
                         }
                     },
                     overlays: {

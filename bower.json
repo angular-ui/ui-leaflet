@@ -2,7 +2,7 @@
   "name": "ui-leaflet",
   "author": "https://github.com/angular-ui/ui-leaflet/graphs/contributors",
   "description": "ui-leaflet - An AngularJS directive to easily interact with Leaflet maps",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "homepage": "http://angular-ui.github.io/ui-leaflet/",
   "keywords": [
     "angularjs",
@@ -17,6 +17,10 @@
   "dependencies": {
     "angular": "1.x",
     "angular-simple-logger": "~0.1.4",
+    "leaflet": "~0.7.x"
+  },
+  "resolutions": {
+    "angular": "~1.5.x",
     "leaflet": "0.7.x"
   },
   "devDependencies": {
@@ -27,17 +31,17 @@
     "angular-route": "1.x",
     "angular-animate": "1.x",
     "angular-mocks": "1.x",
-    "leaflet.markercluster": "*",
+    "leaflet.markercluster": "~0.5.0",
     "leaflet.draw": "*",
     "Leaflet.label": "*",
     "leaflet-tilelayer-geojson": "*",
     "Leaflet.utfgrid": "danzel/Leaflet.utfgrid",
     "Leaflet.awesome-markers": "*",
     "leaflet-providers": "~1.1.5",
-    "leaflet.vector-markers": "~0.0.3",
+    "leaflet.vector-markers": "0.0.4",
     "webgl-heatmap-leaflet": "*",
     "leaflet-plugins": "*",
-    "esri-leaflet": "*",
+    "esri-leaflet": "~1.0.4",
     "proj4": "*",
     "font-awesome": "~4.3.x",
     "proj4leaflet": "*",
@@ -46,7 +50,6 @@
     "Leaflet.ExtraMarkers": "https://github.com/coryasilva/Leaflet.ExtraMarkers/archive/v1.0.1.tar.gz",
     "Leaflet.fullscreen": "http://github.com/Leaflet/Leaflet.fullscreen/archive/v0.0.4.tar.gz",
     "Leaflet.PolylineDecorator": "bbecquet/Leaflet.PolylineDecorator",
-    "ionrangeslider": "~1.9.3",
     "leaflet-minimap": "~2.2.0",
     "esri-leaflet-clustered-feature-layer": "~1.0.x",
     "esri-leaflet-heatmap-feature-layer": "~1.0.x",
@@ -55,6 +58,8 @@
     "angular-highlightjs": "~0.4.3"
   },
   "ignore": [
+    "dist/coverage/",
+    "dist/src/",
     "website/",
     "**/.*",
     "src",
@@ -64,6 +69,7 @@
     "*.md",
     "Gruntfile.js",
     "package.json",
-    "bower.json"
+    "dist/coverage/",
+    "logo.svg"
   ]
 }

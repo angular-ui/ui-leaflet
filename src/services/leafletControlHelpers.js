@@ -194,6 +194,10 @@ angular.module('ui-leaflet').factory('leafletControlHelpers', function ($rootSco
                 map.addControl(_layersControl);
             }
             return mustBeLoaded;
+        },
+
+        destroyMapLayersControl: function(mapId) {
+            delete _controls[mapId];
         }
     };
 });

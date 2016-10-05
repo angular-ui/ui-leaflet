@@ -4,12 +4,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
+    <script src="http://maps.google.com/maps/api/js?key=AIzaSyBazU_OOTAZRmxQfaiirM1EDPLCiUSTlrY"></script>
     <script src="../bower_components/angular/angular.min.js"></script>
     <script src="../bower_components/leaflet/dist/leaflet.js"></script>
     <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
     <script src="../bower_components/leaflet-plugins/layer/tile/Google.js"></script>
     <script src="../dist/ui-leaflet.min.js"></script>
+    <script src="https://rawgit.com/elesdoar/ui-leaflet-layers/master/dist/ui-leaflet-layers.min.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
 
@@ -20,7 +21,7 @@
             	options: {
             		controls: {
             			layers: {
-            				visible: false
+            				visible: true
             			}
             		}
             	},
@@ -47,10 +48,10 @@
                         sst: {
                             name: 'Analyses - Sea Surface Temperature',
                             type: 'wms',
-                            url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/analyses',
+                            url: 'http://nowcoast.noaa.gov/arcgis/services/nowcoast/analysis_meteohydro_sfc_qpe_time/MapServer/WMSServer?service=WMS',
                             visible: true,
                             layerOptions: {
-                                layers: 'NCEP_RAS_ANAL_RTG_SST,NCEP_POLY_ANAL_RTG_SST',
+                                layers: '5',
                                 format: 'image/png',
                                 transparent: true,
                                 attribution: 'NOAA/NOS nowCOAST',
@@ -59,10 +60,10 @@
 				    	wave: {
                             name: 'Forecasts - Wave height',
                             type: 'wms',
-                            url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/forecasts',
+                            url: 'http://nowcoast.noaa.gov/arcgis/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/WMSServer?service=WMS',
                             visible: false,
                             layerOptions: {
-                                layers: 'NDFD_RAS_WAVEH_3_00,NDFD_POLY_WAVEH_3_00',
+                                layers: '10',
                                 format: 'image/png',
                                 transparent: true,
                                 attribution: 'NOAA/NOS nowCOAST',

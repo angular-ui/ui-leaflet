@@ -1,9 +1,9 @@
-    app.controller('MixedMOverlaysMarkersNestedNoWatchController', function ($scope, leafletData, $timeout) {
+    app.controller('MixedMOverlaysMarkersNestedNoWatchController', function ($scope, leafletData, $timeout, leafletLogger) {
+      leafletLogger.currentLevel = leafletLogger.LEVELS.debug;
         var _clonedMarkers;
         $timeout(function () {
             //should do nothing (not watched) and only see one destroy
-            _clonedMarkers = angular.extend({},$scope.markers);
-            $scope.markers = {};
+            _clonedMarkers = angular.copy($scope.markers);
         },1000);
         $timeout(function () {
             leafletData.getDirectiveControls().then(function (controls) {
@@ -16,17 +16,17 @@
                     }
                 }
                 //force manual update
+                controls.markers.create(_clonedMarkers ,$scope.markers);
                 $scope.markers = _clonedMarkers;
-                controls.markers.create($scope.markers);
             });
         }, 4000);
         angular.extend($scope, {
-            markersWatchOptions: {
-                doWatch: false,
-                isDeep: false,
-                individual: {
-                    doWatch: false,
-                    isDeep: false
+            watchOptions: {
+                markers: {
+                    type: null,
+                    individual: {
+                        type: null
+                    }
                 }
             },
             center: {

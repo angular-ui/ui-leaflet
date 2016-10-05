@@ -127,7 +127,7 @@ var app = angular.module('webapp');
                 });
             };
         }]);
-        app.controller("BasicDoubleMapEventsController", [ "$scope", "$log", "leafletData", "leafletEvents", function($scope, $log, leafletData, leafletEvents) {
+        app.controller("BasicDoubleMapEventsController", [ "$scope", "$log", "leafletData", "leafletMapEvents", function($scope, $log, leafletData, leafletMapEvents) {
             angular.extend($scope, {
                 london: {
                     lat: 51.505,
@@ -147,11 +147,11 @@ var app = angular.module('webapp');
             });
             $scope.events = {
                 map: {
-                    enable: leafletEvents.getAvailableMapEvents(),
+                    enable: leafletMapEvents.getAvailableMapEvents(),
                     logic: 'emit'
                 }
             };
-            var mapEvents = leafletEvents.getAvailableMapEvents();
+            var mapEvents = leafletMapEvents.getAvailableMapEvents();
             for (var k in mapEvents) {
                 var eventName = 'leafletDirectiveMap.' + mapEvents[k];
                 $scope.$on(eventName, function(event){
@@ -424,15 +424,6 @@ var app = angular.module('webapp');
                 }
             });
         });
-        app.controller('BasicLFCenterController', [ '$scope', function($scope) {
-            angular.extend($scope, {
-                london: {
-                    lat: 51.505,
-                    lng: -0.09,
-                    zoom: 4
-                }
-            });
-       }]);
         app.controller('BasicLegendController', [ '$scope', function($scope) {
             angular.extend($scope, {
                 london: {
@@ -450,6 +441,15 @@ var app = angular.module('webapp');
                 }
             });
         } ]);
+        app.controller('BasicLFCenterController', [ '$scope', function($scope) {
+            angular.extend($scope, {
+                london: {
+                    lat: 51.505,
+                    lng: -0.09,
+                    zoom: 4
+                }
+            });
+       }]);
         app.controller('BasicMapWithoutAnimationsController', [ '$scope', function($scope) {
             angular.extend($scope, {
                 london: {
@@ -965,6 +965,22 @@ var app = angular.module('webapp');
                });
            });
        }]);
+        app.controller('CustomCenterUrlHashController', [ '$scope', '$location', function($scope, $location) {
+            angular.extend($scope, {
+                london: {
+                    lat: 51.505,
+                    lng: -0.09,
+                    zoom: 4
+                }
+            });
+            $scope.$on("centerUrlHash", function(event, centerHash) {
+                console.log("url", centerHash);
+                $location.search({ center: centerHash });
+            });
+            $scope.changeLocation = function(centerHash) {
+                $location.search({ center: centerHash });
+            };
+        }]);
       app.controller("GeoJSONCenterController", [ '$scope', '$http', 'leafletData', function($scope, $http, leafletData) {
         angular.extend($scope, {
             japan: {
@@ -2663,12 +2679,10 @@ var app = angular.module('webapp');
                     baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            }
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                         },
                         osm: {
                             name: 'OpenStreetMap',
@@ -2716,6 +2730,35 @@ var app = angular.module('webapp');
                 $scope.flag = "";
             });
         }]);
+        app.controller("LayersWebGLHeatmapController", [ "$scope", function($scope) {
+            var dataPoints = [
+                [44.651144316,-63.586260171, 0.5],
+                [44.75, -63.5, 0.8] ];
+            angular.extend($scope, {
+                center: {
+                    lat: 44.8091,
+                    lng: -63.3636,
+                    zoom: 9
+                },
+                layers: {
+                    baselayers: {
+                        osm: {
+                            name: 'OpenStreetMap',
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            type: 'xyz'
+                        }
+                    },
+                    overlays: {
+                        heatmap: {
+                            name: 'Heat Map',
+                            type: 'webGLHeatmap',
+                            data: dataPoints,
+                            visible: true
+                        }
+                    }
+                }
+            });
+        }]);
         // For more info take a look at https://github.com/kartena/Proj4Leaflet proj4leaflet.js
         app.controller('LayersWMSWithDifferentProjectionController', [ '$scope', '$location', function($scope) {
             $scope.map = {
@@ -2755,35 +2798,6 @@ var app = angular.module('webapp');
                 }
             };
         }]);
-        app.controller("LayersWebGLHeatmapController", [ "$scope", function($scope) {
-            var dataPoints = [
-                [44.651144316,-63.586260171, 0.5],
-                [44.75, -63.5, 0.8] ];
-            angular.extend($scope, {
-                center: {
-                    lat: 44.8091,
-                    lng: -63.3636,
-                    zoom: 9
-                },
-                layers: {
-                    baselayers: {
-                        osm: {
-                            name: 'OpenStreetMap',
-                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            type: 'xyz'
-                        }
-                    },
-                    overlays: {
-                        heatmap: {
-                            name: 'Heat Map',
-                            type: 'webGLHeatmap',
-                            data: dataPoints,
-                            visible: true
-                        }
-                    }
-                }
-            });
-        }]);
         app.controller("LayersYandexController", [ "$scope", function($scope) {
             angular.extend($scope, {
                 berlin: {
@@ -2816,6 +2830,65 @@ var app = angular.module('webapp');
                       }
                     }
                 }
+            });
+        }]);
+        app.controller("LegendEsriLegendDataLegendServiceController", ["$scope", "$http", "$log", "leafletData", function($scope, $http, $log, leafletData) {
+            angular.extend($scope, {
+            	options: {
+            		controls: {
+            			layers: {
+            				visible: false
+            			}
+            		}
+            	},
+                usa: {
+	            	lat: 39.931486,
+	                lng: -101.406250,
+	                zoom: 3
+	            },
+                markers: {
+                    m1: {
+                        lat: 39.931486,
+	                	lng: -101.406250,
+                    }
+                },
+                layers: {
+					baselayers: {
+                        mapbox_light: {
+                            name: 'Mapbox Light',
+                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                            type: 'xyz',
+                            layerOptions: {
+                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
+                                mapid: 'bufanuvols.lia22g09'
+                            }
+						}
+                   },
+                   overlays: {
+				    	usa_pop: {
+					    	name: "USA 2000-2010 Population Change",
+					        type: "agsDynamic",
+					        url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_1990-2000_Population_Change/MapServer",
+					        visible: true,
+					        layerOptions: {
+				                opacity: 0.85,
+				                attribution: "Copyright:© 2014 Esri, DeLorme, HERE, TomTom"
+					        }
+				    	}
+                    },
+                },
+                legend: {
+                	legendClass: "info legend-esri",
+					position: "bottomleft",
+                    legendData: null
+                }
+            });
+            leafletData.getMap().then(function(map) {
+                $http.get("http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_1990-2000_Population_Change/MapServer/legend?f=json")
+                    .then(function(data) {
+                        $log.debug('data', data);
+                        $scope.legend.legendData = data.data;
+                    });
             });
         }]);
         app.controller("LegendEsriLegendServiceController", [ "$scope", function($scope) {
@@ -2934,6 +3007,26 @@ var app = angular.module('webapp');
 					    	name: "USA Social Vulnerability Index",
 					        type: "agsDynamic",
 					        url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Social_Vulnerability_Index/MapServer",
+					        visible: true,
+					        layerOptions: {
+				                opacity: 0.85,
+				                attribution: "Copyright:© 2014 Esri, FAO, NOAA"
+					        }
+				    	},
+                        usa_by_sex: {
+					    	name: "USA Population by Sex",
+					        type: "agsDynamic",
+					        url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_by_Sex/MapServer",
+					        visible: false,
+					        layerOptions: {
+				                opacity: 0.85,
+				                attribution: "Copyright:© 2014 Esri, FAO, NOAA"
+					        }
+				    	},
+                        usa_diversity: {
+					    	name: "USA Diversity Index",
+					        type: "agsDynamic",
+					        url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Diversity_Index/MapServer",
 					        visible: false,
 					        layerOptions: {
 				                opacity: 0.85,
@@ -2942,20 +3035,78 @@ var app = angular.module('webapp');
 				    	},
                     },
                 },
+                legendURL1: [
+                    "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_1990-2000_Population_Change/MapServer/legend?f=json",
+                    "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Social_Vulnerability_Index/MapServer/legend?f=json"
+                ],
+                legendURL2: [
+                    "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_by_Sex/MapServer/legend?f=json",
+                    "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Diversity_Index/MapServer/legend?f=json"
+                ],
                 legend: {
-                	url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_1990-2000_Population_Change/MapServer/legend?f=json",
                 	legendClass: "info legend-esri",
 					position: "bottomleft",
                 },
-                legendURL1: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_1990-2000_Population_Change/MapServer/legend?f=json",
-                legendURL2: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Social_Vulnerability_Index/MapServer/legend?f=json",
                 switchLegend: function() {
-                	$scope.layers.overlays.usa_social.visible = !$scope.layers.overlays.usa_social.visible;
+                	$scope.layers.overlays.usa_by_sex.visible = !$scope.layers.overlays.usa_by_sex.visible;
+                	$scope.layers.overlays.usa_diversity.visible = !$scope.layers.overlays.usa_diversity.visible;
                 	$scope.legend.url =
                 		$scope.legend.url == $scope.legendURL1? $scope.legendURL2:$scope.legendURL1;
                 }
             });
+            $scope.legend.url = $scope.legendURL1;
         }]);
+        app.controller('MapboxGLController', function($scope, $timeout) {
+            var defaults = {
+                center: {
+                    lat: 38.91275,
+                    lng: -77.032194,
+                    zoom: 15
+                },
+                layers: {
+                    overlays: {},
+                    baselayers: {}
+                }
+            };
+            angular.extend($scope, defaults);
+            $scope.style = 'mapbox://styles/mapbox/streets-v8';
+            $scope.pitch = 0;
+            var mapboxGlLayer = {
+                name: 'Sample',
+                type: 'mapboxGL',
+                layerOptions: {
+                    accessToken: $scope.accessToken,
+                    style: $scope.style,
+                    pitch: $scope.pitch
+                }
+            };
+            $scope.$watch('accessToken', function (newToken) {
+                if (!newToken) {
+                    $scope.error = 'Mapbox GL Token needed!';
+                    return;
+                }
+                $scope.error = null;
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {accessToken: newToken});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            });
+            $scope.$watch('style', function (newStyle) {
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {style: newStyle});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            })
+            $scope.$watch('pitch', function (pitch) {
+                $scope.layers.baselayers = {};
+                $timeout(function () {
+                    angular.extend(mapboxGlLayer.layerOptions, {pitch: pitch});
+                    $scope.layers.baselayers[mapboxGlLayer.name] = mapboxGlLayer;
+                });
+            });
+        });
         app.controller('MarkersAddRemoveController', [ '$scope', function($scope) {
             angular.extend($scope, {
                 london: {
@@ -3101,6 +3252,66 @@ var app = angular.module('webapp');
                 $scope.markers = addressPointsToMarkers(data);
             });
         }]);
+        app.controller("MarkersClustering10000MarkersNoWatchController", ["$scope", "$http", "leafletData",
+        function($scope, $http, leafletData) {
+            var addressPointsToMarkers = function(points) {
+                return points.map(function(ap) {
+                    return {
+                        layer: 'realworld',
+                        lat: ap[0],
+                        lng: ap[1]
+                    };
+                });
+            };
+            angular.extend($scope, {
+                center: {
+                    lat: -37.9212959167,
+                    lng: 175.5604435167,
+                    zoom: 11
+                },
+                watchOptions: {
+                    markers: {
+                        type: null,
+                        individual: {
+                            type: null
+                        }
+                    }
+                },
+                events: {
+                    map: {
+                        enable: ['moveend', 'popupopen'],
+                        logic: 'emit'
+                    },
+                    marker: {
+                        enable: [],
+                        logic: 'emit'
+                    }
+                },
+                layers: {
+                    baselayers: {
+                        osm: {
+                            name: 'OpenStreetMap',
+                            type: 'xyz',
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                        }
+                    },
+                    overlays: {
+                        realworld: {
+                            name: "Real world data",
+                            type: "markercluster",
+                            visible: true
+                        }
+                    }
+                }
+            });
+            $http.get("json/realworld.10000.json").success(function(data) {
+                leafletData.getDirectiveControls().then(function (controls) {
+                    var markers = addressPointsToMarkers(data)
+                    controls.markers.create(markers ,$scope.markers);
+                    $scope.markers = markers;
+                });
+            });
+        }]);
         app.controller("MarkersClusteringController", [ "$scope", function($scope) {
             angular.extend($scope, {
                 center: {
@@ -3232,7 +3443,7 @@ var app = angular.module('webapp');
                 },
             });
         } ]);
-        app.controller("MarkersDelayedEventsController", ["$scope", "leafletEvents", function($scope, leafletEvents){
+        app.controller("MarkersDelayedEventsController", ["$scope", "leafletMarkerEvents", function($scope, leafletMarkerEvents){
             angular.extend($scope, {
                 london: {
                     lat: 51.505,
@@ -3261,11 +3472,11 @@ var app = angular.module('webapp');
             };
             $scope.events = {
                 markers: {
-                    enable: leafletEvents.getAvailableMarkerEvents(),
+                    enable: leafletMarkerEvents.getAvailableEvents(),
                 }
             };
             $scope.eventDetected = "No events yet...";
-            var markerEvents = leafletEvents.getAvailableMarkerEvents();
+            var markerEvents = leafletMarkerEvents.getAvailableEvents();
             for (var k in markerEvents){
                 var eventName = 'leafletDirectiveMarker.' + markerEvents[k];
                 $scope.$on(eventName, function(event, args){
@@ -3854,7 +4065,7 @@ var app = angular.module('webapp');
                 });
                 layer.bringToFront();
                 $scope.selectedCountry = feature;
-                console.log(feature);
+                //console.log(feature);
             }
             // Get the countries data from a JSON
             $http.get("json/all.json").success(function(data, status) {
@@ -4035,12 +4246,94 @@ var app = angular.module('webapp');
                 }
             })
         }]);
-    app.controller('MixedMOverlaysMarkersNestedNoWatchController', function ($scope, leafletData, $timeout) {
+        app.controller("MixedMapboxTilesGeojsonController", [ "$scope", "$http", function($scope, $http) {
+            angular.extend($scope, {
+                center: {
+                    lat: -33.8979173,
+                    lng: 151.2323598,
+                    zoom: 14
+                },
+                tiles: {
+                    name: 'Mapbox Park',
+                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                    type: 'xyz',
+                    options: {
+                        apikey: 'pk.eyJ1IjoiZmVlbGNyZWF0aXZlIiwiYSI6Ik1Gak9FXzAifQ.9eB142zVCM4JMg7btDDaZQ',
+                        mapid: 'feelcreative.llm8dpdk'
+                    }
+                },
+                geojson: {}
+            });
+            $http.get("https://a.tiles.mapbox.com/v4/feelcreative.llm8dpdk/features.json?access_token=pk.eyJ1IjoiZmVlbGNyZWF0aXZlIiwiYSI6Ik1Gak9FXzAifQ.9eB142zVCM4JMg7btDDaZQ").success(function(data) {
+                $scope.geojson.data = data;
+                console.log(data);
+            });
+        }]);
+    app.controller("MixedMarkersNestedEventsController", ["$scope", "leafletMarkerEvents", function ($scope, leafletMarkerEvents) {
+        $scope.map = {
+            show: true
+        };
+        $scope.layers = {
+            baselayers: {
+                osm: {
+                    name: 'OpenStreetMap',
+                    type: 'xyz',
+                    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    layerOptions: {
+                        subdomains: ['a', 'b', 'c'],
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        continuousWorld: true
+                    }
+                }
+            },
+            overlays: {
+                london: {
+                    name: 'London',
+                    type: 'group',
+                    visible: true
+                }
+            }
+        };
+        $scope.center = {
+            lat: 51.505,
+            lng: -0.09,
+            zoom: 8
+        };
+        $scope.markers = {
+            london: {
+                1: {
+                    lat: 51.505,
+                    lng: -0.09,
+                    draggable: true,
+                    focus: true
+                }
+            }
+        };
+        $scope.events = {
+            markers: {
+                enable: leafletMarkerEvents.getAvailableEvents()
+            }
+        };
+        $scope.eventDetected = "No events yet...";
+        var markerEvents = leafletMarkerEvents.getAvailableEvents();
+        for (var k in markerEvents) {
+            var eventName = 'leafletDirectiveMarker.' + markerEvents[k];
+            $scope.$on(eventName, function (event, args) {
+                $scope.eventDetected = event.name;
+                $scope.args = {
+                    layerName: args.layerName,
+                    model: args.model,
+                    modelName: args.modelName
+                };
+            });
+        }
+    }]);
+    app.controller('MixedMOverlaysMarkersNestedNoWatchController', function ($scope, leafletData, $timeout, leafletLogger) {
+      leafletLogger.currentLevel = leafletLogger.LEVELS.debug;
         var _clonedMarkers;
         $timeout(function () {
             //should do nothing (not watched) and only see one destroy
-            _clonedMarkers = angular.extend({},$scope.markers);
-            $scope.markers = {};
+            _clonedMarkers = angular.copy($scope.markers);
         },1000);
         $timeout(function () {
             leafletData.getDirectiveControls().then(function (controls) {
@@ -4053,17 +4346,17 @@ var app = angular.module('webapp');
                     }
                 }
                 //force manual update
+                controls.markers.create(_clonedMarkers ,$scope.markers);
                 $scope.markers = _clonedMarkers;
-                controls.markers.create($scope.markers);
             });
         }, 4000);
         angular.extend($scope, {
-            markersWatchOptions: {
-                doWatch: false,
-                isDeep: false,
-                individual: {
-                    doWatch: false,
-                    isDeep: false
+            watchOptions: {
+                markers: {
+                    type: null,
+                    individual: {
+                        type: null
+                    }
                 }
             },
             center: {
@@ -4173,88 +4466,6 @@ var app = angular.module('webapp');
             }
         });
     });
-        app.controller("MixedMapboxTilesGeojsonController", [ "$scope", "$http", function($scope, $http) {
-            angular.extend($scope, {
-                center: {
-                    lat: -33.8979173,
-                    lng: 151.2323598,
-                    zoom: 14
-                },
-                tiles: {
-                    name: 'Mapbox Park',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                    type: 'xyz',
-                    options: {
-                        apikey: 'pk.eyJ1IjoiZmVlbGNyZWF0aXZlIiwiYSI6Ik1Gak9FXzAifQ.9eB142zVCM4JMg7btDDaZQ',
-                        mapid: 'feelcreative.llm8dpdk'
-                    }
-                },
-                geojson: {}
-            });
-            $http.get("https://a.tiles.mapbox.com/v4/feelcreative.llm8dpdk/features.json?access_token=pk.eyJ1IjoiZmVlbGNyZWF0aXZlIiwiYSI6Ik1Gak9FXzAifQ.9eB142zVCM4JMg7btDDaZQ").success(function(data) {
-                $scope.geojson.data = data;
-                console.log(data);
-            });
-        }]);
-    app.controller("MixedMarkersNestedEventsController", ["$scope", "leafletEvents", function ($scope, leafletEvents) {
-        $scope.map = {
-            show: true
-        };
-        $scope.layers = {
-            baselayers: {
-                osm: {
-                    name: 'OpenStreetMap',
-                    type: 'xyz',
-                    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    layerOptions: {
-                        subdomains: ['a', 'b', 'c'],
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                        continuousWorld: true
-                    }
-                }
-            },
-            overlays: {
-                london: {
-                    name: 'London',
-                    type: 'group',
-                    visible: true
-                }
-            }
-        };
-        $scope.center = {
-            lat: 51.505,
-            lng: -0.09,
-            zoom: 8
-        };
-        $scope.markers = {
-            london: {
-                1: {
-                    lat: 51.505,
-                    lng: -0.09,
-                    draggable: true,
-                    focus: true
-                }
-            }
-        };
-        $scope.events = {
-            markers: {
-                enable: leafletEvents.getAvailableMarkerEvents()
-            }
-        };
-        $scope.eventDetected = "No events yet...";
-        var markerEvents = leafletEvents.getAvailableMarkerEvents();
-        for (var k in markerEvents) {
-            var eventName = 'leafletDirectiveMarker.' + markerEvents[k];
-            $scope.$on(eventName, function (event, args) {
-                $scope.eventDetected = event.name;
-                $scope.args = {
-                    layerName: args.layerName,
-                    model: args.model,
-                    modelName: args.modelName
-                };
-            });
-        }
-    }]);
         app.controller("PathEventsController", function($scope, leafletLogger) {
             // leafletLogger.currentLevel = leafletLogger.LEVELS.debug;
             var paths = {};
@@ -4371,12 +4582,27 @@ var app = angular.module('webapp');
                 $scope.mouseover = path.modelName;
             });
         });
-        app.controller("PathSimpleController", [ "$scope", function($scope) {
+        app.controller("PathPopupController",["$scope", function($scope){
+            $scope.clickFromPopup = function(fromName){
+                alert("Click from " + fromName);
+            };
+        }])
+        app.controller("PathSimpleController", [ "$scope", "$compile", function($scope, $compile) {
+            var compiledTemplate = $compile(
+                "<div ng-controller='PathPopupController'><h3>Route from London to Rome</h3><p>Distance: 1862km</p>" +
+                "<button ng-click='clickFromPopup(\"europe\")'>click</button></div>")($scope.$new(true));
             angular.extend($scope, {
+                watchOptions:{
+                    paths: {
+                        individual: { type: 'watch'}, //this keeps infdigest errors from happening.... (deep by default)
+                        type: 'watchCollection'
+                    }
+                },
                 london: {
                     lat: 51.505,
                     lng: -0.09,
-                    zoom: 4
+                    zoom: 4,
+                    message: 'london'
                 },
                 europeanPaths: {
                     p1: {
@@ -4387,7 +4613,7 @@ var app = angular.module('webapp');
                             { lat: 48.83, lng: 2.37 },
                             { lat: 41.91, lng: 12.48 }
                         ],
-                        message: "<h3>Route from London to Rome</h3><p>Distance: 1862km</p>",
+                        message: compiledTemplate[0]
                     },
                     p2: {
                         color: 'green',
@@ -4401,94 +4627,19 @@ var app = angular.module('webapp');
                 }
             });
         }]);
-        app.controller('PathTypesController', [ '$scope', function($scope) {
-            var europeCapitals = {
-                Madrid: {
-                    lat: 40.4,
-                    lng: -3.6833333
-                },
-                Rome: {
-                    lat: 41.9,
-                    lng: 12.4833333
-                },
-                London: {
-                    lat: 51.5,
-                    lng: -0.116667
-                },
-                Lisbon: {
-                    lat: 38.7166667,
-                    lng: -9.1333333
-                },
-                Berlin: {
-                    lat: 52.5166667,
-                    lng: 13.4
-                },
-                Paris: {
-                    lat: 48.866667,
-                    lng: 2.333333
-                },
-                Brussels: {
-                    lat: 50.8333,
-                    lng: 4
-                }
-            };
-            var pathsDict = {
-                polyline: {
-                    type: "polyline",
-                    latlngs: [ europeCapitals.London, europeCapitals.Madrid, europeCapitals.Rome ]
-                },
-                multiPolyline: {
-                    type: "multiPolyline",
-                    latlngs: [
-                        [ europeCapitals.London, europeCapitals.Lisbon ],
-                        [ europeCapitals.Paris, europeCapitals.Madrid ],
-                        [ europeCapitals.Rome, europeCapitals.Berlin ]
-                    ]
-                },
-                polygon: {
-                   type: "polygon",
-                   latlngs: [ europeCapitals.London, europeCapitals.Lisbon , europeCapitals.Madrid, europeCapitals.Paris ]
-                },
-                multiPolygon: {
-                    type: "multiPolygon",
-                    latlngs: [
-                                [ europeCapitals.London, europeCapitals.Lisbon , europeCapitals.Madrid, europeCapitals.Paris ],
-                                [ europeCapitals.Berlin, europeCapitals.Rome, europeCapitals.Brussels ]
-                            ]
-                },
-                rectangle: {
-                    type: "rectangle",
-                    latlngs: [ europeCapitals.Berlin, europeCapitals.Lisbon ]
-                },
-                circle: {
-                    type: "circle",
-                    radius: 500 * 1000,
-                    latlngs: europeCapitals.Brussels
-                },
-                circleMarker: {
-                    type: "circleMarker",
-                    radius: 50,
-                    latlngs: europeCapitals.Rome
-                }
-            };
-            angular.extend($scope, {
-                center: {
-                    lat: 51.505,
-                    lng: -0.09,
-                    zoom: 3
-                },
-                paths: {}
-            });
-            $scope.addShape = function(shape) {
-                $scope.paths = {};
-                $scope.paths[shape] = pathsDict[shape];
-            };
-        } ]);
         app.controller('Paths3000ItemsController', ['$scope', 'leafletData', 'LocationDataService', function ($scope, leafletData, LocationDataService) {
             //map properties
             angular.extend($scope, {
                 defaults: {
                     scrollWheelZoom: false
+                },
+                watchOptions: {
+                    paths: {
+                        type: 'watch',
+                        individual: {
+                            type: null
+                        }
+                    }
                 },
                 //restrict map panning for this region
                 maxbounds: {
@@ -4521,14 +4672,17 @@ var app = angular.module('webapp');
             $scope.paths = {};
             //bind locationGrid to zoom level
             $scope.$watch("centroid.zoom", function (zoom) {
+                var tempPaths;
                 if (zoom <= 3) {
                     //clear path object
                     $scope.paths = {};
+                    //make new paths
+                    tempPaths = {};
                     //get location data and initialize leaflet circles
                     LocationDataService.getLocationsTenGrid().then(function (res) {
                         angular.forEach(res.data, function (value, key) {
                             if (value.lat !== null && value.lon !== null) {
-                                $scope.paths['circle' + key] = {
+                                tempPaths['circle' + key] = {
                                     type: 'circle',
                                     className: 'testClass',
                                     fillColor: 'DarkSlateGray',
@@ -4543,6 +4697,7 @@ var app = angular.module('webapp');
                                 };
                             }
                         });
+                        $scope.paths = tempPaths;
                     }, function (error) {
                         console.log('An error occured!', error);
                     });
@@ -4550,11 +4705,13 @@ var app = angular.module('webapp');
                 if (zoom >= 4) {
                     //clear path object
                     $scope.paths = {};
+                    //make new paths
+                    tempPaths = {};
                     //get location data and initialize leaflet circles
                     LocationDataService.getLocationsZeroOneGrid().then(function (res) {
                         angular.forEach(res.data, function (value, key) {
                             if (value.lat !== null && value.lon !== null) {
-                                $scope.paths['circle' + key] = {
+                                tempPaths['circle' + key] = {
                                     type: 'circle',
                                     className: 'testClass',
                                     fillColor: 'DarkSlateGray',
@@ -4569,6 +4726,7 @@ var app = angular.module('webapp');
                                 };
                             }
                         });
+                        $scope.paths = tempPaths;
                     }, function (error) {
                         console.log('An error occured!', error);
                     });
@@ -4848,5 +5006,88 @@ var app = angular.module('webapp');
                         }
                     ];
                 }
+            };
+        } ]);
+        app.controller('PathTypesController', [ '$scope', function($scope) {
+            var europeCapitals = {
+                Madrid: {
+                    lat: 40.4,
+                    lng: -3.6833333
+                },
+                Rome: {
+                    lat: 41.9,
+                    lng: 12.4833333
+                },
+                London: {
+                    lat: 51.5,
+                    lng: -0.116667
+                },
+                Lisbon: {
+                    lat: 38.7166667,
+                    lng: -9.1333333
+                },
+                Berlin: {
+                    lat: 52.5166667,
+                    lng: 13.4
+                },
+                Paris: {
+                    lat: 48.866667,
+                    lng: 2.333333
+                },
+                Brussels: {
+                    lat: 50.8333,
+                    lng: 4
+                }
+            };
+            var pathsDict = {
+                polyline: {
+                    type: "polyline",
+                    latlngs: [ europeCapitals.London, europeCapitals.Madrid, europeCapitals.Rome ]
+                },
+                multiPolyline: {
+                    type: "multiPolyline",
+                    latlngs: [
+                        [ europeCapitals.London, europeCapitals.Lisbon ],
+                        [ europeCapitals.Paris, europeCapitals.Madrid ],
+                        [ europeCapitals.Rome, europeCapitals.Berlin ]
+                    ]
+                },
+                polygon: {
+                   type: "polygon",
+                   latlngs: [ europeCapitals.London, europeCapitals.Lisbon , europeCapitals.Madrid, europeCapitals.Paris ]
+                },
+                multiPolygon: {
+                    type: "multiPolygon",
+                    latlngs: [
+                                [ europeCapitals.London, europeCapitals.Lisbon , europeCapitals.Madrid, europeCapitals.Paris ],
+                                [ europeCapitals.Berlin, europeCapitals.Rome, europeCapitals.Brussels ]
+                            ]
+                },
+                rectangle: {
+                    type: "rectangle",
+                    latlngs: [ europeCapitals.Berlin, europeCapitals.Lisbon ]
+                },
+                circle: {
+                    type: "circle",
+                    radius: 500 * 1000,
+                    latlngs: europeCapitals.Brussels
+                },
+                circleMarker: {
+                    type: "circleMarker",
+                    radius: 50,
+                    latlngs: europeCapitals.Rome
+                }
+            };
+            angular.extend($scope, {
+                center: {
+                    lat: 51.505,
+                    lng: -0.09,
+                    zoom: 3
+                },
+                paths: {}
+            });
+            $scope.addShape = function(shape) {
+                $scope.paths = {};
+                $scope.paths[shape] = pathsDict[shape];
             };
         } ]);}(angular));

@@ -1,10 +1,22 @@
 window.ngLeafLetTestGlobals = {}
 
+afterEach ->
+    window.doTestLog = false
+
 beforeEach ->
+    digest = (scope, fn, $timeout = ngLeafLetTestGlobals.$timeout) ->
+
+        while $timeout.hasPendingTasks()
+            $timeout.flush()
+
+        fn() if fn?
+        scope.$digest() unless scope.$$phase
+    @digest = digest
 
     angular.module('ui-leaflet')
     .config ($provide) ->
-        $provide.value('$log', console)
+        if window.doTestLog
+            $provide.value('$log', console)
         $provide.decorator '$timeout', ($delegate, $browser) ->
             $delegate.hasPendingTasks = ->
                 $browser.deferredFns.length > 0
@@ -12,10 +24,6 @@ beforeEach ->
             $delegate
     .run (leafletLogger) ->
         leafletLogger.currentLevel = leafletLogger.LEVELS.info
-
-    @digest = (scope, fn) ->
-        while ngLeafLetTestGlobals.$timeout.hasPendingTasks()
-            ngLeafLetTestGlobals.$timeout.flush()
-
-        fn() if fn?
-        scope.$digest() unless scope.$$phase
+    .service 'digestor', ($timeout, $rootScope) ->
+        digest: (scope = $rootScope, fn) ->
+            digest(scope, fn, $timeout)

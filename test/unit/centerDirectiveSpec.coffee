@@ -77,6 +77,24 @@ describe 'Directive: leaflet center', ->
                         expect(map.getCenter().lng).toBeCloseTo -9.2, 4
                         expect(map.getZoom()).toEqual 4
 
+                describe 'Using url-hash functionality with custom param', ->
+                    it 'should update the center of the map if changes the url', ->
+                        element = angular.element(
+                            "<leaflet #{directiveName}='center' url-hash-center='yes' url-hash-param='center'></leaflet>"
+                        )
+                        element = $compile(element)(scope)
+                        map = undefined
+
+                        leafletData.getMap().then (leafletMap) ->
+                            map = leafletMap
+
+                        centerParams = center: '30.1' + ':' + '-9.2' + ':' + '4'
+                        $location.search centerParams
+                        scope.$digest()
+                        expect(map.getCenter().lat).toBeCloseTo 30.1, 4
+                        expect(map.getCenter().lng).toBeCloseTo -9.2, 4
+                        expect(map.getZoom()).toEqual 4
+
             describe 'sets scope from leaflet', ->
                 it 'should update the url hash if changes the center', ->
                     element = angular.element("<leaflet #{directiveName}='center' url-hash-center='yes'></leaflet>")

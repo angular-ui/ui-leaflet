@@ -2,17 +2,20 @@
 var getAvailPort = require('./utils/getAvailPort');
 var port = getAvailPort(7777);
 
-var _files = ['src/**/*.js', 'test/unit/**.js', 'test/unit/**.coffee', 'test/e2e/**.js'];
+var _files = ['src/**/*.js'];
+var _testFiles = ['test/unit/**.js', 'test/unit/**.coffee',
+    'test/e2e/**.js', 'test/unit/**/**.js', 'test/unit/**/**.coffee', 'test/e2e/**/**.js'];
 
-module.exports = function(grunt, options) {
+module.exports = function (grunt, options) {
     return {
-        options: {
-            livereload: port
-        },
+        // NOT WORTH THE PINTA when having multiple watches
+        // options: {
+        //     livereload: port
+        // },
         fast: {
             files: _files,
             tasks: [
-                'fast-build',
+                'fastbuild',
                 'uglify',
                 'concat:license'
             ]
@@ -20,31 +23,17 @@ module.exports = function(grunt, options) {
         source: {
             files: _files,
             tasks: [
-                'fast-build',
+                'fastbuild',
                 'uglify',
-                'test-unit',
+                'testunit',
                 'concat:license'
             ]
         },
         unit: {
-            files: _files,
+            files: _testFiles,
             tasks: [
-                'fast-build',
-                'karma:unit'
-            ]
-        },
-        'unit-mocha': {
-            files: _files,
-            tasks: [
-                'fast-build',
-                'karma:unit-mocha'
-            ]
-        },
-        chrome: {
-            files: _files,
-            tasks: [
-                'fast-build',
-                'karma:unit-chrome'
+                'fastbuild',
+                'karma'
             ]
         },
         examples: {
@@ -54,8 +43,8 @@ module.exports = function(grunt, options) {
             ]
         },
         website: {
-          files: ['website/src/js/app.js', 'website/src/js/**/*.js'],
-          tasks: ['jshint', 'concat:website', 'uglify'] //'ngmin'
+            files: ['website/src/js/app.js', 'website/src/js/**/*.js'],
+            tasks: ['jshint', 'concat:website', 'uglify'] //'ngmin'
         }
     };
 };

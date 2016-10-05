@@ -18,8 +18,8 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
             controls       : '=',
             decorations    : '=',
             eventBroadcast : '=',
-            markersWatchOptions : '=',
-            geojsonWatchOptions : '='
+            watchOptions   : '=',
+            id             : '@'
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',
@@ -60,6 +60,10 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
                 }
             }
 
+            // Create the Leaflet Map Object with the options
+            var map = new L.Map(element[0], leafletMapDefaults.getMapCreationDefaults(attrs.id));
+            ctrl._leafletMap.resolve(map);
+
             // If the width attribute defined update css
             // Then watch if bound property changes and update css
             if (isDefined(attrs.width)) {
@@ -89,10 +93,6 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
                         map.invalidateSize();
                     });
             }
-
-            // Create the Leaflet Map Object with the options
-            var map = new L.Map(element[0], leafletMapDefaults.getMapCreationDefaults(attrs.id));
-            ctrl._leafletMap.resolve(map);
 
             if (!isDefined(attrs.center) && !isDefined(attrs.lfCenter)) {
                 map.setView([defaults.center.lat, defaults.center.lng], defaults.center.zoom);
@@ -126,7 +126,7 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
             // if no event-broadcast attribute, all events are broadcasted
             if (!isDefined(attrs.eventBroadcast)) {
                 var logic = "broadcast";
-                addEvents(map, mapEvents, "eventName", scope, logic);
+                addEvents(map, attrs.id, mapEvents, "eventName", scope, logic);
             }
 
             // Resolve the map object to the promises

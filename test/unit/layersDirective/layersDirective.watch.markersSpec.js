@@ -175,111 +175,126 @@ describe("Directive: leaflet: layers.watch.markers", function () {
         expect(typeof layers.overlays.fire).toBe('object');
     });
 
-    it('should add and remove markers in overlays in watch 1', function () {
-        // Check for a marker remove in a layer group
-        angular.extend(scope, {
-            layers: {
-                baselayers: {
-                    osm: {
-                        name: 'OpenStreetMap',
-                        type: 'xyz',
-                        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        layerOptions: {
-                            subdomains: ['a', 'b', 'c'],
-                            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                            continuousWorld: true
+    describe('should add and remove markers in overlays in watch 1', function () {
+        var element, map, markers, layers;
+        beforeEach(function(){
+            // Check for a marker remove in a layer group
+            angular.extend(scope, {
+                layers: {
+                    baselayers: {
+                        osm: {
+                            name: 'OpenStreetMap',
+                            type: 'xyz',
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            layerOptions: {
+                                subdomains: ['a', 'b', 'c'],
+                                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                                continuousWorld: true
+                            }
+                        }
+                    },
+                    overlays: {
+                        cars: {
+                            name: 'cars',
+                            type: 'group',
+                            visible: true
+                        },
+                        trucks: {
+                            name: 'trucks',
+                            type: 'group',
+                            visible: false
                         }
                     }
                 },
-                overlays: {
-                    cars: {
-                        name: 'cars',
-                        type: 'group',
-                        visible: true
-                    },
-                    trucks: {
-                        name: 'trucks',
-                        type: 'group',
-                        visible: false
+                markers: {
+                    m1: {
+                        lat: 1.2,
+                        lng: 0.3,
+                        layer: 'cars'
                     }
                 }
-            },
-            markers: {
-                m1: {
-                    lat: 1.2,
-                    lng: 0.3,
-                    layer: 'cars'
-                }
-            }
-        });
-        var element = angular.element('<leaflet layers="layers" markers="markers"></leaflet>');
-        element = $compile(element)(scope);
-        var map;
-        leafletData.getMap().then(function (leafletMap) {
-            map = leafletMap;
-        });
-        var markers;
-        leafletData.getMarkers().then(function (leafletMarkers) {
-            markers = leafletMarkers;
-        });
-        var layers;
-        leafletData.getLayers().then(function (leafletLayers) {
-            layers = leafletLayers;
-        });
-        scope.$digest();
-        expect(map.hasLayer(markers.m1)).toBe(true);
-        expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(true);
+            });
+            element = angular.element('<leaflet layers="layers" markers="markers"></leaflet>');
+            element = $compile(element)(scope);
 
-        // remove marker information
-        scope.markers.m1 = {};
-        scope.$digest();
-        expect(map.hasLayer(markers.m1)).toBe(false);
-        expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
+            leafletData.getMap().then(function (leafletMap) {
+                map = leafletMap;
+            });
 
-        scope.markers.m1 = {
-            lat: 1.2,
-            lng: 0.3,
-            layer: 'cars'
-        };
-        scope.$digest();
-        expect(map.hasLayer(markers.m1)).toBe(true); //Fail
-        expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(true);
+            leafletData.getMarkers().then(function (leafletMarkers) {
+                markers = leafletMarkers;
+            });
 
-        // null the marker information
-        scope.markers.m1 = null;
-        scope.$digest();
-        expect(map.hasLayer(markers.m1)).toBe(false);
-        expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
-        // delete the marker
-        delete scope.markers.m1;
-        scope.$digest();
-        expect(map.hasLayer(markers.m1)).toBe(false);
-        expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
-        // delete the marker layer
-        scope.markers.m1 = {
-            lat: 1.2,
-            lng: 0.3,
-            layer: 'cars'
-        };
-        scope.$digest();
-        scope.markers.m1 = {
-            lat: 1.2,
-            lng: 0.3
-        };
-        scope.$digest();
-        expect(map.hasLayer(markers.m1)).toBe(true);
-        expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
-        expect(layers.overlays.trucks.hasLayer(markers.m1)).toBe(false);
-        // Then add to a not visible layer
-        scope.markers.m1 = {
-            lat: 1.2,
-            lng: 0.3,
-            layer: 'trucks'
-        };
-        scope.$digest();
-        expect(map.hasLayer(markers.m1)).toBe(false);
-        expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
-        expect(layers.overlays.trucks.hasLayer(markers.m1)).toBe(true);
+            leafletData.getLayers().then(function (leafletLayers) {
+                layers = leafletLayers;
+            });
+        });
+
+        it('be added via original model', function () {
+            scope.$digest();
+            expect(map.hasLayer(markers.m1)).toBe(true);
+            expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(true);
+        });
+        it('be removed model:{}', function () {
+            // remove marker information
+            scope.markers.m1 = {};
+            scope.$digest();
+            expect(map.hasLayer(markers.m1)).toBe(false);
+            expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
+        });
+        it('re-added ', function () {
+            scope.markers.m1 = {
+                lat: 1.2,
+                lng: 0.3,
+                layer: 'cars'
+            };
+            scope.$digest();
+            expect(map.hasLayer(markers.m1)).toBe(true); //Fail
+            expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(true);
+        });
+
+        it('be removed model: null', function () {
+            // null the marker information
+            scope.markers.m1 = null;
+            scope.$digest();
+            expect(map.hasLayer(markers.m1)).toBe(false);
+            expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
+        });
+        it('stay removed on deleted model', function () {
+            // delete the marker
+            delete scope.markers.m1;
+            scope.$digest();
+            expect(map.hasLayer(markers.m1)).toBe(false);
+            expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
+        });
+        it('readded with mutations', function () {
+            scope.markers.m1 = {
+                lat: 1.2,
+                lng: 0.3,
+                layer: 'cars'
+            };
+            scope.$digest();
+            scope.markers.m1 = {
+                lat: 1.2,
+                lng: 0.3
+            };
+            scope.$digest();
+            expect(map.hasLayer(markers.m1)).toBe(true);
+            expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
+            expect(layers.overlays.trucks.hasLayer(markers.m1)).toBe(false);
+        });
+        it('layer changed to a non visible layer', function () {
+            // Then add to a not visible layer
+            scope.markers.m1 = {
+                lat: 1.2,
+                lng: 0.3,
+                layer: 'trucks'
+            };
+            scope.$digest();
+            expect(map.hasLayer(markers.m1)).toBe(false);
+            expect(layers.overlays.cars.hasLayer(markers.m1)).toBe(false);
+            expect(layers.overlays.trucks.hasLayer(markers.m1)).toBe(true);
+        });
     });
 
     it('should add and remove markers in overlays in watch 2', function () {

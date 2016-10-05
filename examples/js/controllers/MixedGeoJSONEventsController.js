@@ -71,7 +71,7 @@
                 });
                 layer.bringToFront();
                 $scope.selectedCountry = feature;
-                console.log(feature);
+                //console.log(feature);
             }
             // Get the countries data from a JSON
             $http.get("json/all.json").success(function(data, status) {

@@ -1,7 +1,7 @@
 {
     "node": true,
-    "browser": true,
     "esnext": true,
+    "browser": true,
     "bitwise": true,
     "curly": false,
     "eqeqeq": true,
@@ -15,6 +15,9 @@
     "unused": true,
     "trailing": true,
     "smarttabs": true,
+    "latedef": {
+        "nofunc": true
+    },
     "globals": {
         "angular": false,
         "L": false,

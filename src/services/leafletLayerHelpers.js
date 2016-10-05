@@ -16,20 +16,41 @@ angular.module('ui-leaflet')
         }
         var utfgrid = new L.UtfGrid(params.url, params.pluginOptions);
 
+        var toSend = {
+            model: params.$parent
+        };
+
+        // TODO Use event manager
         utfgrid.on('mouseover', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseover', toSend);
         });
 
         utfgrid.on('mouseout', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMouseout', toSend);
         });
 
         utfgrid.on('click', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridClick', toSend);
         });
 
         utfgrid.on('mousemove', function(e) {
-            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', e);
+            angular.extend(toSend, {
+                leafletEvent: e,
+                leafletObject: e.target,
+            });
+            $rootScope.$broadcast('leafletDirectiveMap.utfgridMousemove', toSend);
         });
 
         return utfgrid;
@@ -40,19 +61,6 @@ angular.module('ui-leaflet')
             mustHaveUrl: true,
             createLayer: function(params) {
                 return L.tileLayer(params.url, params.options);
-            }
-        },
-        mapbox: {
-            mustHaveKey: true,
-            createLayer: function(params) {
-                var version = 3;
-                if(isDefined(params.options.version) && params.options.version === 4) {
-                    version = params.options.version;
-                }
-                var url = version === 3?
-                    '//{s}.tiles.mapbox.com/v3/' + params.key + '/{z}/{x}/{y}.png':
-                    '//api.tiles.mapbox.com/v4/' + params.key + '/{z}/{x}/{y}.png?access_token=' + params.apiKey;
-                return L.tileLayer(url, params.options);
             }
         },
         geoJSON: {
@@ -91,14 +99,13 @@ angular.module('ui-leaflet')
                 });
             }
         },
-        utfGrid: {
-            mustHaveUrl: true,
-            createLayer: utfGridCreateLayer
-        },
         cartodbTiles: {
             mustHaveKey: true,
             createLayer: function(params) {
-                var url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url)?
+                    params.url+'/'+params.user:
+                    '//' + params.user + '.cartodb.com';
+                url += '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 return L.tileLayer(url, params.options);
             }
         },
@@ -106,7 +113,10 @@ angular.module('ui-leaflet')
             mustHaveKey: true,
             mustHaveLayer : true,
             createLayer: function(params) {
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
+                var url = isDefined(params.url)?
+                    params.url+'/'+params.user:
+                    '//' + params.user + '.cartodb.com';
+                params.url = url + '/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
                 return utfGridCreateLayer(params);
             }
         },
@@ -114,11 +124,27 @@ angular.module('ui-leaflet')
             mustHaveKey: true,
             mustHaveLayer : true,
             createLayer: function(params) {
-                var tilesURL = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
+                var url = isDefined(params.url)?
+                    params.url+'/'+params.user:
+                    '//' + params.user + '.cartodb.com';
+                var tilesURL = url + '/api/v1/map/' + params.key + '/{z}/{x}/{y}.png';
                 var tileLayer = L.tileLayer(tilesURL, params.options);
-                params.url = '//' + params.user + '.cartodb.com/api/v1/map/' + params.key + '/' + params.layer + '/{z}/{x}/{y}.grid.json';
-                var utfLayer = utfGridCreateLayer(params);
-                return L.layerGroup([tileLayer, utfLayer]);
+                var layers = [tileLayer];
+
+                var addUtfLayer = function(parent, params, layer) {
+                    var paramsCopy = angular.copy(params);
+                    paramsCopy.url = url + '/api/v1/map/' + paramsCopy.key + '/' + layer + '/{z}/{x}/{y}.grid.json';
+                    parent.push(utfGridCreateLayer(paramsCopy));
+                };
+
+                if(isArray(params.layer)) {
+                    for(var i = 0; i < params.layer.length; i++) {
+                        addUtfLayer(layers, params, params.layer[i]);
+                    }
+                } else {
+                    addUtfLayer(layers, params, params.layer);
+                }
+                return L.layerGroup(layers);
             }
         },
         wms: {
@@ -131,21 +157,6 @@ angular.module('ui-leaflet')
             mustHaveUrl: true,
             createLayer: function(params) {
                 return L.tileLayer.wmts(params.url, params.options);
-            }
-        },
-        wfs: {
-            mustHaveUrl: true,
-            mustHaveLayer : true,
-            createLayer: function(params) {
-                if (!Helpers.WFSLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var options = angular.copy(params.options);
-                if(options.crs && 'string' === typeof options.crs) {
-                    /*jshint -W061 */
-                    options.crs = eval(options.crs);
-                }
-                return new L.GeoJSON.WFS(params.url, params.layer, options);
             }
         },
         group: {
@@ -176,159 +187,6 @@ angular.module('ui-leaflet')
                 return L.featureGroup();
             }
         },
-        google: {
-            mustHaveUrl: false,
-            createLayer: function(params) {
-                var type = params.type || 'SATELLITE';
-                if (!Helpers.GoogleLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Google(type, params.options);
-            }
-        },
-        here: {
-            mustHaveUrl: false,
-            createLayer: function(params) {
-                var provider = params.provider || 'HERE.terrainDay';
-                if (!Helpers.LeafletProviderPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.TileLayer.Provider(provider, params.options);
-            }
-        },            
-        china:{
-            mustHaveUrl:false,
-            createLayer:function(params){
-                var type = params.type || '';
-                if(!Helpers.ChinaLayerPlugin.isLoaded()){
-                    return;
-                }
-                return L.tileLayer.chinaProvider(type, params.options);
-            }
-        },
-        agsBase: {
-            mustHaveLayer : true,
-            createLayer: function (params) {
-                if (!Helpers.AGSBaseLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return L.esri.basemapLayer(params.layer, params.options);
-            }
-        },
-        ags: {
-            mustHaveUrl: true,
-            createLayer: function(params) {
-                if (!Helpers.AGSLayerPlugin.isLoaded()) {
-                    return;
-                }
-
-                var options = angular.copy(params.options);
-                angular.extend(options, {
-                    url: params.url
-                });
-                var layer = new lvector.AGS(options);
-                layer.onAdd = function(map) {
-                    this.setMap(map);
-                };
-                layer.onRemove = function() {
-                    this.setMap(null);
-                };
-                return layer;
-            }
-        },
-        agsFeature: {
-            mustHaveUrl: true,
-            createLayer: function(params) {
-                if (!Helpers.AGSFeatureLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                var layer = L.esri.featureLayer(params.options);
-                var load = function() {
-                    if(isDefined(params.options.loadedDefer)) {
-                        params.options.loadedDefer.resolve();
-                    }
-                };
-                layer.on('loading', function() {
-                    params.options.loadedDefer = $q.defer();
-                    layer.off('load', load);
-                    layer.on('load', load);
-                });
-
-                return layer;
-            }
-        },
-        agsTiled: {
-            mustHaveUrl: true,
-            createLayer: function(params) {
-                if (!Helpers.AGSTiledMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                return L.esri.tiledMapLayer(params.options);
-            }
-        },
-        agsDynamic: {
-            mustHaveUrl: true,
-            createLayer: function(params) {
-                if (!Helpers.AGSDynamicMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-
-                params.options.url = params.url;
-
-                return L.esri.dynamicMapLayer(params.options);
-            }
-        },
-        agsImage: {
-            mustHaveUrl: true,
-            createLayer: function(params) {
-                if (!Helpers.AGSImageMapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri plugin is not loaded.');
-                    return;
-                }
-                 params.options.url = params.url;
-
-                return L.esri.imageMapLayer(params.options);
-            }
-        },
-        agsClustered: {
-            mustHaveUrl: true,
-            createLayer: function(params) {
-                if (!Helpers.AGSClusteredLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri clustered layer plugin is not loaded.');
-                    return;
-                }
-
-                if(!Helpers.MarkerClusterPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The markercluster plugin is not loaded.');
-                    return;
-                }
-                return L.esri.clusteredFeatureLayer(params.url, params.options);
-            }
-        },
-        agsHeatmap: {
-            mustHaveUrl: true,
-            createLayer: function(params) {
-                if (!Helpers.AGSHeatmapLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The esri heatmap layer plugin is not loaded.');
-                    return;
-                }
-
-                if(!Helpers.HeatLayerPlugin.isLoaded()) {
-                    $log.warn(errorHeader + ' The heatlayer plugin is not loaded.');
-                    return;
-                }
-                return L.esri.heatmapFeatureLayer(params.url, params.options);
-            }
-        },
         markercluster: {
             mustHaveUrl: false,
             createLayer: function(params) {
@@ -337,60 +195,6 @@ angular.module('ui-leaflet')
                     return;
                 }
                 return new L.MarkerClusterGroup(params.options);
-            }
-        },
-        bing: {
-            mustHaveUrl: false,
-            createLayer: function(params) {
-                if (!Helpers.BingLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.BingLayer(params.key, params.options);
-            }
-        },
-        webGLHeatmap: {
-            mustHaveUrl: false,
-            mustHaveData: true,
-            createLayer: function(params) {
-                if (!Helpers.WebGLHeatMapLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var layer = new L.TileLayer.WebGLHeatMap(params.options);
-                if (isDefined(params.data)) {
-                    layer.setData(params.data);
-                }
-
-                return layer;
-            }
-        },
-        heat: {
-            mustHaveUrl: false,
-            mustHaveData: true,
-            createLayer: function(params) {
-                if (!Helpers.HeatLayerPlugin.isLoaded()) {
-                    return;
-                }
-                var layer = new L.heatLayer();
-
-                if (isArray(params.data)) {
-                    layer.setLatLngs(params.data);
-                }
-
-                if (isObject(params.options)) {
-                    layer.setOptions(params.options);
-                }
-
-                return layer;
-            }
-        },
-        yandex: {
-            mustHaveUrl: false,
-            createLayer: function(params) {
-                var type = params.type || 'map';
-                if (!Helpers.YandexLayerPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.Yandex(type, params.options);
             }
         },
         imageOverlay: {
@@ -502,7 +306,8 @@ angular.module('ui-leaflet')
             key: layerDefinition.key,
             apiKey: layerDefinition.apiKey,
             pluginOptions: layerDefinition.pluginOptions,
-            user: layerDefinition.user
+            user: layerDefinition.user,
+            $parent: layerDefinition
         };
 
         //TODO Add $watch to the layer properties
@@ -547,9 +352,19 @@ angular.module('ui-leaflet')
         }
     }
 
+    let changeOpacityListener = (op) => {
+        return (ly) => {
+            if(isDefined(ly.setOpacity)) {
+                ly.setOpacity(op);
+            }
+        };
+    };
+
     return {
         createLayer: createLayer,
+        layerTypes: layerTypes,
         safeAddLayer: safeAddLayer,
-        safeRemoveLayer: safeRemoveLayer
+        safeRemoveLayer: safeRemoveLayer,
+        changeOpacityListener: changeOpacityListener
     };
 });

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html ng-app="demoapp">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="../bower_components/leaflet/dist/leaflet.js"></script>
+    <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
+    <script src="../bower_components/Leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="../dist/ui-leaflet.min.js"></script>
+    <script src="https://rawgit.com/elesdoar/ui-leaflet-layers/master/dist/ui-leaflet-layers.min.js"></script>
+    <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
+    <script>
+        var app = angular.module("demoapp", ['ui-leaflet']);
+        app.controller("LayersHeatmapController", ["$scope", "$http", function($scope, $http) {
+
+            var points = [];
+            var heatmap = {
+                name: 'Heat Map',
+                type: 'heat',
+                data: points,
+                visible: true
+            };
+
+            $http.get("json/heat-points.json").success(function(data) {
+                $scope.layers.overlays = {
+                    heat: {
+                        name: 'Heat Map',
+                        type: 'heat',
+                        data: data,
+                        layerOptions: {
+                            radius: 20,
+                            blur: 10
+                        },
+                        visible: true
+                    }
+                };
+            });
+
+            angular.extend($scope, {
+                center: {
+                    lat: 37.774546,
+                    lng: -122.433523,
+                    zoom: 12
+                },
+                layers: {
+                    baselayers: {
+                        mapbox_light: {
+                            name: 'Mapbox Light',
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
+                        }
+                    }
+                }
+            });
+        }]);
+    </script>
+</head>
+
+<body ng-controller="LayersHeatmapController">
+    <leaflet lf-center="center" layers="layers" width="100%" height="480px"></leaflet>
+    <h1>HeatMap example</h1>
+    <p>This example uses the <a href="https://github.com/Leaflet/Leaflet.heat">Leaflet.heat</a> library.</p>
+    <p>The example is inspired in <a href="https://developers.google.com/maps/documentation/javascript/examples/layer-heatmap?hl=es">this</a> Google Maps Heat example.</p>
+</body>
+
+</html>

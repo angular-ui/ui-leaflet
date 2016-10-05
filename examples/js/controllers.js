@@ -38,15 +38,6 @@ var app = angular.module('webapp');
                 }
             });
        }]);
-        app.controller('BasicCenterController', [ '$scope', function($scope) {
-            angular.extend($scope, {
-                london: {
-                    lat: 51.505,
-                    lng: -0.09,
-                    zoom: 4
-                }
-            });
-       }]);
         app.controller('BasicCenterGeoIPController', [ '$scope', '$http', function($scope, $http) {
             angular.extend($scope, {
                 center: {
@@ -263,11 +254,12 @@ var app = angular.module('webapp');
                 },
                 tiles2: {
                     name: 'Mapbox Outdoors',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                    url: '//api.mapbox.com/styles/v1/{user}/{mapId}/tiles/256/{z}/{x}/{y}?access_token={apiKey}',
                     type: 'xyz',
                     options: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lia3no0m'
+                        user: 'elesdoar',
+                        apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                        mapId: 'citng3g0g003s2it88y9lg769'
                     }
                 },
                 paths2: {
@@ -562,20 +554,22 @@ var app = angular.module('webapp');
                 },
                 mapbox_outdoors: {
                     name: 'Mapbox Outdoors',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                    url: '//api.mapbox.com/styles/v1/{user}/{mapId}/tiles/256/{z}/{x}/{y}?access_token={apiKey}',
                     type: 'xyz',
                     options: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lia3no0m'
+                        user: 'elesdoar',
+                        apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                        mapId: 'citng3g0g003s2it88y9lg769'
                     }
                 },
-                mapbox_wheat: {
+                mapbox_satellite: {
                     name: 'Mapbox Wheat Paste',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                    url: '//api.mapbox.com/styles/v1/{user}/{mapId}/tiles/256/{z}/{x}/{y}?access_token={apiKey}',
                     type: 'xyz',
                     options: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lia35jfp'
+                        user: 'elesdoar',
+                        apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                        mapId: 'citngqecv00362hphvm5m7myb'
                     }
                 }
             };
@@ -585,7 +579,7 @@ var app = angular.module('webapp');
                     lng: -0.09,
                     zoom: 8
                 },
-                tiles: tilesDict.mapbox_wheat
+                tiles: tilesDict.mapbox_satellite
             });
             $scope.changeTiles = function(tiles) {
                 $scope.tiles = tilesDict[tiles];
@@ -782,12 +776,10 @@ var app = angular.module('webapp');
                     baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            },
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
                             layerParams: {
                                 showOnSelector: false
                             }
@@ -825,11 +817,12 @@ var app = angular.module('webapp');
                 },
                 tiles: {
                     name: 'Mapbox Comic',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                    url: '//api.mapbox.com/styles/v1/{user}/{mapId}/tiles/256/{z}/{x}/{y}?access_token={apiKey}',
                     type: 'xyz',
                     options: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lpa06kfg'
+                        user: 'elesdoar',
+                        apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                        mapId: 'cii0r8pax00zvaikonyem8014'
                     }
                 },
                 controls: {
@@ -848,11 +841,12 @@ var app = angular.module('webapp');
                 },
                 tiles: {
                     name: 'Mapbox Comic',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
+                    url: '//api.mapbox.com/styles/v1/{user}/{mapId}/tiles/256/{z}/{x}/{y}?access_token={apiKey}',
                     type: 'xyz',
                     options: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lpa06kfg'
+                        user: 'elesdoar',
+                        apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                        mapId: 'cii0r8pax00zvaikonyem8014'
                     }
                 },
                 controls: {}
@@ -920,12 +914,10 @@ var app = angular.module('webapp');
                     baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            },
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
                             layerParams: {
                                 showOnSelector: false
                             }
@@ -1261,7 +1253,7 @@ var app = angular.module('webapp');
             	options: {
             		controls: {
             			layers: {
-            				visible: false
+            				visible: true
             			}
             		}
             	},
@@ -1288,10 +1280,10 @@ var app = angular.module('webapp');
                         sst: {
                             name: 'Analyses - Sea Surface Temperature',
                             type: 'wms',
-                            url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/analyses',
+                            url: 'http://nowcoast.noaa.gov/arcgis/services/nowcoast/analysis_meteohydro_sfc_qpe_time/MapServer/WMSServer?service=WMS',
                             visible: true,
                             layerOptions: {
-                                layers: 'NCEP_RAS_ANAL_RTG_SST,NCEP_POLY_ANAL_RTG_SST',
+                                layers: '5',
                                 format: 'image/png',
                                 transparent: true,
                                 attribution: 'NOAA/NOS nowCOAST',
@@ -1300,10 +1292,10 @@ var app = angular.module('webapp');
 				    	wave: {
                             name: 'Forecasts - Wave height',
                             type: 'wms',
-                            url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/forecasts',
+                            url: 'http://nowcoast.noaa.gov/arcgis/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/WMSServer?service=WMS',
                             visible: false,
                             layerOptions: {
-                                layers: 'NDFD_RAS_WAVEH_3_00,NDFD_POLY_WAVEH_3_00',
+                                layers: '10',
                                 format: 'image/png',
                                 transparent: true,
                                 attribution: 'NOAA/NOS nowCOAST',
@@ -1371,14 +1363,12 @@ var app = angular.module('webapp');
         }]);
         app.controller("LayersDynamicAdditionController", [ "$scope", function($scope) {
             $scope.definedLayers = {
-                mapbox_wheat: {
-                    name: 'Mapbox Wheat Paste',
-                    url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                    type: 'xyz',
-                    layerOptions: {
-                        apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                        mapid: 'bufanuvols.lia35jfp'
-                    }
+                mapbox_light: {
+                    name: 'Mapbox Light',
+                    type: 'mapbox',
+                    user: 'elesdoar',
+                    key: 'citojtj9e00022iqjmdzhrdwd',
+                    apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                 },
                 osm: {
                     name: 'OpenStreetMap',
@@ -1410,7 +1400,7 @@ var app = angular.module('webapp');
                 layers: {
                     baselayers: {
                         osm: $scope.definedLayers.osm,
-                        mapbox_wheat: $scope.definedLayers.mapbox_wheat
+                        mapbox_light: $scope.definedLayers.mapbox_light
                     },
                     overlays: {
                         hillshade: $scope.definedOverlays.hillshade
@@ -1846,13 +1836,11 @@ var app = angular.module('webapp');
 					baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            }
-						}
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
+                        }
                    },
                    overlays: {
 				    	usa_pop: {
@@ -1948,12 +1936,10 @@ var app = angular.module('webapp');
                     baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            }
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                         }
                     }
                 }
@@ -2006,14 +1992,11 @@ var app = angular.module('webapp');
                 layers: {
                     baselayers: {
                         xyz: {
-                            name: 'Mapbox Streets',
-                            url: 'http://a.tiles.mapbox.com/v3/examples.map-i86nkdio/{z}/{x}/{y}.png',
-                            type: 'xyz',
-                            layerOptions: {
-                                showOnSelector: true,
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.ll5em372'
-                            }
+                            name: 'Mapbox Outdoors',
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg',
+                            key: 'citng3g0g003s2it88y9lg769'
                         }
                     },
                     overlays: {
@@ -2630,12 +2613,10 @@ var app = angular.module('webapp');
                     baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia3no0m'
-                            }
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                         }
                     },
                     overlays: {
@@ -2856,13 +2837,11 @@ var app = angular.module('webapp');
 					baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            }
-						}
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
+                        }
                    },
                    overlays: {
 				    	usa_pop: {
@@ -2915,13 +2894,11 @@ var app = angular.module('webapp');
 					baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            }
-						}
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
+                        }
                    },
                    overlays: {
 				    	usa_pop: {
@@ -2984,13 +2961,11 @@ var app = angular.module('webapp');
 					baselayers: {
                         mapbox_light: {
                             name: 'Mapbox Light',
-                            url: 'http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={apikey}',
-                            type: 'xyz',
-                            layerOptions: {
-                                apikey: 'pk.eyJ1IjoiYnVmYW51dm9scyIsImEiOiJLSURpX0pnIn0.2_9NrLz1U9bpwMQBhVk97Q',
-                                mapid: 'bufanuvols.lia22g09'
-                            }
-						}
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
+                        }
                    },
                    overlays: {
 				    	usa_pop: {
@@ -3975,9 +3950,11 @@ var app = angular.module('webapp');
                 layers2: {
                     baselayers: {
                         mapbox: {
-                            name: 'Mapbox Terrain',
-                            url: 'http://a.tiles.mapbox.com/v3/examples.map-i86nkdio/{z}/{x}/{y}.png',
-                            type: 'xyz'
+                            name: 'Mapbox Light',
+                            type: 'mapbox',
+                            user: 'elesdoar',
+                            key: 'citojtj9e00022iqjmdzhrdwd',
+                            apiKey: 'pk.eyJ1IjoiZWxlc2RvYXIiLCJhIjoiY2l0bmcwaDNpMDQzMTJvbDRpaTltN2dlbiJ9.KDnhRVh9St6vpQovMI7iLg'
                         }
                     }
                 },
@@ -4466,6 +4443,53 @@ var app = angular.module('webapp');
             }
         });
     });
+    app.controller('MixedMOverlaysMarkersNoWatchController', function ($scope, leafletData, $timeout, leafletLogger) {
+      leafletLogger.currentLevel = leafletLogger.LEVELS.debug;
+        var _clonedMarkers;
+        $timeout(function () {
+            //should do nothing (not watched) and only see one destroy
+            _clonedMarkers = angular.copy($scope.markers);
+        },1000);
+        $timeout(function () {
+            leafletData.getDirectiveControls().then(function (controls) {
+                //move all markers by a few decimal points
+                for (var markerName in _clonedMarkers) {
+                    var marker = _clonedMarkers[markerName];
+                    marker.lat += .05;
+                }
+                //force manual update
+                controls.markers.create(_clonedMarkers ,$scope.markers);
+                $scope.markers = _clonedMarkers;
+            });
+        }, 4000);
+        angular.extend($scope, {
+            markersWatchOptions: {
+                doWatch: false,
+                isDeep: false,
+                individual: {
+                    doWatch: false,
+                    isDeep: false
+                }
+            },
+            center: {
+                lat: 42.20133,
+                lng: 2.19110,
+                zoom: 11
+            },
+            markers: {
+              m1: {
+                  lat: 42.20133,
+                  lng: 2.19110,
+                  message: "I'm a car"
+              },
+              m2: {
+                  lat: 42.21133,
+                  lng: 2.18110,
+                  message: "I'm a car"
+              }
+            }
+        });
+    });
         app.controller("PathEventsController", function($scope, leafletLogger) {
             // leafletLogger.currentLevel = leafletLogger.LEVELS.debug;
             var paths = {};
@@ -4927,12 +4951,8 @@ var app = angular.module('webapp');
                     baselayers: {
                         osm: {
                             name: 'OpenStreetMap',
-                            type: 'xyz',
-                            url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg',
-                            layerOptions: {
-                                subdomains: '1234',
-                                attribution: 'test'
-                            }
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            type: 'xyz'
                         }
                     },
                     overlays: {

@@ -36,12 +36,13 @@ module.exports =
 
     travis:[ 'fastbuild', 'bower:install', 'testunit' ]
 
+    changelog: ['conventionalChangelog']
 
-    'bump@':[ 'bumponly', 'default', 'graph', 'bumpcommit' ]
+    'bump@':[ 'bumponly', 'default', 'changelog', 'bumpcommit' ]
 
-    'bump@minor':[ 'bumponly:minor', 'default', 'graph', 'bumpcommit' ]
+    'bump@minor':[ 'bumponly:minor', 'default', 'changelog', 'bumpcommit' ]
 
-    'bump@major':[ 'bumponly:major', 'default', 'graph', 'bumpcommit' ]
+    'bump@major':[ 'bumponly:major', 'default', 'changelog', 'bumpcommit' ]
     #To Update examples for Viewer
     examples:[ 'shell:examples', 'concat:examples' ]
 

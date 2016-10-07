@@ -1,5 +1,5 @@
 <div class="col-md-10" ng-controller="MaxboundsController">
-    <leaflet maxbounds="maxbounds" defaults="defaults"></leaflet>
+    <leaflet id="map-max-bounds" maxbounds="maxbounds" defaults="defaults"></leaflet>
     <button class="btn btn-primary padright" ng-click="setRegion('london')">London Region</button>
     <button class="btn btn-primary padright" ng-click="setRegion('lisbon')">Lisbon Region</button>
     <button class="btn btn-primary padright" ng-click="setRegion('warszawa')">Warszawa Region</button>
@@ -14,7 +14,7 @@
     <div class="tab-container" ng-switch on="activeTab">
         <div hljs ng-switch-default>
 <div ng-controller="MaxboundsController">
-     <leaflet maxbounds="maxbounds" defaults="defaults"></leaflet>
+     <leaflet id="map-max-bounds" maxbounds="maxbounds" defaults="defaults"></leaflet>
      <button class="btn btn-primary padright" ng-click="setRegion('london')">London Region</button>
      <button class="btn btn-primary padright" ng-click="setRegion('lisbon')">Lisbon Region</button>
      <button class="btn btn-primary padright" ng-click="setRegion('warszawa')">Warszawa Region</button>

@@ -1,5 +1,5 @@
 <div ng-controller="MultiLayerMapController" class="mainPageDemo col-md-6">
-    <leaflet center="center" tiles="tiles" defaults="defaults" height="400px"></leaflet>
+    <leaflet id="multilayer-map" center="center" tiles="tiles" defaults="defaults" height="400px"></leaflet>
     <div class="multilayer">
         <div class="btn-group btn-group-justified" data-toggle="buttons">
             <label class="btn btn-primary active" ng-click="setBaseLayer('osm')">
@@ -11,10 +11,13 @@
             <label class="btn btn-primary" ng-click="setBaseLayer('mapbox_light')">
                 <input type="radio" name="options"> Mapbox Light
             </label>
-            <label class="btn btn-primary" ng-click="setBaseLayer('mapbox_wheatpaste')">
-                <input type="radio" name="options"> Mapbox Wheat
+            <label class="btn btn-primary" ng-click="setBaseLayer('mapbox_outdoors')">
+                <input type="radio" name="options"> Mapbox Outdoors
             </label>
         </div>
     </div>
-    <p>Click on the buttons to change the active map layer. You can see a standalone example of this code <a href="examples/layers-example.html">here</a>.</p>
+    <p>
+        Click on the buttons to change the active map layer. You can see a standalone example of this code
+        <a href="examples/0107-basic-tiles-example.html">here</a>.
+    </p>
 </div>

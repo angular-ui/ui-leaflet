@@ -1,5 +1,5 @@
 <div class="col-md-10" ng-controller="TilesZoomChangerController">
-    <leaflet center="cairo" tiles="tiles" defaults="defaults"></leaflet>
+    <leaflet id="map-tiles-zoom-changer" center="cairo" tiles="tiles" defaults="defaults"></leaflet>
     <p>Current TileLayer Url: {{ tiles.url }}</p>
     <p>Current Zoom Level: {{ cairo.zoom }}</p>
     <h2>Tiles Zoom Changer example</h2>
@@ -11,7 +11,7 @@
     <div class="tab-container" ng-switch on="activeTab">
         <div hljs ng-switch-default>
 <div ng-controller="TilesZoomChangerController">
-    <leaflet center="cairo" tiles="tiles" defaults="defaults"></leaflet>
+    <leaflet id="map-tiles-zoom-changer" center="cairo" tiles="tiles" defaults="defaults"></leaflet>
     <p>Current TileLayer Url: {{ tiles.url }}</p>
     <p>Current Zoom Level: {{ cairo.zoom }}</p>
 </div></div>

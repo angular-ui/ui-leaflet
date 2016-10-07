@@ -1,5 +1,5 @@
 <div class="col-md-10" ng-controller="DraggingMarkersController">
-    <leaflet markers="markers" center="center" defaults="defaults"></leaflet>
+    <leaflet id="map-dragging-markers" markers="markers" center="center" defaults="defaults"></leaflet>
     <form class="form-inline" role="form">
         <div class="form-group">
             <div class="control-group col col-lg-3">
@@ -52,7 +52,7 @@
     <div class="tab-container" ng-switch on="activeTab">
         <div hljs ng-switch-default>
 <div ng-controller="DraggingMarkersController">
-    <leaflet markers="markers" center="center"></leaflet>
+    <leaflet id="map-dragging-markers" markers="markers" center="center"></leaflet>
 </div></div>
         <div hljs ng-switch-when="javascript" include="'website/src/js/controllers/DraggingMarkersController.js'"></div>
     </div>

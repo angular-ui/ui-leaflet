@@ -1,5 +1,5 @@
 <div class="col-md-10" ng-controller="CenterUrlHashController">
-    <leaflet center="center" url-hash-center="yes" defaults="defaults"></leaflet>
+    <leaflet id="map-center-url-hash" center="center" url-hash-center="yes" defaults="defaults"></leaflet>
     <form class="form-inline" role="form">
         <div class="form-group">
             <div class="control-group col col-lg-3">
@@ -39,7 +39,7 @@
         Longitude : <input type="number" step="any" ng-model="center.lng" />
         Zoom : <input type="number" step="any" ng-model="center.zoom" />
     </form>
-    <leaflet center="center"></leaflet>
+    <leaflet id="map-center-url-hash" center="center"></leaflet>
 </div></div>
         <div hljs ng-switch-when="javascript" include="'website/src/js/controllers/CenterUrlHashController.js'"></div>
     </div>

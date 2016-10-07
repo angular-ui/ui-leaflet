@@ -38,14 +38,14 @@
     "Leaflet.utfgrid": "danzel/Leaflet.utfgrid",
     "Leaflet.awesome-markers": "*",
     "leaflet-providers": "~1.1.5",
-    "leaflet.vector-markers": "0.0.4",
+    "leaflet.vector-markers": "~0.0.6",
     "webgl-heatmap-leaflet": "*",
     "leaflet-plugins": "*",
     "esri-leaflet": "~1.0.4",
     "proj4": "*",
     "font-awesome": "~4.3.x",
-    "proj4leaflet": "*",
-    "Leaflet.MakiMarkers": "*",
+    "proj4leaflet": "~0.x",
+    "Leaflet.MakiMarkers": "~2.x",
     "Leaflet.heat": "https://github.com/Leaflet/Leaflet.heat/archive/gh-pages.tar.gz",
     "Leaflet.ExtraMarkers": "https://github.com/coryasilva/Leaflet.ExtraMarkers/archive/v1.0.1.tar.gz",
     "Leaflet.fullscreen": "http://github.com/Leaflet/Leaflet.fullscreen/archive/v0.0.4.tar.gz",
@@ -69,7 +69,8 @@
     "*.md",
     "Gruntfile.js",
     "package.json",
-    "dist/coverage/",
-    "logo.svg"
+    "logo.svg",
+    "bower.json",
+    "dist/coverage/"
   ]
 }

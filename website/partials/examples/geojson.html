@@ -1,5 +1,5 @@
 <div class="col-md-10" ng-controller="GeoJSONController">
-    <leaflet center="japan" defaults="defaults" geojson="geojson"></leaflet>
+    <leaflet id="map-geojson" center="japan" defaults="defaults" geojson="geojson"></leaflet>
     <h2>GeoJSON example</h2>
     <p>Let's see how to render and interact with a geoJSON file layered into our map.</p>
     <ul class="nav nav-tabs">
@@ -9,7 +9,7 @@
     <div class="tab-container" ng-switch on="activeTab">
         <div hljs ng-switch-default>
 <div ng-controller="GeoJSONController">
-     <leaflet center="japan" geojson="geojson"></leaflet>
+     <leaflet id="map-geojson" center="japan" geojson="geojson"></leaflet>
 </div></div>
         <div hljs ng-switch-when="javascript" include="'website/src/js/controllers/GeoJSONController.js'"></div>
     </div>

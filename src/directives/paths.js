@@ -109,8 +109,8 @@ angular.module('ui-leaflet').directive('paths', function (leafletLogger, $q, lea
                                 }
 
                                 // Show label if defined
-                                if (leafletHelpers.LabelPlugin.isLoaded() && isDefined(pathData.label) && isDefined(pathData.label.message)) {
-                                    newPath.bindLabel(pathData.label.message, pathData.label.options);
+                                if (isDefined(pathData.label) && isDefined(pathData.label.message)) {
+                                    newPath.bindTooltip(pathData.label.message, pathData.label.options);
                                 }
 
                                 // Check if the marker should be added to a layer

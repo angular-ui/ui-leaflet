@@ -415,18 +415,6 @@ angular.module('ui-leaflet').service('leafletHelpers', function ($q, $log, $time
                 }
             }
         },
-        LabelPlugin: {
-            isLoaded: function() {
-                return angular.isDefined(L.Label);
-            },
-            is: function(layer) {
-                if (this.isLoaded()) {
-                    return layer instanceof L.MarkerClusterGroup;
-                } else {
-                    return false;
-                }
-            }
-        },
         MarkerClusterPlugin: {
             isLoaded: function() {
                 return angular.isDefined(L.MarkerClusterGroup);

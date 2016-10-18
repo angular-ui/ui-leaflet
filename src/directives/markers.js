@@ -113,8 +113,8 @@ angular.module('ui-leaflet').directive('markers',
                     }
 
                     // Show label if defined
-                    if (Helpers.LabelPlugin.isLoaded() && isDefined(model.label) && isDefined(model.label.message)) {
-                        marker.bindLabel(model.label.message, model.label.options);
+                    if (isDefined(model.label) && isDefined(model.label.message)) {
+                        marker.bindTooltip(model.label.message, model.label.options);
                     }
 
                     // Check if the marker should be added to a layer

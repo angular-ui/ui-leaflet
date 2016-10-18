@@ -37,8 +37,8 @@ angular.module('ui-leaflet')
                         onEachFeature = geojson.onEachFeature;
                     } else {
                         onEachFeature = function(feature, layer) {
-                            if (leafletHelpers.LabelPlugin.isLoaded() && isDefined(feature.properties.description)) {
-                                layer.bindLabel(feature.properties.description);
+                            if (isDefined(feature.properties.description)) {
+                                layer.bindTooltip(feature.properties.description);
                             }
 
                             leafletGeoJsonEvents.bindEvents(attrs.id, layer, null, feature,

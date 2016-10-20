@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 1.0.0 2016-10-03
+*  ui-leaflet 3.0.0 2016-10-20
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -2183,6 +2183,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
         //We need to keep trying until angular has compiled before we _updateLayout and _updatePosition
         //This should take care of any scenario , eg ngincludes, whatever.
         //Is there a better way to check for this?
+
         var innerText = marker._popup._contentNode.innerText || marker._popup._contentNode.textContent;
         if (innerText.length < 1) {
             $timeout(function () {
@@ -2216,8 +2217,10 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
                 return false;
             }
 
-            compilePopup(marker, markerScope);
-            updatePopup(marker, markerData, map);
+            $timeout(function () {
+                compilePopup(marker, markerScope);
+                updatePopup(marker, markerData, map);
+            });
         }
     };
 
@@ -4233,6 +4236,7 @@ angular.module('ui-leaflet').directive('markers', function (leafletLogger, $root
 
                     // Bind message
                     if (isDefined(model.message)) {
+                        $log.debug('Marker message', model.message);
                         marker.bindPopup(model.message, model.popupOptions);
                     }
 

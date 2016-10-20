@@ -103,6 +103,7 @@ angular.module('ui-leaflet').directive('markers',
 
                     // Bind message
                     if (isDefined(model.message)) {
+                        $log.debug('Marker message', model.message);
                         marker.bindPopup(model.message, model.popupOptions);
                     }
 

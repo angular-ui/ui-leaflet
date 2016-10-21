@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 2.0.0 2016-10-05
+*  ui-leaflet 2.0.0 2016-10-21
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -3908,6 +3908,10 @@ angular.module('ui-leaflet').directive('layers', ["leafletLogger", "$q", "leafle
                                 safeRemoveLayer(map, leafletLayers.overlays[name], options);
                             }
                             // TODO: Depending on the layer type we will have to delete what's included on it
+                            var oldLayer = oldOverlayLayers[name];
+                            if (isDefined(oldLayer) && oldLayer.hasOwnProperty("cleanupAction")) {
+                                oldLayer.cleanupAction(leafletLayers.overlays[name]);
+                            }
                             delete leafletLayers.overlays[name];
 
                             if (newOverlayLayers[name] && newOverlayLayers[name].doRefresh) {
@@ -5050,7 +5054,7 @@ angular.module('ui-leaflet').factory('leafletMarkerEvents', ["$rootScope", "$q",
 
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 angular.module('ui-leaflet').factory('leafletPathEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletLabelEvents", "leafletEventsHelpers", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
     var isDefined = leafletHelpers.isDefined,

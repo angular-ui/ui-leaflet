@@ -113,13 +113,13 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet',
 
             if (isDefined(map.zoomControl) &&
                 defaults.zoomControl===false) {
-                map.zoomControl.removeFrom(map);
+                map.zoomControl.remove();
             }
 
             if (isDefined(map.zoomsliderControl) &&
                 isDefined(defaults.zoomsliderControl) &&
                 defaults.zoomsliderControl===false) {
-                map.zoomsliderControl.removeFrom(map);
+                map.zoomsliderControl.remove();
             }
 
 

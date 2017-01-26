@@ -70,7 +70,6 @@
   "dependencies": {
     "angular": "1.x",
     "angular-simple-logger": "~0.1.4",
-    "karma-coverage": "^0.5.3",
     "leaflet": "0.7.x"
   }
 }

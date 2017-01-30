@@ -27,8 +27,8 @@
     "angular-route": "1.x",
     "angular-animate": "1.x",
     "angular-mocks": "1.x",
-    "leaflet.markercluster": "*",
-    "leaflet.draw": "*",
+    "leaflet.markercluster": "0.X",
+    "leaflet.draw": "0.3.X",
     "Leaflet.label": "*",
     "leaflet-tilelayer-geojson": "*",
     "Leaflet.utfgrid": "danzel/Leaflet.utfgrid",
@@ -53,6 +53,9 @@
     "leaflet-search": "~1.5.8",
     "highlightjs": "~8.8.0",
     "angular-highlightjs": "~0.4.3"
+  },
+  "resolutions": {
+    "leaflet": "0.7.7"
   },
   "ignore": [
     "website/",

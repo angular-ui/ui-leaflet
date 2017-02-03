@@ -1,9 +1,6 @@
 'use strict';
-var _ = require('lodash'),
-_pkg = require('../package.json'),
-last = _.last(_pkg.version.split('.')),
-next = Number(last) + 1,
-argv = require('yargs').argv;
+var _pkg = require('../package.json');
+var argv = require('yargs').argv;
 
 /*
  _pkg.nextVersion only works for patch updates
@@ -15,12 +12,21 @@ argv = require('yargs').argv;
 
  `grunt changelog --ui_leaflet_ver SOME_TAG_NUMBER`
  */
-_pkg.nextVersion = _pkg.version.replace(last, String(next));
 
 module.exports = function (grunt, options) {
     return {
         options: {
-            version: argv.ui_leaflet_ver || _pkg.nextVersion
+            changelogOpts: {
+                // conventional-changelog options go here
+                preset: 'angular',
+                releaseCount: 0
+            },
+            context: {
+                currentTag: 'v' + (argv.ui_leaflet_ver || _pkg.version)
+            }
+        },
+        release: {
+            src: 'CHANGELOG.md'
         }
     };
 };

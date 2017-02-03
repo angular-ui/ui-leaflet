@@ -38,15 +38,6 @@ var app = angular.module('webapp');
                 }
             });
        }]);
-        app.controller('BasicCenterController', [ '$scope', function($scope) {
-            angular.extend($scope, {
-                london: {
-                    lat: 51.505,
-                    lng: -0.09,
-                    zoom: 4
-                }
-            });
-       }]);
         app.controller('BasicCenterGeoIPController', [ '$scope', '$http', function($scope, $http) {
             angular.extend($scope, {
                 center: {
@@ -1262,7 +1253,7 @@ var app = angular.module('webapp');
             	options: {
             		controls: {
             			layers: {
-            				visible: false
+            				visible: true
             			}
             		}
             	},
@@ -1289,10 +1280,10 @@ var app = angular.module('webapp');
                         sst: {
                             name: 'Analyses - Sea Surface Temperature',
                             type: 'wms',
-                            url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/analyses',
+                            url: 'http://nowcoast.noaa.gov/arcgis/services/nowcoast/analysis_meteohydro_sfc_qpe_time/MapServer/WMSServer?service=WMS',
                             visible: true,
                             layerOptions: {
-                                layers: 'NCEP_RAS_ANAL_RTG_SST,NCEP_POLY_ANAL_RTG_SST',
+                                layers: '5',
                                 format: 'image/png',
                                 transparent: true,
                                 attribution: 'NOAA/NOS nowCOAST',
@@ -1301,10 +1292,10 @@ var app = angular.module('webapp');
 				    	wave: {
                             name: 'Forecasts - Wave height',
                             type: 'wms',
-                            url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/forecasts',
+                            url: 'http://nowcoast.noaa.gov/arcgis/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/WMSServer?service=WMS',
                             visible: false,
                             layerOptions: {
-                                layers: 'NDFD_RAS_WAVEH_3_00,NDFD_POLY_WAVEH_3_00',
+                                layers: '10',
                                 format: 'image/png',
                                 transparent: true,
                                 attribution: 'NOAA/NOS nowCOAST',
@@ -3084,7 +3075,8 @@ var app = angular.module('webapp');
             }
             $scope.addMarkers();
         } ]);
-        app.controller('MarkersAngularTemplateController', [ '$scope', function($scope) {
+        app.controller('MarkersAngularTemplateController', [ '$scope', 'leafletLogger', function($scope, leafletLogger) {
+            leafletLogger.currentLevel = leafletLogger.LEVELS.debug
             angular.extend($scope, {
                 london: {
                     lat: 51.505,
@@ -4285,6 +4277,144 @@ var app = angular.module('webapp');
         $timeout(function () {
             leafletData.getDirectiveControls().then(function (controls) {
                 //move all markers by a few decimal points
+                for (var layer in _clonedMarkers) {
+                    var markerSet = _clonedMarkers[layer];
+                    for (var markerName in markerSet) {
+                        var marker = markerSet[markerName];
+                        marker.lat += .05;
+                    }
+                }
+                //force manual update
+                controls.markers.create(_clonedMarkers ,$scope.markers);
+                $scope.markers = _clonedMarkers;
+            });
+        }, 4000);
+        angular.extend($scope, {
+            watchOptions: {
+                markers: {
+                    type: null,
+                    individual: {
+                        type: null
+                    }
+                }
+            },
+            center: {
+                lat: 42.20133,
+                lng: 2.19110,
+                zoom: 11
+            },
+            layers: {
+                baselayers: {
+                    osm: {
+                        name: 'OpenStreetMap',
+                        type: 'xyz',
+                        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            subdomains: ['a', 'b', 'c'],
+                            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            continuousWorld: true
+                        }
+                    },
+                    cycle: {
+                        name: 'OpenCycleMap',
+                        type: 'xyz',
+                        url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            subdomains: ['a', 'b', 'c'],
+                            attribution: '&copy; <a href="http://www.opencyclemap.org/copyright">OpenCycleMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            continuousWorld: true
+                        }
+                    }
+                },
+                overlays: {
+                    hillshade: {
+                        name: 'Hillshade Europa',
+                        type: 'wms',
+                        url: 'http://129.206.228.72/cached/hillshade',
+                        visible: true,
+                        layerOptions: {
+                            layers: 'europe_wms:hs_srtm_europa',
+                            format: 'image/png',
+                            opacity: 0.25,
+                            attribution: 'Hillshade layer by GIScience http://www.osm-wms.de',
+                            crs: L.CRS.EPSG900913
+                        }
+                    },
+                    fire: {
+                        name: 'OpenFireMap',
+                        type: 'xyz',
+                        url: 'http://openfiremap.org/hytiles/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            attribution: '&copy; <a href="http://www.openfiremap.org">OpenFireMap</a> contributors - &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            continuousWorld: true
+                        }
+                    },
+                    cars: {
+                        name: 'Cars',
+                        type: 'group',
+                        visible: true
+                    },
+                    bikes: {
+                        name: 'Bicycles',
+                        type: 'group',
+                        visible: false
+                    },
+                    runners: {
+                        name: 'Runners',
+                        type: 'group',
+                        visible: false
+                    }
+                }
+            },
+            markers: {
+                cars: {
+                    m1: {
+                        lat: 42.20133,
+                        lng: 2.19110,
+                        message: "I'm a car"
+                    },
+                    m2: {
+                        lat: 42.21133,
+                        lng: 2.18110,
+                        message: "I'm a car"
+                    }
+                },
+                bikes: {
+                    m3: {
+                        lat: 42.19133,
+                        lng: 2.18110,
+                        layer: 'bikes',
+                        message: 'A bike!!'
+                    },
+                    m4: {
+                        lat: 42.3,
+                        lng: 2.16110,
+                        layer: 'bikes'
+                    }
+                },
+                runners: {
+                    m5: {
+                        lat: 42.1,
+                        lng: 2.16910
+                    },
+                    m6: {
+                        lat: 42.15,
+                        lng: 2.17110
+                    }
+                }
+            }
+        });
+    });
+    app.controller('MixedMOverlaysMarkersNoWatchController', function ($scope, leafletData, $timeout, leafletLogger) {
+      leafletLogger.currentLevel = leafletLogger.LEVELS.debug;
+        var _clonedMarkers;
+        $timeout(function () {
+            //should do nothing (not watched) and only see one destroy
+            _clonedMarkers = angular.copy($scope.markers);
+        },1000);
+        $timeout(function () {
+            leafletData.getDirectiveControls().then(function (controls) {
+                //move all markers by a few decimal points
                 for (var markerName in _clonedMarkers) {
                     var marker = _clonedMarkers[markerName];
                     marker.lat += .05;
@@ -4783,12 +4913,8 @@ var app = angular.module('webapp');
                     baselayers: {
                         osm: {
                             name: 'OpenStreetMap',
-                            type: 'xyz',
-                            url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg',
-                            layerOptions: {
-                                subdomains: '1234',
-                                attribution: 'test'
-                            }
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            type: 'xyz'
                         }
                     },
                     overlays: {

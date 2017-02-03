@@ -16,8 +16,7 @@ module.exports = function (grunt, options) {
                 'dist/<%= pkg.name %>.min.no-header.js',
                 'dist/<%= pkg.name %>.js',
                 'dist/<%= pkg.name %>_dev_mapped.js',
-                'dist/<%= pkg.name %>_dev_mapped.js.map',
-                'dist/architecture/**/*'
+                'dist/<%= pkg.name %>_dev_mapped.js.map'
             ],
             createTag: true,
             tagName: 'v%VERSION%',

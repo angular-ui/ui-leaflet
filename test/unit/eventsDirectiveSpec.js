@@ -21,7 +21,7 @@ describe('Directive: leaflet', function() {
         $rootScope.$apply();
     }));
 
-    ['', '1', '{{aMapId}}'].forEach(function(mapId){
+    ['map1', 'map2', '{{aMapId}}'].forEach(function(mapId){
       it( mapId + ' should broadcast events from the rootscope when triggered leaflet events',function(){
           var element = mapId? angular.element('<leaflet id="' + mapId + '" events="events"></leaflet>') :angular.element('<leaflet events="events"></leaflet>');
           $rootScope.aMapId = 'a-map-id';
@@ -70,11 +70,10 @@ describe('Directive: leaflet', function() {
               check[origEventName] = true;
           }
 
+          if(mapId)
+            mapId = mapId + '.';
 
           leafletData.getMap(mapId).then(function(map) {
-            if(mapId) {
-                mapId = mapId + '.';
-            }
             mapEvents.forEach(function(origEventName) {
                 var eventName = 'leafletDirectiveMap.' + mapId + origEventName;
                 // console.log('Call: ' + eventName); // Inspect

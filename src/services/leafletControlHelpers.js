@@ -1,6 +1,7 @@
 angular.module('ui-leaflet').factory('leafletControlHelpers', function ($rootScope, leafletLogger, leafletHelpers, leafletLayerHelpers, leafletMapDefaults) {
     var isDefined = leafletHelpers.isDefined,
         isObject = leafletHelpers.isObject,
+        get = leafletHelpers.get,
         createLayer = leafletLayerHelpers.createLayer,
         _controls = {},
         errorHeader = leafletHelpers.errorHeader + ' [Controls] ',
@@ -8,7 +9,7 @@ angular.module('ui-leaflet').factory('leafletControlHelpers', function ($rootSco
 
     var _controlLayersMustBeVisible = function(baselayers, overlays, mapId) {
         var defaults = leafletMapDefaults.getDefaults(mapId);
-        if(!defaults.controls.layers.visible) {
+        if(!get(defaults, 'controls.layers.visible')) {
             return false;
         }
 
@@ -46,7 +47,7 @@ angular.module('ui-leaflet').factory('leafletControlHelpers', function ($rootSco
         angular.extend(controlOptions, defaults.controls.layers.options);
 
         var control;
-        if(defaults.controls.layers && isDefined(defaults.controls.layers.control)) {
+        if(!!get(defaults, 'controls.layers.control')) {
 			control = defaults.controls.layers.control.apply(this, [[], [], controlOptions]);
 		} else {
 			control = new L.control.layers([], [], controlOptions);

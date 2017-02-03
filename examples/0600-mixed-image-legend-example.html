@@ -21,7 +21,7 @@
             	options: {
             		controls: {
             			layers: {
-            				visible: false
+            				visible: true
             			}
             		}
             	},
@@ -48,10 +48,10 @@
                         sst: {
                             name: 'Analyses - Sea Surface Temperature',
                             type: 'wms',
-                            url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/analyses',
+                            url: 'http://nowcoast.noaa.gov/arcgis/services/nowcoast/analysis_meteohydro_sfc_qpe_time/MapServer/WMSServer?service=WMS',
                             visible: true,
                             layerOptions: {
-                                layers: 'NCEP_RAS_ANAL_RTG_SST,NCEP_POLY_ANAL_RTG_SST',
+                                layers: '5',
                                 format: 'image/png',
                                 transparent: true,
                                 attribution: 'NOAA/NOS nowCOAST',
@@ -60,10 +60,10 @@
 				    	wave: {
                             name: 'Forecasts - Wave height',
                             type: 'wms',
-                            url: 'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/forecasts',
+                            url: 'http://nowcoast.noaa.gov/arcgis/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/WMSServer?service=WMS',
                             visible: false,
                             layerOptions: {
-                                layers: 'NDFD_RAS_WAVEH_3_00,NDFD_POLY_WAVEH_3_00',
+                                layers: '10',
                                 format: 'image/png',
                                 transparent: true,
                                 attribution: 'NOAA/NOS nowCOAST',

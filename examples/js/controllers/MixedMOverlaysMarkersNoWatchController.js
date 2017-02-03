@@ -1,15 +1,3 @@
-<!DOCTYPE html>
-<html ng-app="demoapp">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../bower_components/angular/angular.min.js"></script>
-    <script src="../bower_components/leaflet/dist/leaflet.js"></script>
-    <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
-    <script src="../dist/ui-leaflet_dev_mapped.js"></script>
-    <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-    var app = angular.module('demoapp', ['ui-leaflet']);
     app.controller('MixedMOverlaysMarkersNoWatchController', function ($scope, leafletData, $timeout, leafletLogger) {
       leafletLogger.currentLevel = leafletLogger.LEVELS.debug;
         var _clonedMarkers;
@@ -43,7 +31,6 @@
                 lng: 2.19110,
                 zoom: 11
             },
-
             markers: {
               m1: {
                   lat: 42.20133,
@@ -58,15 +45,3 @@
             }
         });
     });
-  </script>
-</head>
-<body ng-controller="MixedMOverlaysMarkersNoWatchController">
-    <leaflet
-        lf-center="center"
-        markers="markers"
-        markers-watch-options="markersWatchOptions"
-        height="480px" width="100%">
-    </leaflet>
-    <h1>Overlays with nested markers no watchers example</h1>
-</body>
-</html>

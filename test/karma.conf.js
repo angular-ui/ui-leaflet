@@ -1,5 +1,9 @@
+const pkg = require('../package.json');
+const mainLib = 'dist/' + pkg.name +'.js';
+
 module.exports = (karma) => {
     karma.set({
+        // base path, that will be used to resolve files and exclude
         basePath: '../',
 
         frameworks: ['jasmine'],
@@ -44,11 +48,7 @@ module.exports = (karma) => {
              */
             'http://pastebin.com/raw.php?i=3ZjK6LtA',
             'bower_components/leaflet.vector-markers/dist/leaflet-vector-markers.js',
-            //source
-            'dist/src/directives/leaflet.js',
-            'dist/src/services/*.js',
-            'dist/src/**/*.js',
-            //tests
+            mainLib,
             'test/unit/bootstrap.coffee',
             'test/unit/*.js',
             'test/unit/**/*.js',
@@ -77,6 +77,8 @@ module.exports = (karma) => {
         // enable / disable watching file and executing tests whenever any file changes
         autoWatch: false,
 
+        // Continuous Integration mode
+        // if true, it capture browsers, run tests and exit
         singleRun: true
     });
 };

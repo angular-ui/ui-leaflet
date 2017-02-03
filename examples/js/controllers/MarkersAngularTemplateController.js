@@ -1,4 +1,5 @@
-        app.controller('MarkersAngularTemplateController', [ '$scope', function($scope) {
+        app.controller('MarkersAngularTemplateController', [ '$scope', 'leafletLogger', function($scope, leafletLogger) {
+            leafletLogger.currentLevel = leafletLogger.LEVELS.debug
             angular.extend($scope, {
                 london: {
                     lat: 51.505,

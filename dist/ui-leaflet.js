@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 3.0.0 2016-10-20
+*  ui-leaflet 3.0.0 2016-12-27
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -115,11 +115,11 @@ angular.module('ui-leaflet', ['nemLogging']).directive('leaflet', ["$q", "leafle
             }
 
             if (isDefined(map.zoomControl) && defaults.zoomControl === false) {
-                map.zoomControl.removeFrom(map);
+                map.zoomControl.remove();
             }
 
             if (isDefined(map.zoomsliderControl) && isDefined(defaults.zoomsliderControl) && defaults.zoomsliderControl === false) {
-                map.zoomsliderControl.removeFrom(map);
+                map.zoomsliderControl.remove();
             }
 
             // if no event-broadcast attribute, all events are broadcasted
@@ -4051,7 +4051,7 @@ angular.module("ui-leaflet").directive('legend', ["leafletLogger", "$http", "$ti
                 leafletScope.$watch('legend', function (newLegend) {
                     if (!isDefined(newLegend)) {
                         if (isDefined(leafletLegend)) {
-                            leafletLegend.removeFrom(map);
+                            leafletLegend.remove();
                             leafletLegend = null;
                         }
 
@@ -4069,7 +4069,7 @@ angular.module("ui-leaflet").directive('legend', ["leafletLogger", "$http", "$ti
                     }
 
                     if (isDefined(leafletLegend)) {
-                        leafletLegend.removeFrom(map);
+                        leafletLegend.remove();
                         leafletLegend = null;
                     }
 
@@ -5072,7 +5072,7 @@ angular.module('ui-leaflet').factory('leafletMarkerEvents', ["$rootScope", "$q",
 
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 angular.module('ui-leaflet').factory('leafletPathEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletLabelEvents", "leafletEventsHelpers", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletLabelEvents, leafletEventsHelpers) {
     var isDefined = leafletHelpers.isDefined,

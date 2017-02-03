@@ -54,8 +54,8 @@ angular.module("ui-leaflet").directive('legend', function (leafletLogger, $http,
                     leafletScope.$watch('legend', function (newLegend) {
                         if (!isDefined(newLegend)) {
                             if (isDefined(leafletLegend)) {
-                                leafletLegend.removeFrom(map);
-                                leafletLegend= null;
+                                leafletLegend.remove();
+                                leafletLegend = null;
                             }
 
                             return;
@@ -72,8 +72,8 @@ angular.module("ui-leaflet").directive('legend', function (leafletLogger, $http,
                         }
 
                         if (isDefined(leafletLegend)) {
-                            leafletLegend.removeFrom(map);
-                            leafletLegend= null;
+                            leafletLegend.remove();
+                            leafletLegend = null;
                         }
 
                         leafletLegend = L.control({

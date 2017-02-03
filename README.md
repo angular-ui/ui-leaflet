@@ -35,7 +35,7 @@ Library. This software aims to easily embed maps managed by Leaflet on your proj
 
 [![Join the chat at https://gitter.im/angular-ui/ui-leaflet](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angular-ui/ui-leaflet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/angular-ui/ui-leaflet.png?branch=master)](https://travis-ci.org/angular-ui/ui-leaflet) [![Dependencies](https://david-dm.org/angular-ui/ui-leaflet.svg)](https://david-dm.org/angular-ui/ui-leaflet)&nbsp;
+[![Build Status](https://travis-ci.org/angular-ui/ui-leaflet.png?branch=leaflet-1.X)](https://travis-ci.org/angular-ui/ui-leaflet?branch=leaflet-1.X) [![Dependencies](https://david-dm.org/angular-ui/ui-leaflet.svg)](https://david-dm.org/angular-ui/ui-leaflet)&nbsp;
 [![Dependencies](https://david-dm.org/angular-ui/ui-leaflet/dev-status.svg)](https://david-dm.org/angular-ui/ui-leaflet) [![Coverage
 Status](https://coveralls.io/repos/angular-ui/ui-leaflet/badge.png?branch=master)](http://angular-ui.github.io/ui-leaflet/coverage/PhantomJS%201.9.7%20%28Linux%29/lcov-report/dist/ui-leaflet.js.html)
 

@@ -43,7 +43,7 @@ module.exports = (karma) => {
              'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
              */
             'http://pastebin.com/raw.php?i=3ZjK6LtA',
-            'bower_components/leaflet.vector-markers/dist/Leaflet.vector-markers.js',
+            'bower_components/leaflet.vector-markers/dist/leaflet-vector-markers.js',
             //source
             'dist/src/directives/leaflet.js',
             'dist/src/services/*.js',

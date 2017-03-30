@@ -92,9 +92,12 @@ angular.module('ui-leaflet')
                     // Event propadation logic
                     if (isDefined(leafletScope.eventBroadcast[this.lObjectType].logic)) {
                         // We take care of possible propagation logic
-                        if (leafletScope.eventBroadcast[_this.lObjectType].logic !== "emit" &&
-                            leafletScope.eventBroadcast[_this.lObjectType].logic !== "broadcast")
-                                $log.warn(errorHeader + "Available event propagation logic are: 'emit' or 'broadcast'.");
+                        var configuredLogic = leafletScope.eventBroadcast[_this.lObjectType].logic;
+                        if (configuredLogic !== "emit" && configuredLogic !== "broadcast"){
+                            $log.warn(errorHeader + "Available event propagation logic are: 'emit' or 'broadcast'.");
+                        }else{
+                            logic = configuredLogic;
+                        }
                     }
                     // Enable / Disable
                     var eventsEnable = false, eventsDisable = false;

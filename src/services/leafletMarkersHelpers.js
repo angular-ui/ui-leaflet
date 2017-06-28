@@ -518,7 +518,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
                 icon: createLeafletIcon(markerData.icon),
                 title: isDefined(markerData.title) ? markerData.title : '',
                 draggable: isDefined(markerData.draggable) ? markerData.draggable : false,
-                clickable: isDefined(markerData.clickable) ? markerData.clickable : true,
+                interactive: isDefined(markerData.interactive) ? markerData.interactive : true,
                 riseOnHover: isDefined(markerData.riseOnHover) ? markerData.riseOnHover : false,
                 zIndexOffset: isDefined(markerData.zIndexOffset) ? markerData.zIndexOffset : 0,
                 iconAngle: isDefined(markerData.iconAngle) ? markerData.iconAngle : 0

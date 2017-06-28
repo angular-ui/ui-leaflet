@@ -9,7 +9,7 @@ angular.module('ui-leaflet').factory('leafletPathsHelpers', function ($rootScope
         // Path options
         'stroke', 'weight', 'color', 'opacity',
         'fill', 'fillColor', 'fillOpacity',
-        'dashArray', 'lineCap', 'lineJoin', 'clickable',
+        'dashArray', 'lineCap', 'lineJoin', 'interactive',
         'pointerEvents', 'className',
 
         // Polyline options

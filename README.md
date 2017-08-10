@@ -1,14 +1,14 @@
-# Angular Leaflet Directive - WORK IN PROGRESS (WIP)
+# Angular Leaflet Directive for LeafletJS 1.x - WORK IN PROGRESS (WIP)
 
 ![](https://cdn.rawgit.com/angular-ui/ui-leaflet/master/logo.svg)
 
-##Why the [fork](https://github.com/tombatossals/angular-leaflet-directive)?
+## Why the [fork](https://github.com/tombatossals/angular-leaflet-directive)?
 
 While we are grateful for all the original work at [tombatossals/angular-leaflet-directive](https://github.com/tombatossals/angular-leaflet-directive). We need to be able to operate as an organization to respond to issues, pull-requests and other various items quicker. We need to be able to add other developers as admins easier via group permissions via github orgs. Lastly this project needs to be more credible via being a group / org.
 
-## Master Branch State
+## Leaflet 1.x Branch State
 
-Please note the master branch is currently in a "in-progress state" and is not suitable for use at this point. We are trying
+Please note the leaflet 1.x branch is currently in a "in-progress state" and is not suitable for use at this point. We are trying
 break up the library to be more unix / plugin like. This will reduce the burden of constant changes to the core repo (this repo)
 for each and every unforseeable plugin that leaflet has. Therefore, the new usage plugins will require developers (angular-ui or not)
 to create specific angular directives, services, factories, and etc to extend the main ui-leaflet directive. Where ui-leaflet
@@ -27,6 +27,10 @@ More about decorators:
 - [Ben Nadel Decorating (Monkey Patching)](http://www.bennadel.com/blog/2775-monkey-patching-the-q-service-using-provide-decorator-in-angularjs.htm)
 - [Ben Nadel - Using Module.decorator() In AngularJS 1.4 (new way)](http://www.bennadel.com/blog/2870-using-module-decorator-in-angularjs-1-4.htm)
 - [Jesus Rodriguez - Experiment: Decorating Directives](http://angular-tips.com/blog/2013/09/experiment-decorating-directives/)
+
+### Important Note
+
+This branch is the current development for ui-leaflet library on it will be current focus, old versions that supports Leaflet 0.7.x, we will be resolving most important issues, but all new features will be in this branch.
 
 ## Goal
 

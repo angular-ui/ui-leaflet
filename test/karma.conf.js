@@ -48,15 +48,12 @@ module.exports = (karma) => {
              */
             'http://pastebin.com/raw.php?i=3ZjK6LtA',
             'bower_components/leaflet.vector-markers/dist/leaflet-vector-markers.js',
+            'bower_components/leaflet-polylinedecorator/leaflet.polylineDecorator.js',
             mainLib,
             'test/unit/bootstrap.coffee',
             'test/unit/*.js',
             'test/unit/**/*.js',
-            'test/unit/**/*.coffee',
-            'bower_components/Leaflet.PolylineDecorator/leaflet.polylineDecorator.js', {
-                pattern: 'test/**/*.coffee',
-                included: false
-            }, {
+            'test/unit/**/*.coffee', {
                 pattern: 'dist/*.js.map',
                 included: false
             }

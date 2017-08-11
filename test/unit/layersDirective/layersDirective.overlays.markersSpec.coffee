@@ -72,7 +72,7 @@ describe 'Directive: leaflet: layers.overlays.markers', ->
                     expect(layers.overlays.cars.hasLayer(markerToCheck)).toBe true
                     done()
 
-        it 'should check for a marker in a wrong layer group', ->
+        it 'should check for a marker in a wrong layer group', (done) ->
             angular.extend scope,
                 layers:
                     baselayers: osm:
@@ -101,13 +101,15 @@ describe 'Directive: leaflet: layers.overlays.markers', ->
 
             element = angular.element('<leaflet layers="layers" markers="markers" markers-nested="true"></leaflet>')
             element = $compile(element)(scope)
-            leafletData.getMarkers().then (markers) ->
-                expect(Object.keys(markers).length).toEqual 0
+            @digest scope, ->
+                leafletData.getMarkers().then (markers) ->
+                    expect(Object.keys(markers).length).toEqual 0
+                    done()
 
 
     describe 'marker', ->
 
-        it 'should check for a marker in the layer group that is visible', ->
+        it 'should check for a marker in the layer group that is visible', (done) ->
             angular.extend scope,
                 layers:
                     baselayers:
@@ -143,14 +145,15 @@ describe 'Directive: leaflet: layers.overlays.markers', ->
             leafletData.getMarkers().then (leafletMarkers) ->
                 markers = leafletMarkers
 
-            scope.$digest()
-            leafletData.getLayers().then (layers) ->
-                expect(Object.keys(markers).length).toEqual 1
-                expect(markers.m1 instanceof L.Marker).toBe true
-                expect(layers.overlays.cars.hasLayer(markers.m1)).toBe true
-                expect(map.hasLayer(markers.m1)).toBe true
+            @digest scope, ->
+                leafletData.getLayers().then (layers) ->
+                    expect(Object.keys(markers).length).toEqual 1
+                    expect(markers.m1 instanceof L.Marker).toBe true
+                    expect(layers.overlays.cars.hasLayer(markers.m1)).toBe true
+                    expect(map.hasLayer(markers.m1)).toBe true
+                    done()
 
-        it 'should check for a marker in a wrong layer group', ->
+        it 'should check for a marker in a wrong layer group', (done) ->
             angular.extend scope,
                 layers:
                     baselayers: osm:
@@ -177,10 +180,13 @@ describe 'Directive: leaflet: layers.overlays.markers', ->
                     layer: 'bikes'
             element = angular.element('<leaflet layers="layers" markers="markers"></leaflet>')
             element = $compile(element)(scope)
-            leafletData.getMarkers().then (markers) ->
-                expect(Object.keys(markers).length).toEqual 0
+            @digest scope, ->
+                leafletData.getMarkers().then (markers) ->
+                    console.log 'Markers', markers
+                    expect(Object.keys(markers).length).toEqual 0
+                    done()
 
-        it 'should check for a marker the old way', ->
+        it 'should check for a marker the old way', (done) ->
             angular.extend scope,
                 layers:
                     baselayers:
@@ -211,7 +217,8 @@ describe 'Directive: leaflet: layers.overlays.markers', ->
             leafletData.getMap().then (leafletMap) ->
                 map = leafletMap
 
-            scope.$digest()
-            leafletData.getMarkers().then (markers) ->
-                expect(Object.keys(markers).length).toEqual 1
-                expect(map.hasLayer(markers.m1)).toBe true
+            @digest scope, ->
+                leafletData.getMarkers().then (markers) ->
+                    expect(Object.keys(markers).length).toEqual 1
+                    expect(map.hasLayer(markers.m1)).toBe true
+                    done()

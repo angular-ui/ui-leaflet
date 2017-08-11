@@ -25,7 +25,7 @@ describe('Directive: leaflet', function() {
         var element = angular.element('<leaflet></leaflet>');
         element = $compile(element)(scope);
         scope.$digest();
-        expect(element.text()).toEqual('+-Leaflet | © OpenStreetMap contributors');
+        expect(element.text()).toEqual('+−Leaflet | © OpenStreetMap contributors');
     });
 
     it('should set default center if not center is provided', function() {

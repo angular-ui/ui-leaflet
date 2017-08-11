@@ -73,6 +73,7 @@ angular.module('ui-leaflet')
                 var _addGeojson = function(geojson, maybeName){
 
                     if (!(isDefined(geojson) && isDefined(geojson.data))) {
+                        leafletData.setGeoJSON(undefined, attrs.id);
                         return;
                     }
                     var onEachFeature = _hookUpEvents(geojson, maybeName);

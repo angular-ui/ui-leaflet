@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 3.0.0 2017-02-03
+*  ui-leaflet 3.0.0 2017-08-10
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -3493,6 +3493,7 @@ angular.module('ui-leaflet').directive('geojson', function ($timeout, leafletLog
                 var _addGeojson = function _addGeojson(geojson, maybeName) {
 
                     if (!(isDefined(geojson) && isDefined(geojson.data))) {
+                        leafletData.setGeoJSON(undefined, attrs.id);
                         return;
                     }
                     var onEachFeature = _hookUpEvents(geojson, maybeName);

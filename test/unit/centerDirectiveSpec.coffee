@@ -23,24 +23,26 @@ describe 'Directive: leaflet center', ->
     for key, directiveName of ['center', 'lf-center']
         describe directiveName, ->
             describe 'sets leaflet from scope', ->
-                it 'should have default {[0, 0], 1} parameters on the map if not correctly defined', ->
+                it 'should have default {[0, 0], 1} parameters on the map if not correctly defined', (done) ->
                     scope.center = {}
                     element = angular.element("<leaflet #{directiveName}='center'></leaflet>")
                     element = $compile(element)(scope)
-                    scope.$digest()
-                    leafletData.getMap().then (map) ->
-                        expect(map.getZoom()).toEqual 1
-                        expect(map.getCenter().lat).toEqual 0
-                        expect(map.getCenter().lng).toEqual 0
+                    @digest scope, ->
+                        leafletData.getMap().then (map) ->
+                            expect(map.getZoom()).toEqual 1
+                            expect(map.getCenter().lat).toEqual 0
+                            expect(map.getCenter().lng).toEqual 0
+                            done()
 
-                it 'should update the map center if the initial center scope properties are set', ->
+                it 'should update the map center if the initial center scope properties are set', (done) ->
                     element = angular.element("<leaflet #{directiveName}='center'></leaflet>")
                     element = $compile(element)(scope)
-                    scope.$digest()
-                    leafletData.getMap().then (map) ->
-                        expect(map.getZoom()).toEqual center.zoom
-                        expect(map.getCenter().lat).toBeCloseTo 0.96658, 4
-                        expect(map.getCenter().lng).toBeCloseTo 2.02, 4
+                    @digest scope, ->
+                        leafletData.getMap().then (map) ->
+                            expect(map.getZoom()).toEqual center.zoom
+                            expect(map.getCenter().lat).toBeCloseTo 0.96658, 4
+                            expect(map.getCenter().lng).toBeCloseTo 2.02, 4
+                            done()
 
                 it 'should update the map center if the scope center properties changes', ->
                     element = angular.element("<leaflet #{directiveName}='center'></leaflet>")

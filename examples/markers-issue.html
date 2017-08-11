@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html ng-app="demoapp">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="../bower_components/leaflet/dist/leaflet.js"></script>
+    <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
+    <script src="../dist/ui-leaflet_dev_mapped.js"></script>
+    <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="http://cloud.github.com/downloads/lafeber/world-flags-sprite/flags32.css" />
+    <style>
+        html {
+            font-family: sans-serif;
+        }
+
+        body, html { height: 100%; margin: 0; }
+
+        .worldmap {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+        }
+
+    </style>
+    <script>
+        var app = angular.module("demoapp", ['ui-leaflet']);
+        app.controller('IssueMarkersController', [
+            "$scope", "$rootScope", "$http", "$timeout", "$log", "leafletData", "leafletLogger",
+            function($scope, $rootScope, $http, $timeout, $log, leafletData, leafletLogger) {
+            angular.extend($rootScope, {
+                markers: {
+                    layer1: {
+                        main_marker: {
+                            lat: 0.966,
+                            lng: 2.02
+                        }
+                    }
+                },
+
+                layers: {
+                    baselayers: {
+                        osm: {
+                            name: 'OpenStreetMap',
+                            type: 'xyz',
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            layerOptions: {
+                                subdomains: ['a', 'b', 'c'],
+                                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                                continuousWorld: true
+                            }
+                        }
+                    },
+                    overlays: {
+                        layer1: {
+                            name: 'cars',
+                            type: 'group',
+                            visible: true
+                        }
+                    }
+                }
+            });
+
+            leafletData.getMarkers().then(function(leafletMarkers) {
+                $log.debug('leafletMarkers', leafletMarkers);
+            });
+        }]);
+    </script>
+    <style>
+        .angular-leaflet-map {
+            height: 100%;
+        }
+    </style>
+  </head>
+  <body ng-controller="IssueMarkersController">
+      <leaflet layers="layers" markers="markers" markers-nested="true"></leaflet>
+  </body>
+</html>

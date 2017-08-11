@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 3.0.0 2017-08-10
+*  ui-leaflet 3.0.0 2017-08-11
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -4234,7 +4234,6 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                         $log.error(errorHeader + ' Received invalid data on the marker ' + newName + '.');
                         return;
                     }
-                    _setLMarker(marker, leafletMarkers, newName, maybeLayerName);
 
                     // Bind message
                     if (isDefined(model.message)) {
@@ -4265,6 +4264,8 @@ angular.module('ui-leaflet').directive('markers', ["leafletLogger", "$rootScope"
                             marker.openPopup();
                         }
                     }
+
+                    _setLMarker(marker, leafletMarkers, newName, maybeLayerName);
 
                     if (watchOptions.individual.type !== null) {
                         addMarkerWatcher(marker, pathToMarker, leafletScope, layers, map, watchOptions.individual);

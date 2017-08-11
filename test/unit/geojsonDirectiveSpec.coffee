@@ -22,7 +22,6 @@ describe 'Directive: geojson', ->
         element = $compile(element)(scope)
         @digest scope, ->
             leafletData.getGeoJSON().then (geoJSON) ->
-                console.log('geoJSON', geoJSON)
                 expect(geoJSON).not.toBeDefined()
                 done()
     it 'should create a geoJSON tilelayer if a good structure is provided', (done) ->

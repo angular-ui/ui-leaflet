@@ -89,8 +89,8 @@ describe('Directive: leaflet', function() {
         });
     });
 
-    it('invalid MAPID should NOT broadcast events from the rootscope when triggered leaflet events',function(){
-        var element = angular.element('<leaflet events="events"></leaflet>');
+    it('invalid MAPID should NOT broadcast events from the rootscope when triggered leaflet events', function(){
+        var element = angular.element('<div><leaflet events="events"></leaflet></div>');
         element = $compile(element)($rootScope);
         var scope = element.scope();
         var check = {};
@@ -107,7 +107,7 @@ describe('Directive: leaflet', function() {
             'blur',
             'preclick',
             'load',
-            'unload',
+            //'unload',
             'viewreset',
             'movestart',
             'move',

@@ -80,7 +80,7 @@ describe 'leafletData directiveControls', ->
                 @rootName = directiveName
                 @controlsPromise = @testRunner()
 
-            it 'root', ->
+            it 'root', () ->
                 @controlsPromise
                 .then (controls) =>
                     expect(controls[@rootName]).toBeDefined()

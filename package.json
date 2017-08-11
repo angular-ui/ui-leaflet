@@ -47,7 +47,7 @@
     "grunt-protractor-runner": "^5.0.0",
     "grunt-shell": "^2.1.0",
     "grunt-shell-spawn": "0.x",
-    "jasmine-core": "2.x",
+    "jasmine-core": "2.5.2",
     "jsdom": "^11.1.0",
     "karma": "^1.7.0",
     "karma-chrome-launcher": "^2.2.0",

@@ -24,7 +24,7 @@ module.exports = (karma) => {
             }]
         },
 
-        reporters: ['dots', 'coverage'],
+        reporters: ['mocha', 'coverage'],
 
         coffeePreprocessor: {
             options: {
@@ -76,6 +76,10 @@ module.exports = (karma) => {
 
         // Continuous Integration mode
         // if true, it capture browsers, run tests and exit
-        singleRun: true
+        singleRun: true,
+
+        browserDisconnectTimeout : 2000, // default 2000
+        browserDisconnectTolerance : 1, // default 0
+        browserNoActivityTimeout : 60000 //default 10000
     });
 };

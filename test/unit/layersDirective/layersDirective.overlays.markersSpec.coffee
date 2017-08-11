@@ -7,9 +7,7 @@ jasmine specs for directives go here
 describe 'Directive: leaflet: layers.overlays.markers', ->
     $timeout = $q = scope = leafletData = $rootScope = $compile = leafletMarkersHelper = undefined
     beforeEach ->
-
         module('ui-leaflet')
-
 
         inject (_$compile_, _$rootScope_, _leafletData_, _leafletMarkersHelpers_, _$q_, _$timeout_) ->
             $timeout = _$timeout_
@@ -178,11 +176,10 @@ describe 'Directive: leaflet: layers.overlays.markers', ->
                     lat: 1.2
                     lng: 0.3
                     layer: 'bikes'
-            element = angular.element('<leaflet layers="layers" markers="markers"></leaflet>')
+            element = angular.element('<leaflet id="nester-markers" layers="layers" markers="markers"></leaflet>')
             element = $compile(element)(scope)
             @digest scope, ->
-                leafletData.getMarkers().then (markers) ->
-                    console.log 'Markers', markers
+                leafletData.getMarkers('nester-markers').then (markers) ->
                     expect(Object.keys(markers).length).toEqual 0
                     done()
 

@@ -60,7 +60,7 @@ angular.module('ui-leaflet')
     MarkerEvents.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName) {
       var logic = EventsHelper.prototype.bindEvents.call(this, maybeMapId, lObject, name, model, leafletScope, layerName);
 
-      if (Helpers.LabelPlugin.isLoaded() && isDefined(lObject.label)) {
+      if (isDefined(lObject.label)) {
           lblHelp.genEvents(maybeMapId, name, logic, leafletScope, lObject, model, layerName);
       }
     };

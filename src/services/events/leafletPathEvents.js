@@ -120,7 +120,7 @@ angular.module('ui-leaflet')
             lObject.on(eventName, _genDispatchPathEvent(maybeMapId, eventName, logic, leafletScope, pathEvents, name));
         }
 
-        if (Helpers.LabelPlugin.isLoaded() && isDefined(lObject.label)) {
+        if (isDefined(lObject.label)) {
             lblHelp.genEvents(maybeMapId, name, logic, leafletScope, lObject, model);
         }
     };

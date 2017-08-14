@@ -37,7 +37,7 @@ This branch is the current development for ui-leaflet library on it will be curr
 [AngularJS](http://angularjs.org/) directive for the [Leaflet](http://www.leafletjs.com/) Javascript
 Library. This software aims to easily embed maps managed by Leaflet on your project.
 
-[![Join the chat at https://gitter.im/angular-ui/ui-leaflet](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angular-ui/ui-leaflet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/angular-ui/ui-leaflet](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angular-ui/ui-leaflet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![CDNJS](https://img.shields.io/cdnjs/v/ui-leaflet.svg)](https://cdnjs.com/libraries/ui-leaflet)
 
 [![Build Status](https://travis-ci.org/angular-ui/ui-leaflet.png?branch=leaflet-1.X)](https://travis-ci.org/angular-ui/ui-leaflet?branch=leaflet-1.X) [![Dependencies](https://david-dm.org/angular-ui/ui-leaflet.svg)](https://david-dm.org/angular-ui/ui-leaflet)&nbsp;
 [![Dependencies](https://david-dm.org/angular-ui/ui-leaflet/dev-status.svg)](https://david-dm.org/angular-ui/ui-leaflet) [![Coverage

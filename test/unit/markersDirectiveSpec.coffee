@@ -207,17 +207,6 @@ describe 'Directive: leaflet', ->
         expect(leafletMainMarker._popup._contentNode.innerHTML).toEqual '<p class="ng-binding">angular</p>'
 
     it 'should bind label to main marker if message is given', (done) ->
-        spyOn(leafletHelpers.LabelPlugin, 'isLoaded').and.returnValue true
-        L.Label = L.Class.extend(includes: L.Mixin.Events)
-        L.BaseMarkerMethods =
-            bindLabel: (content, options) ->
-                @label = new (L.Label)(options, this)
-                @label._content = content
-                this
-            updateLabelContent: (content) ->
-                @label._content = content
-
-        L.Marker.include L.BaseMarkerMethods
         marker =
             lat: 0.966
             lng: 2.02
@@ -233,14 +222,14 @@ describe 'Directive: leaflet', ->
         $rootScope.$digest()
         leafletData.getMarkers().then (leafletMarkers) ->
             leafletMainMarker = leafletMarkers.marker
-            expect(leafletMainMarker.label._content).toEqual 'original'
+            expect(leafletMainMarker.getTooltip()._content).toEqual 'original'
 
         marker.label.message = 'new'
 
         @digest $rootScope, ->
             leafletData.getMarkers().then (leafletMarkers) ->
                 leafletMainMarker = leafletMarkers.marker
-                expect(leafletMainMarker.label._content).toEqual 'new'
+                expect(leafletMainMarker.getTooltip()._content).toEqual 'new'
                 done()
 
     # Markers

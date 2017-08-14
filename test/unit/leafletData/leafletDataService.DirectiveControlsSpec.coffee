@@ -65,34 +65,40 @@ describe 'leafletData directiveControls', ->
 
             element = angular.element markup
             element = $compile(element)($rootScope)
+            element
 
-            $rootScope.$digest()
-
-            if Array.isArray id
-                return $q.all id.map (anId) ->
-                    leafletData.getDirectiveControls(anId)
-
-            leafletData.getDirectiveControls(id)
 
     ['markers', 'geojson'].forEach (directiveName) ->
         describe "#{directiveName} controls", ->
             beforeEach ->
                 @rootName = directiveName
-                @controlsPromise = @testRunner()
+                @element = @testRunner()
 
-            it 'root', () ->
-                @controlsPromise
-                .then (controls) =>
-                    expect(controls[@rootName]).toBeDefined()
-            it 'create', ->
-                @controlsPromise
-                .then (controls) =>
-                    expect(controls[@rootName].create).toBeDefined()
-            it 'clean', ->
-                @controlsPromise
-                .then (controls) =>
-                    expect(controls[@rootName].clean).toBeDefined()
+            it 'root', (done) ->
+                element = @element
+                rootName = @rootName
+                @digest $rootScope, ->
+                    leafletData.getDirectiveControls().then (controls) ->
+                        expect(controls[rootName]).toBeDefined()
+                        done()
+                        return
 
+            it 'create', (done) ->
+                element = @element
+                rootName = @rootName
+                @digest $rootScope, ->
+                    leafletData.getDirectiveControls().then (controls) ->
+                        expect(controls[rootName].create).toBeDefined()
+                        done()
+                        return
+            it 'clean', (done) ->
+                element = @element
+                rootName = @rootName
+                @digest $rootScope, ->
+                    leafletData.getDirectiveControls().then (controls) ->
+                        expect(controls[rootName].clean).toBeDefined()
+                        done()
+                        return
 
         describe "#{directiveName} MANY controls", ->
             beforeEach ->
@@ -101,21 +107,43 @@ describe 'leafletData directiveControls', ->
                 <leaflet id="map1" markers='markers' geojson='geojson'></leaflet>
                 <leaflet id="map2" markers='markers' geojson='geojson'></leaflet>
                 """
-                @controlsPromise = @testRunner(markup, ['map1', 'map2'])
+                @ids = ['map1', 'map2']
+                @element = @testRunner(markup, @ids)
 
-            it 'root', ->
-                @controlsPromise
-                .then (controls) =>
-                    expect(controls.length).toBe(2)
-                    controls.forEach (c) =>
-                        expect(c[@rootName]).toBeDefined()
-            it 'create', ->
-                @controlsPromise
-                .then (controls) =>
-                    controls.forEach (c) =>
-                        expect(c[@rootName].create).toBeDefined()
-            it 'clean', ->
-                @controlsPromise
-                .then (controls) =>
-                    controls.forEach (c) =>
-                        expect(c[@rootName].clean).toBeDefined()
+            it 'root', (done) ->
+                element = @element
+                rootName = @rootName
+                ids = @ids
+                @digest $rootScope, ->
+                    promise = $q.all ids.map (anId) ->
+                        leafletData.getDirectiveControls(anId)
+                    promise.then (controls) ->
+                        expect(controls.length).toBe(2)
+                        controls.forEach (c) =>
+                            expect(c[rootName]).toBeDefined()
+                        done()
+                        return
+            it 'create', (done) ->
+                element = @element
+                rootName = @rootName
+                ids = @ids
+                @digest $rootScope, ->
+                    promise = $q.all ids.map (anId) ->
+                        leafletData.getDirectiveControls(anId)
+                    promise.then (controls) ->
+                        controls.forEach (c) =>
+                            expect(c[rootName].create).toBeDefined()
+                        done()
+                        return
+            it 'clean', (done) ->
+                element = @element
+                rootName = @rootName
+                ids = @ids
+                @digest $rootScope, ->
+                    promise = $q.all ids.map (anId) ->
+                        leafletData.getDirectiveControls(anId)
+                    promise.then (controls) ->
+                        controls.forEach (c) =>
+                            expect(c[rootName].clean).toBeDefined()
+                        done()
+                        return

@@ -24,7 +24,7 @@ module.exports = (karma) => {
             }]
         },
 
-        reporters: ['mocha', 'coverage'],
+        reporters: ['dots', 'coverage'],
 
         coffeePreprocessor: {
             options: {

@@ -14,7 +14,7 @@ describe 'Directive: geojson', ->
         scope = $rootScope.$new()
 
     afterEach inject ($rootScope) ->
-        $rootScope.$apply()
+        # $rootScope.$apply()
 
     it 'should not create a geoJSON tilelayer if a bad structure is provided', (done) ->
         angular.extend scope, geojson: {}

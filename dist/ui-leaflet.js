@@ -1413,38 +1413,9 @@ angular.module('ui-leaflet').factory('leafletLayerHelpers', ["$rootScope", "$q",
             }
         },
         geoJSON: {
-            mustHaveUrl: true,
-            createLayer: function createLayer(params) {
-                if (!Helpers.GeoJSONPlugin.isLoaded()) {
-                    return;
-                }
-                return new L.TileLayer.GeoJSON(params.url, params.pluginOptions, params.options);
-            }
-        },
-        geoJSONShape: {
             mustHaveUrl: false,
             createLayer: function createLayer(params) {
                 return new L.GeoJSON(params.data, params.options);
-            }
-        },
-        geoJSONAwesomeMarker: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                return new L.geoJson(params.data, {
-                    pointToLayer: function pointToLayer(feature, latlng) {
-                        return L.marker(latlng, { icon: L.AwesomeMarkers.icon(params.icon) });
-                    }
-                });
-            }
-        },
-        geoJSONVectorMarker: {
-            mustHaveUrl: false,
-            createLayer: function createLayer(params) {
-                return new L.geoJson(params.data, {
-                    pointToLayer: function pointToLayer(feature, latlng) {
-                        return L.marker(latlng, { icon: L.VectorMarkers.icon(params.icon) });
-                    }
-                });
             }
         },
         cartodbTiles: {

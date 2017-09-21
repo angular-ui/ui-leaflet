@@ -179,7 +179,7 @@ describe("Directive: leaflet: layers.watch", function () {
         // Added a good layer.. Data is normally geojson file but not testing this
             scope.layers.overlays.countries = {
                 name: 'Countries',
-                type: 'geoJSONShape',
+                type: 'geoJSON',
                 data: {"type": "FeatureCollection",
                     "features": [{
                     "type":"Feature",
@@ -203,6 +203,6 @@ describe("Directive: leaflet: layers.watch", function () {
         scope.$digest();
         expect(Object.keys(layers.overlays).length).toEqual(3);
         expect(typeof layers.overlays.countries).toBe('object');
-        
+
     });
 });

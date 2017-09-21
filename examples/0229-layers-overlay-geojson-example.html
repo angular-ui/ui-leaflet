@@ -35,42 +35,49 @@
                 }
             });
 
-        $http.get("json/countries.geo.json").success(function(data, status) {
-            angular.extend($scope.layers.overlays, {
-                countries: {
-                    name:'World Country Boundaries',
-                    type: 'geoJSONShape',
-                    data: data,
-                    visible: true,
-                    layerOptions: {
-                        style: {
-                                color: '#00D',
-                                fillColor: 'red',
-                                weight: 2.0,
-                                opacity: 0.6,
-                                fillOpacity: 0.2
-                        }
-                    }
-                }
-            });
-        });
-
-        $http.get("json/major_cities.json").success(function(data, status) {
-                    angular.extend($scope.layers.overlays, {
-                        cities: {
-                            name:'Major Cities (Awesome Markers)',
-                            type: 'geoJSONAwesomeMarker',
-                            data: data,
-                            visible: true,
-                            icon: {
-                                icon: 'heart',
-                                markerColor: 'red',
-                                prefix: 'fa'
+            $http.get("json/countries.geo.json").then(function(response) {
+                angular.extend($scope.layers.overlays, {
+                    countries: {
+                        name:'World Country Boundaries',
+                        type: 'geoJSON',
+                        data: response.data,
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                    color: '#00D',
+                                    fillColor: 'red',
+                                    weight: 2.0,
+                                    opacity: 0.6,
+                                    fillOpacity: 0.2
                             }
                         }
-                    });
+                    }
                 });
+            });
 
+            /*
+            $http.get("json/major_cities.json").then(function(response) {
+                angular.extend($scope.layers.overlays, {
+                    cities: {
+                        name:'Major Cities (Awesome Markers)',
+                        type: 'geoJSON',
+                        data: response.data,
+                        visible: true,
+                        layerOptions: {
+                            pointToLayer: function (feature, latlng) {
+                                return L.marker(latlng, {
+                                    icon: L.AwesomeMarkers.icon({
+                                        icon: 'heart',
+                                        markerColor: 'red',
+                                        prefix: 'fa'
+                                    })
+                                });
+                            }
+                        }
+                    }
+                });
+            });
+            */
         }]);
     </script>
 </head>

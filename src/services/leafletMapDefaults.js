@@ -91,6 +91,22 @@ angular.module('ui-leaflet').factory('leafletMapDefaults', function ($q, leaflet
                 mapDefaults.markerZoomAnimation = d.markerZoomAnimation;
             }
 
+            if (isDefined(d.zoomDelta)){
+                mapDefaults.zoomDelta = d.zoomDelta;
+            }
+
+            if (isDefined(d.zoomSnap)){
+                mapDefaults.zoomSnap = d.zoomSnap;
+            }
+
+            if (isDefined(d.wheelPxPerZoomLevel)){
+                mapDefaults.wheelPxPerZoomLevel = d.wheelPxPerZoomLevel;
+            }
+
+            if (isDefined(d.boxZoom)) {
+                mapDefaults.boxZoom = d.boxZoom;
+            }
+
             if (d.map) {
                 for (var option in d.map) {
                     mapDefaults[option] = d.map[option];
@@ -165,6 +181,22 @@ angular.module('ui-leaflet').factory('leafletMapDefaults', function ($q, leaflet
 
                 if (isDefined(userDefaults.path)) {
                     newDefaults.path = userDefaults.path;
+                }
+
+                if (isDefined(userDefaults.zoomDelta)){
+                    newDefaults.zoomDelta = userDefaults.zoomDelta;
+                }
+
+                if (isDefined(userDefaults.zoomSnap)){
+                    newDefaults.zoomSnap = userDefaults.zoomSnap;
+                }
+
+                if (isDefined(userDefaults.wheelPxPerZoomLevel)){
+                    newDefaults.wheelPxPerZoomLevel = userDefaults.wheelPxPerZoomLevel;
+                }
+
+                if (isDefined(userDefaults.boxZoom)){
+                    newDefaults.boxZoom = userDefaults.boxZoom;
                 }
             }
 

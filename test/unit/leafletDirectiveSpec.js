@@ -183,4 +183,56 @@ describe('Directive: leaflet', function() {
         scope.$digest();
         expect(leafletMap.zoomControl).toBe(undefined);
     });
+
+    it('should set zoomDelta if specified', function() {
+        angular.extend(scope, { defaults: { zoomDelta: 2.35 } });
+        var element = angular.element('<leaflet defaults="defaults"></leaflet>');
+        element = $compile(element)(scope);
+        var leafletMap;
+        leafletData.getMap().then(function(map) {
+            leafletMap = map;
+        });
+        scope.$digest();
+        var defaults = leafletMapDefaults.getDefaults();
+        expect(defaults.zoomDelta).toEqual(2.35);
+    });
+
+    it('should set zoomSnap if specified', function() {
+        angular.extend(scope, { defaults: { zoomSnap: 0.84 } });
+        var element = angular.element('<leaflet defaults="defaults"></leaflet>');
+        element = $compile(element)(scope);
+        var leafletMap;
+        leafletData.getMap().then(function(map) {
+            leafletMap = map;
+        });
+        scope.$digest();
+        var defaults = leafletMapDefaults.getDefaults();
+        expect(defaults.zoomSnap).toEqual(0.84);
+    });
+
+    it('should set wheelPxPerZoomLevel if specified', function() {
+        angular.extend(scope, { defaults: { wheelPxPerZoomLevel: 250 } });
+        var element = angular.element('<leaflet defaults="defaults"></leaflet>');
+        element = $compile(element)(scope);
+        var leafletMap;
+        leafletData.getMap().then(function(map) {
+            leafletMap = map;
+        });
+        scope.$digest();
+        var defaults = leafletMapDefaults.getDefaults();
+        expect(defaults.wheelPxPerZoomLevel).toEqual(250);
+    });
+
+    it('should set boxZoom if specified', function() {
+        angular.extend(scope, { defaults: { boxZoom: true } });
+        var element = angular.element('<leaflet defaults="defaults"></leaflet>');
+        element = $compile(element)(scope);
+        var leafletMap;
+        leafletData.getMap().then(function(map) {
+            leafletMap = map;
+        });
+        scope.$digest();
+        var defaults = leafletMapDefaults.getDefaults();
+        expect(defaults.boxZoom).toEqual(true);
+    });
 });

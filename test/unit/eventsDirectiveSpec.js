@@ -811,7 +811,7 @@ describe('Directive: leaflet', function() {
             label: {
                 message: 'test',
                 options: {
-                    clickable: true
+                    interactive: true
                 }
             }
         };

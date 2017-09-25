@@ -214,7 +214,7 @@ describe 'Directive: leaflet', ->
             label:
                 message: 'original'
                 options:
-                    clickable: true
+                    interactive: true
         angular.extend $rootScope, markers:
             marker: marker
         element = angular.element('<leaflet markers="markers"></leaflet>')

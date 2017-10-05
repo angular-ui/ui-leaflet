@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 3.0.0 2017-09-21
+*  ui-leaflet 3.0.0 2017-10-05
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -1869,6 +1869,22 @@ angular.module('ui-leaflet').factory('leafletMapDefaults', function ($q, leaflet
                 mapDefaults.markerZoomAnimation = d.markerZoomAnimation;
             }
 
+            if (isDefined(d.zoomDelta)) {
+                mapDefaults.zoomDelta = d.zoomDelta;
+            }
+
+            if (isDefined(d.zoomSnap)) {
+                mapDefaults.zoomSnap = d.zoomSnap;
+            }
+
+            if (isDefined(d.wheelPxPerZoomLevel)) {
+                mapDefaults.wheelPxPerZoomLevel = d.wheelPxPerZoomLevel;
+            }
+
+            if (isDefined(d.boxZoom)) {
+                mapDefaults.boxZoom = d.boxZoom;
+            }
+
             if (d.map) {
                 for (var option in d.map) {
                     mapDefaults[option] = d.map[option];
@@ -1943,6 +1959,22 @@ angular.module('ui-leaflet').factory('leafletMapDefaults', function ($q, leaflet
 
                 if (isDefined(userDefaults.path)) {
                     newDefaults.path = userDefaults.path;
+                }
+
+                if (isDefined(userDefaults.zoomDelta)) {
+                    newDefaults.zoomDelta = userDefaults.zoomDelta;
+                }
+
+                if (isDefined(userDefaults.zoomSnap)) {
+                    newDefaults.zoomSnap = userDefaults.zoomSnap;
+                }
+
+                if (isDefined(userDefaults.wheelPxPerZoomLevel)) {
+                    newDefaults.wheelPxPerZoomLevel = userDefaults.wheelPxPerZoomLevel;
+                }
+
+                if (isDefined(userDefaults.boxZoom)) {
+                    newDefaults.boxZoom = userDefaults.boxZoom;
                 }
             }
 
@@ -2467,7 +2499,7 @@ angular.module('ui-leaflet').service('leafletMarkersHelpers', function ($rootSco
                 icon: createLeafletIcon(markerData.icon),
                 title: isDefined(markerData.title) ? markerData.title : '',
                 draggable: isDefined(markerData.draggable) ? markerData.draggable : false,
-                clickable: isDefined(markerData.clickable) ? markerData.clickable : true,
+                interactive: isDefined(markerData.interactive) ? markerData.interactive : true,
                 riseOnHover: isDefined(markerData.riseOnHover) ? markerData.riseOnHover : false,
                 zIndexOffset: isDefined(markerData.zIndexOffset) ? markerData.zIndexOffset : 0,
                 iconAngle: isDefined(markerData.iconAngle) ? markerData.iconAngle : 0
@@ -2558,7 +2590,7 @@ angular.module('ui-leaflet').factory('leafletPathsHelpers', function ($rootScope
 
     var availableOptions = [
     // Path options
-    'stroke', 'weight', 'color', 'opacity', 'fill', 'fillColor', 'fillOpacity', 'dashArray', 'lineCap', 'lineJoin', 'clickable', 'pointerEvents', 'className',
+    'stroke', 'weight', 'color', 'opacity', 'fill', 'fillColor', 'fillOpacity', 'dashArray', 'lineCap', 'lineJoin', 'interactive', 'pointerEvents', 'className',
 
     // Polyline options
     'smoothFactor', 'noClip'];

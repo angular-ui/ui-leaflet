@@ -153,6 +153,10 @@ angular.module('ui-leaflet').directive('layers', function (leafletLogger, $q, le
                                 safeRemoveLayer(map, leafletLayers.overlays[name], options);
                             }
                             // TODO: Depending on the layer type we will have to delete what's included on it
+                            var oldLayer = oldOverlayLayers[name];
+                            if (isDefined(oldLayer) && oldLayer.hasOwnProperty("cleanupAction")) {
+                              oldLayer.cleanupAction(leafletLayers.overlays[name]);
+                            }
                             delete leafletLayers.overlays[name];
 
                             if (newOverlayLayers[name] && newOverlayLayers[name].doRefresh) {

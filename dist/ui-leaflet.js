@@ -1,5 +1,5 @@
 /*!
-*  ui-leaflet 2.0.0 2016-10-21
+*  ui-leaflet 2.0.0 2018-01-05
 *  ui-leaflet - An AngularJS directive to easily interact with Leaflet maps
 *  git: https://github.com/angular-ui/ui-leaflet
 */
@@ -684,7 +684,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", "$timeout"
     var _clone = _copy;
     /*
     For parsing paths to a field in an object
-     Example:
+      Example:
     var obj = {
         bike:{
          1: 'hi'
@@ -693,7 +693,7 @@ angular.module('ui-leaflet').service('leafletHelpers', ["$q", "$log", "$timeout"
     };
     _getObjectValue(obj,"bike.1") returns 'hi'
     this is getPath in ui-gmap
-     like _.get
+      like _.get
     http://stackoverflow.com/questions/2631001/javascript-test-for-existence-of-nested-object-key?page=1&tab=active#tab-top
      */
     var _getObjectValue = function _getObjectValue(object, path) {
@@ -2883,28 +2883,40 @@ angular.module('ui-leaflet').service('leafletLogger', ["nemSimpleLogger", functi
   return nemSimpleLogger.spawn();
 }]);
 
-'use strict';
+"use strict";
 
-angular.module('ui-leaflet').factory('nominatimService', ["$q", "$http", "leafletHelpers", "leafletMapDefaults", function ($q, $http, leafletHelpers, leafletMapDefaults) {
-    var isDefined = leafletHelpers.isDefined;
-
+angular.module("ui-leaflet").factory("nominatimService", ["$q", "$http", "leafletHelpers", "leafletMapDefaults", function ($q, $http, leafletHelpers, leafletMapDefaults) {
     return {
         query: function query(address, mapId) {
             var defaults = leafletMapDefaults.getDefaults(mapId);
             var url = defaults.nominatim.server;
             var df = $q.defer();
 
-            $http.get(url, { params: { format: 'json', limit: 1, q: address } }).success(function (data) {
-                if (data.length > 0 && isDefined(data[0].boundingbox)) {
-                    df.resolve(data[0]);
-                } else {
-                    df.reject('[Nominatim] Invalid address');
-                }
-            });
-
+            if (angular.version.major === 1 && angular.version.minor < 6) {
+                $http.get(url, {
+                    params: { format: "json", limit: 1, q: address }
+                }).success(function (data) {
+                    resolvePromise(data, df);
+                });
+            } else {
+                $http.get(url, {
+                    params: { format: "json", limit: 1, q: address }
+                }).then(function (response) {
+                    resolvePromise(response.data, df);
+                });
+            }
             return df.promise;
         }
     };
+
+    function resolvePromise(data, promise) {
+        var isDefined = leafletHelpers.isDefined;
+        if (data.length > 0 && isDefined(data[0].boundingbox)) {
+            promise.resolve(data[0]);
+        } else {
+            promise.reject("[Nominatim] Invalid address");
+        }
+    }
 }]);
 
 'use strict';
@@ -4737,7 +4749,7 @@ angular.module('ui-leaflet').factory('leafletEventsHelpersFactory', ["$rootScope
      }
      //would yield name of
      name = "m1"
-      If nested:
+       If nested:
      markerModel : {
      cars: {
      m1: { lat:_, lon: _}
@@ -4802,7 +4814,12 @@ angular.module('ui-leaflet').factory('leafletEventsHelpersFactory', ["$rootScope
                 // Event propadation logic
                 if (isDefined(leafletScope.eventBroadcast[this.lObjectType].logic)) {
                     // We take care of possible propagation logic
-                    if (leafletScope.eventBroadcast[_this.lObjectType].logic !== "emit" && leafletScope.eventBroadcast[_this.lObjectType].logic !== "broadcast") $log.warn(errorHeader + "Available event propagation logic are: 'emit' or 'broadcast'.");
+                    var configuredLogic = leafletScope.eventBroadcast[_this.lObjectType].logic;
+                    if (configuredLogic !== "emit" && configuredLogic !== "broadcast") {
+                        $log.warn(errorHeader + "Available event propagation logic are: 'emit' or 'broadcast'.");
+                    } else {
+                        logic = configuredLogic;
+                    }
                 }
                 // Enable / Disable
                 var eventsEnable = false,
@@ -4908,36 +4925,36 @@ angular.module('ui-leaflet').factory('leafletGeoJsonEvents', ["$rootScope", "$q"
 'use strict';
 
 angular.module('ui-leaflet').factory('leafletLabelEvents', ["$rootScope", "$q", "leafletLogger", "leafletHelpers", "leafletEventsHelpersFactory", function ($rootScope, $q, leafletLogger, leafletHelpers, leafletEventsHelpersFactory) {
-    var Helpers = leafletHelpers,
-        EventsHelper = leafletEventsHelpersFactory;
-    //$log = leafletLogger;
+        var Helpers = leafletHelpers,
+            EventsHelper = leafletEventsHelpersFactory;
+        //$log = leafletLogger;
 
-    var LabelEvents = function LabelEvents() {
-        EventsHelper.call(this, 'leafletDirectiveLabel', 'markers');
-    };
-    LabelEvents.prototype = new EventsHelper();
+        var LabelEvents = function LabelEvents() {
+                EventsHelper.call(this, 'leafletDirectiveLabel', 'markers');
+        };
+        LabelEvents.prototype = new EventsHelper();
 
-    LabelEvents.prototype.genDispatchEvent = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
-        var markerName = name.replace('markers.', '');
-        return EventsHelper.prototype.genDispatchEvent.call(this, maybeMapId, eventName, logic, leafletScope, lObject, markerName, model, layerName);
-    };
+        LabelEvents.prototype.genDispatchEvent = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
+                var markerName = name.replace('markers.', '');
+                return EventsHelper.prototype.genDispatchEvent.call(this, maybeMapId, eventName, logic, leafletScope, lObject, markerName, model, layerName);
+        };
 
-    LabelEvents.prototype.getAvailableEvents = function () {
-        return ['click', 'dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
-    };
+        LabelEvents.prototype.getAvailableEvents = function () {
+                return ['click', 'dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
+        };
 
-    LabelEvents.prototype.genEvents = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
-        var _this = this;
-        var labelEvents = this.getAvailableEvents();
-        var scopeWatchName = Helpers.getObjectArrayPath("markers." + name);
-        labelEvents.forEach(function (eventName) {
-            lObject.label.on(eventName, _this.genDispatchEvent(maybeMapId, eventName, logic, leafletScope, lObject.label, scopeWatchName, model, layerName));
-        });
-    };
+        LabelEvents.prototype.genEvents = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName) {
+                var _this = this;
+                var labelEvents = this.getAvailableEvents();
+                var scopeWatchName = Helpers.getObjectArrayPath("markers." + name);
+                labelEvents.forEach(function (eventName) {
+                        lObject.label.on(eventName, _this.genDispatchEvent(maybeMapId, eventName, logic, leafletScope, lObject.label, scopeWatchName, model, layerName));
+                });
+        };
 
-    LabelEvents.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName) {};
+        LabelEvents.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName) {};
 
-    return new LabelEvents();
+        return new LabelEvents();
 }]);
 
 'use strict';
